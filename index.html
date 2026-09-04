@@ -99,6 +99,10 @@
 function enviar() {
 
   const tema = document.getElementById("tema").value;
+  const duracao = document.getElementById("duracao").value;
+  const estilo = document.getElementById("estilo").value;
+  const voz = document.getElementById("voz").value;
+  const visual = document.getElementById("visual").value;
 
   if (!tema.trim()) {
     document.getElementById("resultado").innerText =
@@ -106,8 +110,31 @@ function enviar() {
     return;
   }
 
-  document.getElementById("resultado").innerText =
-    "Pedido preparado! Em breve conectaremos este botão ao GitHub.";
+  const titulo = encodeURIComponent("Criar Short: " + tema);
+
+  const corpo = encodeURIComponent(
+`### TEMA
+${tema}
+
+### DURAÇÃO
+${duracao}
+
+### ESTILO
+${estilo}
+
+### VOZ
+${voz}
+
+### VISUAL
+${visual}`
+  );
+
+  const url =
+    "https://github.com/karinaosproject/youtube-shorts-automatico/issues/new" +
+    "?title=" + titulo +
+    "&body=" + corpo;
+
+  window.location.href = url;
 }
 </script>
 
