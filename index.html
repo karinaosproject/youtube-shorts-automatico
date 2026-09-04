@@ -18,10 +18,12 @@
       background: white;
       padding: 25px;
       border-radius: 15px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
     }
 
     h1 {
       text-align: center;
+      margin-bottom: 25px;
     }
 
     label {
@@ -30,7 +32,9 @@
       font-weight: bold;
     }
 
-    input, select, button {
+    input,
+    select,
+    button {
       width: 100%;
       box-sizing: border-box;
       padding: 13px;
@@ -46,6 +50,17 @@
       color: white;
       border: none;
       font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    #resultado {
+      text-align: center;
+      margin-top: 18px;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -54,65 +69,86 @@
 
 <div class="box">
 
-<h1>🎬 Criador de Shorts</h1>
+  <h1>🎬 Criador de Shorts</h1>
 
-<label>Tema do vídeo</label>
-<input id="tema" placeholder="Ex.: 5 curiosidades sobre o espaço">
+  <label for="tema">Tema do vídeo</label>
+  <input
+    id="tema"
+    type="text"
+    placeholder="Ex.: 5 curiosidades sobre o espaço"
+  >
 
-<label>Duração</label>
-<select id="duracao">
-  <option>30 segundos</option>
-  <option selected>60 segundos</option>
-  <option>90 segundos</option>
-</select>
+  <label for="duracao">Duração</label>
+  <select id="duracao">
+    <option value="30 segundos">30 segundos</option>
+    <option value="45 segundos">45 segundos</option>
+    <option value="60 segundos" selected>60 segundos</option>
+    <option value="90 segundos">90 segundos</option>
+  </select>
 
-<label>Estilo</label>
-<select id="estilo">
-  <option>Curiosidades</option>
-  <option>Mistério</option>
-  <option>História</option>
-  <option>Motivacional</option>
-  <option>Fatos surpreendentes</option>
-</select>
+  <label for="estilo">Estilo do vídeo</label>
+  <select id="estilo">
+    <option>Curiosidades</option>
+    <option>Mistério</option>
+    <option>História</option>
+    <option>Motivacional</option>
+    <option>Notícias</option>
+    <option>Fatos surpreendentes</option>
+  </select>
 
-<label>Voz</label>
-<select id="voz">
-  <option>Feminina</option>
-  <option>Masculina</option>
-</select>
+  <label for="voz">Tipo de voz</label>
+  <select id="voz">
+    <option>Feminina</option>
+    <option>Masculina</option>
+    <option>Automática</option>
+  </select>
 
-<label>Estilo visual</label>
-<select id="visual">
-  <option>Cinematográfico</option>
-  <option>Documentário</option>
-  <option>Rápido e viral</option>
-  <option>Realista</option>
-</select>
+  <label for="idioma">Idioma</label>
+  <select id="idioma">
+    <option>Português brasileiro</option>
+    <option>English</option>
+    <option>Español</option>
+  </select>
 
-<button onclick="enviar()">CRIAR VÍDEO</button>
+  <label for="visual">Estilo visual</label>
+  <select id="visual">
+    <option>Realista</option>
+    <option>Cinematográfico</option>
+    <option>Documentário</option>
+    <option>Notícias</option>
+    <option>Rápido</option>
+    <option>Viral</option>
+  </select>
 
-<p id="resultado"></p>
+  <button onclick="enviar()">
+    CRIAR VÍDEO
+  </button>
+
+  <p id="resultado"></p>
 
 </div>
 
 <script>
 function enviar() {
 
-  const tema = document.getElementById("tema").value;
+  const tema = document.getElementById("tema").value.trim();
   const duracao = document.getElementById("duracao").value;
   const estilo = document.getElementById("estilo").value;
   const voz = document.getElementById("voz").value;
+  const idioma = document.getElementById("idioma").value;
   const visual = document.getElementById("visual").value;
 
-  if (!tema.trim()) {
+  if (!tema) {
     document.getElementById("resultado").innerText =
       "Digite um tema primeiro.";
     return;
   }
 
-  const titulo = encodeURIComponent("Criar Short: " + tema);
+  const titulo =
+    encodeURIComponent("Criar Short: " + tema);
 
-  const corpo = encodeURIComponent(
+  const corpo =
+    encodeURIComponent(
 `### TEMA
 ${tema}
 
@@ -125,12 +161,18 @@ ${estilo}
 ### VOZ
 ${voz}
 
+### IDIOMA
+${idioma}
+
 ### VISUAL
-${visual}`
-  );
+${visual}
+
+### STATUS
+Novo pedido de Short`
+    );
 
   const url =
-    "https://karinaosproject.github.io/youtube-shorts-automatico/issues/new" +
+    "https://github.com/karinaosproject/youtube-shorts-automatico/issues/new" +
     "?title=" + titulo +
     "&body=" + corpo;
 
