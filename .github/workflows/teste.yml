@@ -1,0 +1,16 @@
+name: Teste do Criador de Shorts
+
+on:
+  workflow_dispatch:
+
+jobs:
+  teste:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Testar automação
+        run: |
+          echo "================================"
+          echo "CRIADOR DE SHORTS"
+          echo "Automação funcionando!"
+          echo "================================"
