@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criador de Shorts</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 25px;
+      background: #f5f5f5;
+    }
+
+    .box {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 18px;
+      font-weight: bold;
+    }
+
+    input, select, button {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 13px;
+      margin-top: 7px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    button {
+      margin-top: 25px;
+      background: #111;
+      color: white;
+      border: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="box">
+
+<h1>🎬 Criador de Shorts</h1>
+
+<label>Tema do vídeo</label>
+<input id="tema" placeholder="Ex.: 5 curiosidades sobre o espaço">
+
+<label>Duração</label>
+<select id="duracao">
+  <option>30 segundos</option>
+  <option selected>60 segundos</option>
+  <option>90 segundos</option>
+</select>
+
+<label>Estilo</label>
+<select id="estilo">
+  <option>Curiosidades</option>
+  <option>Mistério</option>
+  <option>História</option>
+  <option>Motivacional</option>
+  <option>Fatos surpreendentes</option>
+</select>
+
+<label>Voz</label>
+<select id="voz">
+  <option>Feminina</option>
+  <option>Masculina</option>
+</select>
+
+<label>Estilo visual</label>
+<select id="visual">
+  <option>Cinematográfico</option>
+  <option>Documentário</option>
+  <option>Rápido e viral</option>
+  <option>Realista</option>
+</select>
+
+<button onclick="enviar()">CRIAR VÍDEO</button>
+
+<p id="resultado"></p>
+
+</div>
+
+<script>
+function enviar() {
+
+  const tema = document.getElementById("tema").value;
+
+  if (!tema.trim()) {
+    document.getElementById("resultado").innerText =
+      "Digite um tema primeiro.";
+    return;
+  }
+
+  document.getElementById("resultado").innerText =
+    "Pedido preparado! Em breve conectaremos este botão ao GitHub.";
+}
+</script>
+
+</body>
+</html>
