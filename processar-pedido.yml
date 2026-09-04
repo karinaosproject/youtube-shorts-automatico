@@ -1,0 +1,86 @@
+        name: Processar pedido de Short
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  criar-roteiro:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ler pedido
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          echo "================================"
+          echo "🎬 NOVO PEDIDO"
+          echo "================================"
+          echo "$ISSUE_BODY"
+
+      - name: Gerar roteiro com Gemini
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          python - <<'PY'
+          import os
+          import json
+          import urllib.request
+
+          api_key = os.environ["GEMINI_API_KEY"]
+          pedido = os.environ["ISSUE_BODY"]
+
+          prompt = f"""
+          Você é um roteirista profissional de YouTube Shorts.
+
+          Receba o pedido abaixo e crie um roteiro curto, envolvente
+          e pronto para narração.
+
+          REGRAS:
+          - Comece com um gancho forte.
+          - Não use introdução desnecessária.
+          - Use frases curtas.
+          - Mantenha ritmo rápido.
+          - Termine com uma frase de impacto.
+          - Respeite o idioma indicado no pedido.
+          - Entregue somente o roteiro.
+
+          PEDIDO:
+          {pedido}
+          """
+
+          data = {
+              "contents": [
+                  {
+                      "parts": [
+                          {"text": prompt}
+                      ]
+                  }
+              ]
+          }
+
+          url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+
+          request = urllib.request.Request(
+              url,
+              data=json.dumps(data).encode("utf-8"),
+              headers={
+                  "Content-Type": "application/json",
+                  "x-goog-api-key": api_key
+              },
+              method="POST"
+          )
+
+          with urllib.request.urlopen(request) as response:
+              resultado = json.load(response)
+
+          roteiro = resultado["candidates"][0]["content"]["parts"][0]["text"]
+
+          print("")
+          print("================================")
+          print("🧠 ROTEIRO GERADO PELO GEMINI")
+          print("================================")
+          print(roteiro)
+          print("================================")
+          PY
