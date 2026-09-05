@@ -5,10 +5,11 @@ on:
     types: [opened]
 
 jobs:
-  criar-roteiro:
+  criar-short:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Ler pedido
         env:
           ISSUE_TITLE: ${{ github.event.issue.title }}
@@ -62,9 +63,7 @@ jobs:
               "contents": [
                   {
                       "parts": [
-                          {
-                              "text": prompt
-                          }
+                          {"text": prompt}
                       ]
                   }
               ]
@@ -87,38 +86,106 @@ jobs:
                   resultado = json.load(response)
 
           except urllib.error.HTTPError as e:
-              print("================================")
               print("❌ ERRO DA API GEMINI")
-              print("================================")
-              print("Código HTTP:", e.code)
-              print("Resposta do Google:")
+              print("Código:", e.code)
               print(e.read().decode("utf-8"))
-              print("================================")
               raise
 
-          except Exception as e:
-              print("================================")
-              print("❌ ERRO AO CHAMAR GEMINI")
-              print("================================")
-              print(str(e))
-              print("================================")
-              raise
+          roteiro = resultado["candidates"][0]["content"]["parts"][0]["text"]
 
-          try:
-              roteiro = resultado["candidates"][0]["content"]["parts"][0]["text"]
-
-          except Exception:
-              print("================================")
-              print("❌ RESPOSTA INESPERADA DO GEMINI")
-              print("================================")
-              print(json.dumps(resultado, indent=2, ensure_ascii=False))
-              print("================================")
-              raise
-
-          print("")
           print("================================")
-          print("🧠 ROTEIRO GERADO PELO GEMINI")
+          print("🧠 ROTEIRO GERADO")
           print("================================")
           print(roteiro)
           print("================================")
+
+          with open("roteiro.txt", "w", encoding="utf-8") as f:
+              f.write(roteiro)
           PY
+
+      - name: Gerar voz com Gemini TTS
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python - <<'PY'
+          import json
+          import urllib.request
+          import urllib.error
+          import base64
+
+          api_key = __import__("os").environ["GEMINI_API_KEY"]
+
+          with open("roteiro.txt", "r", encoding="utf-8") as f:
+              roteiro = f.read()
+
+          data = {
+              "contents": [
+                  {
+                      "parts": [
+                          {
+                              "text": "Narre este roteiro em português brasileiro, com voz natural, clara, envolvente e ritmo de YouTube Shorts:\n\n" + roteiro
+                          }
+                      ]
+                  }
+              ],
+              "generationConfig": {
+                  "responseModalities": ["AUDIO"],
+                  "speechConfig": {
+                      "languageCode": "pt-BR",
+                      "voiceConfig": {
+                          "prebuiltVoiceConfig": {
+                              "voiceName": "Kore"
+                          }
+                      }
+                  }
+              }
+          }
+
+          url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent"
+
+          request = urllib.request.Request(
+              url,
+              data=json.dumps(data).encode("utf-8"),
+              headers={
+                  "Content-Type": "application/json",
+                  "x-goog-api-key": api_key
+              },
+              method="POST"
+          )
+
+          try:
+              with urllib.request.urlopen(request) as response:
+                  resultado = json.load(response)
+
+          except urllib.error.HTTPError as e:
+              print("❌ ERRO DO GEMINI TTS")
+              print("Código:", e.code)
+              print(e.read().decode("utf-8"))
+              raise
+
+          audio_data = (
+              resultado["candidates"][0]
+              ["content"]["parts"][0]
+              ["inlineData"]["data"]
+          )
+
+          audio_bytes = base64.b64decode(audio_data)
+
+          with open("narracao.wav", "wb") as f:
+              f.write(audio_bytes)
+
+          print("================================")
+          print("🎙️ NARRAÇÃO GERADA COM SUCESSO")
+          print("================================")
+          print("Arquivo: narracao.wav")
+          print("Tamanho:", len(audio_bytes), "bytes")
+          print("================================")
+          PY
+
+      - name: Salvar arquivos gerados
+        uses: actions/upload-artifact@v4
+        with:
+          name: short-gerado
+          path: |
+            roteiro.txt
+            narracao.wav
