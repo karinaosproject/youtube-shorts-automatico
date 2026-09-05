@@ -11,7 +11,7 @@ jobs:
     steps:
 
       # ==========================================
-      # 1. INSTALAR FFMPEG
+      # 1. FFMPEG
       # ==========================================
 
       - name: Instalar FFmpeg
@@ -23,7 +23,7 @@ jobs:
           ffprobe -version
 
       # ==========================================
-      # 2. INSTALAR PIPER
+      # 2. PIPER
       # ==========================================
 
       - name: Instalar Piper TTS
@@ -56,7 +56,7 @@ jobs:
           echo "================================"
 
       # ==========================================
-      # 4. GEMINI - ROTEIRO + 6 CENAS
+      # 4. GEMINI
       # ==========================================
 
       - name: Gerar roteiro e cenas com Gemini
@@ -113,7 +113,6 @@ jobs:
           - Não coloque explicações.
           - Não use listas.
           - Não use emojis.
-          - Responda exatamente no formato solicitado.
 
           FORMATO OBRIGATÓRIO:
 
@@ -178,18 +177,15 @@ jobs:
           )
 
           try:
-
               print("🧠 Enviando pedido para Gemini...")
 
               with urllib.request.urlopen(
                   request,
                   timeout=180
               ) as response:
-
                   resultado = json.load(response)
 
           except urllib.error.HTTPError as e:
-
               print("❌ ERRO DA API GEMINI")
               print("Código:", e.code)
 
@@ -199,33 +195,12 @@ jobs:
               )
 
               print(corpo)
-
               raise
 
-          except Exception as e:
-
-              print("❌ ERRO AO ACESSAR GEMINI")
-              print(str(e))
-
-              raise
-
-          try:
-
-              texto = (
-                  resultado["candidates"][0]
-                  ["content"]["parts"][0]["text"]
-              )
-
-          except Exception:
-
-              print("❌ RESPOSTA INESPERADA DO GEMINI")
-              print(json.dumps(
-                  resultado,
-                  ensure_ascii=False,
-                  indent=2
-              ))
-
-              raise
+          texto = (
+              resultado["candidates"][0]
+              ["content"]["parts"][0]["text"]
+          )
 
           print("")
           print("================================")
@@ -233,10 +208,6 @@ jobs:
           print("================================")
           print(texto)
           print("================================")
-
-          # ------------------------------------------
-          # PARSER DAS 6 CENAS
-          # ------------------------------------------
 
           linhas = [
               linha.strip()
@@ -259,7 +230,6 @@ jobs:
               if linha_upper.startswith("CENA "):
 
                   if cena_atual is not None:
-
                       cenas.append({
                           "texto": " ".join(
                               texto_atual
@@ -273,9 +243,7 @@ jobs:
                   texto_atual = []
                   busca_atual = None
 
-              elif linha_upper.startswith(
-                  "TEXTO:"
-              ):
+              elif linha_upper.startswith("TEXTO:"):
 
                   valor = linha[
                       len("TEXTO:"):
@@ -284,16 +252,13 @@ jobs:
                   if valor:
                       texto_atual.append(valor)
 
-              elif linha_upper.startswith(
-                  "BUSCA:"
-              ):
+              elif linha_upper.startswith("BUSCA:"):
 
                   busca_atual = linha[
                       len("BUSCA:"):
                   ].strip()
 
           if cena_atual is not None:
-
               cenas.append({
                   "texto": " ".join(
                       texto_atual
@@ -303,20 +268,10 @@ jobs:
                   ).strip()
               })
 
-          # ------------------------------------------
-          # VALIDAR
-          # ------------------------------------------
-
           if len(cenas) != 6:
-
-              print("")
-              print(
-                  "❌ Gemini não retornou "
-                  f"6 cenas. Retornou {len(cenas)}."
-              )
-
               raise Exception(
-                  "Quantidade de cenas inválida."
+                  f"Gemini retornou {len(cenas)} cenas. "
+                  "Esperadas exatamente 6."
               )
 
           for i, cena in enumerate(
@@ -325,20 +280,14 @@ jobs:
           ):
 
               if not cena["texto"]:
-
                   raise Exception(
                       f"Cena {i} sem texto."
                   )
 
               if not cena["busca"]:
-
                   raise Exception(
                       f"Cena {i} sem busca."
                   )
-
-          # ------------------------------------------
-          # SALVAR
-          # ------------------------------------------
 
           with open(
               "cenas.json",
@@ -360,7 +309,6 @@ jobs:
           ) as f:
 
               for cena in cenas:
-
                   f.write(
                       cena["texto"].strip()
                       + "\n\n"
@@ -385,7 +333,7 @@ jobs:
           PY
 
       # ==========================================
-      # 5. BAIXAR VOZ PIPER PT-BR
+      # 5. BAIXAR VOZ PIPER
       # ==========================================
 
       - name: Baixar voz Piper PT-BR
@@ -406,7 +354,7 @@ jobs:
           echo "✅ Modelo Piper pronto."
 
       # ==========================================
-      # 6. GERAR NARRAÇÃO DAS 6 CENAS
+      # 6. NARRAÇÃO
       # ==========================================
 
       - name: Gerar narrações das cenas
@@ -421,7 +369,6 @@ jobs:
               "r",
               encoding="utf-8"
           ) as f:
-
               cenas = json.load(f)
 
           os.makedirs(
@@ -460,24 +407,16 @@ jobs:
               )
 
               if processo.returncode != 0:
-
                   raise Exception(
                       f"Piper falhou na cena {i}."
                   )
 
-              if not os.path.exists(
-                  arquivo
-              ):
-
+              if not os.path.exists(arquivo):
                   raise Exception(
-                      f"Áudio da cena {i} "
-                      "não foi criado."
+                      f"Áudio da cena {i} não foi criado."
                   )
 
-              if os.path.getsize(
-                  arquivo
-              ) == 0:
-
+              if os.path.getsize(arquivo) == 0:
                   raise Exception(
                       f"Áudio vazio na cena {i}."
                   )
@@ -493,7 +432,7 @@ jobs:
           PY
 
       # ==========================================
-      # 7. BUSCAR 6 VÍDEOS NO PEXELS
+      # 7. PEXELS
       # ==========================================
 
       - name: Buscar vídeos no Pexels
@@ -514,7 +453,6 @@ jobs:
           ).strip()
 
           if not api_key:
-
               raise Exception(
                   "PEXELS_API_KEY não foi encontrada."
               )
@@ -524,7 +462,6 @@ jobs:
               "r",
               encoding="utf-8"
           ) as f:
-
               cenas = json.load(f)
 
           os.makedirs(
@@ -585,8 +522,7 @@ jobs:
                   try:
 
                       print(
-                          f"📡 Tentativa "
-                          f"{tentativa}/3"
+                          f"📡 Tentativa {tentativa}/3"
                       )
 
                       with urllib.request.urlopen(
@@ -615,21 +551,14 @@ jobs:
                       print(corpo)
 
                       if e.code == 429:
-
-                          print(
-                              "⏳ Limite de requisições. "
-                              "Aguardando..."
-                          )
-
                           time.sleep(10)
                           continue
 
                       raise
 
               if resultado is None:
-
                   raise Exception(
-                      "Pexels não respondeu "
+                      f"Pexels não respondeu "
                       f"para cena {indice}."
                   )
 
@@ -639,17 +568,12 @@ jobs:
               )
 
               if not videos:
-
                   raise Exception(
-                      "Nenhum vídeo encontrado "
+                      f"Nenhum vídeo encontrado "
                       f"para: {busca}"
                   )
 
               escolhido = None
-
-              # --------------------------------------
-              # PRIMEIRO: TENTAR VÍDEO VERTICAL
-              # --------------------------------------
 
               for video in videos:
 
@@ -697,10 +621,6 @@ jobs:
                   if escolhido:
                       break
 
-              # --------------------------------------
-              # SEGUNDO: ACEITAR OUTRO FORMATO
-              # --------------------------------------
-
               if not escolhido:
 
                   for video in videos:
@@ -735,9 +655,8 @@ jobs:
                           break
 
               if not escolhido:
-
                   raise Exception(
-                      "Não foi possível escolher "
+                      f"Não foi possível escolher "
                       f"vídeo para cena {indice}."
                   )
 
@@ -789,7 +708,6 @@ jobs:
               if not os.path.getsize(
                   arquivo_saida
               ):
-
                   raise Exception(
                       f"Vídeo vazio na cena {indice}."
                   )
@@ -826,7 +744,7 @@ jobs:
           PY
 
       # ==========================================
-      # 8. CRIAR LEGENDAS + CLIPES
+      # 8. CRIAR LEGENDAS ASS + CLIPES
       # ==========================================
 
       - name: Criar legendas e clipes
@@ -847,8 +765,69 @@ jobs:
               "r",
               encoding="utf-8"
           ) as f:
-
               cenas = json.load(f)
+
+          def ass_time(segundos):
+
+              segundos = max(
+                  0,
+                  segundos
+              )
+
+              horas = int(
+                  segundos // 3600
+              )
+
+              minutos = int(
+                  (segundos % 3600) // 60
+              )
+
+              seg = int(
+                  segundos % 60
+              )
+
+              centesimos = int(
+                  round(
+                      (
+                          segundos
+                          - int(segundos)
+                      ) * 100
+                  )
+              )
+
+              if centesimos >= 100:
+                  centesimos = 99
+
+              return (
+                  f"{horas}:"
+                  f"{minutos:02d}:"
+                  f"{seg:02d}."
+                  f"{centesimos:02d}"
+              )
+
+          def limpar_ass(texto):
+
+              texto = texto.replace(
+                  "\\",
+                  ""
+              )
+
+              texto = texto.replace(
+                  "{",
+                  "("
+              )
+
+              texto = texto.replace(
+                  "}",
+                  ")"
+              )
+
+              texto = texto.replace(
+                  "\n",
+                  " "
+              )
+
+              return texto.strip()
 
           for i, cena in enumerate(
               cenas,
@@ -865,8 +844,8 @@ jobs:
                   f"videos/cena-{i:02d}.mp4"
               )
 
-              srt = (
-                  f"subtitles/cena-{i:02d}.srt"
+              ass = (
+                  f"subtitles/cena-{i:02d}.ass"
               )
 
               clip = (
@@ -890,14 +869,14 @@ jobs:
 
               print("")
               print("================================")
-              print(f"🎬 PREPARANDO CENA {i}")
+              print(f"📝 LEGENDA CENA {i}")
               print("================================")
               print(
-                  f"Narração: {duracao:.2f}s"
+                  f"Duração: {duracao:.2f}s"
               )
 
               # --------------------------------------
-              # DIVIDIR TEXTO EM FRASES
+              # FRASES
               # --------------------------------------
 
               frases = re.split(
@@ -914,10 +893,6 @@ jobs:
               if not frases:
                   frases = [texto]
 
-              # --------------------------------------
-              # CALCULAR TEMPO DE CADA FRASE
-              # --------------------------------------
-
               total_palavras = sum(
                   len(frase.split())
                   for frase in frases
@@ -926,17 +901,95 @@ jobs:
               if total_palavras <= 0:
                   total_palavras = 1
 
-              tempo_atual = 0.0
-
               # --------------------------------------
-              # CRIAR SRT
+              # CRIAR ASS
               # --------------------------------------
 
               with open(
-                  srt,
+                  ass,
                   "w",
                   encoding="utf-8"
               ) as f:
+
+                  f.write(
+                      "[Script Info]\n"
+                  )
+
+                  f.write(
+                      "ScriptType: v4.00+\n"
+                  )
+
+                  f.write(
+                      "PlayResX: 1080\n"
+                  )
+
+                  f.write(
+                      "PlayResY: 1920\n"
+                  )
+
+                  f.write(
+                      "WrapStyle: 2\n"
+                  )
+
+                  f.write(
+                      "ScaledBorderAndShadow: yes\n"
+                  )
+
+                  f.write(
+                      "\n"
+                  )
+
+                  f.write(
+                      "[V4+ Styles]\n"
+                  )
+
+                  f.write(
+                      "Format: Name, "
+                      "Fontname, Fontsize, "
+                      "PrimaryColour, "
+                      "SecondaryColour, "
+                      "OutlineColour, "
+                      "BackColour, "
+                      "Bold, Italic, "
+                      "Underline, StrikeOut, "
+                      "ScaleX, ScaleY, "
+                      "Spacing, Angle, "
+                      "BorderStyle, Outline, "
+                      "Shadow, Alignment, "
+                      "MarginL, MarginR, MarginV, "
+                      "Encoding\n"
+                  )
+
+                  f.write(
+                      "Style: Default,"
+                      "DejaVu Sans,"
+                      "52,"
+                      "&H00FFFFFF,"
+                      "&H00FFFFFF,"
+                      "&H00000000,"
+                      "&H80000000,"
+                      "1,0,0,0,"
+                      "100,100,0,0,"
+                      "1,3,2,2,"
+                      "70,70,180,1\n"
+                  )
+
+                  f.write(
+                      "\n"
+                  )
+
+                  f.write(
+                      "[Events]\n"
+                  )
+
+                  f.write(
+                      "Format: Layer, "
+                      "Start, End, Style, "
+                      "Name, MarginL, MarginR, "
+                      "MarginV, Effect, Text\n"
+                  )
+
+                  tempo_atual = 0.0
 
                   for numero, frase in enumerate(
                       frases,
@@ -962,85 +1015,52 @@ jobs:
                           + tempo_frase
                       )
 
-                      def srt_time(segundos):
-
-                          horas = int(
-                              segundos // 3600
-                          )
-
-                          minutos = int(
-                              (segundos % 3600)
-                              // 60
-                          )
-
-                          seg = int(
-                              segundos % 60
-                          )
-
-                          milissegundos = int(
-                              round(
-                                  (
-                                      segundos
-                                      - math.floor(
-                                          segundos
-                                      )
-                                  )
-                                  * 1000
-                              )
-                          )
-
-                          if milissegundos >= 1000:
-
-                              milissegundos = 999
-
-                          return (
-                              f"{horas:02d}:"
-                              f"{minutos:02d}:"
-                              f"{seg:02d},"
-                              f"{milissegundos:03d}"
-                          )
-
-                      inicio_txt = srt_time(
-                          inicio
+                      frase = limpar_ass(
+                          frase
                       )
 
-                      fim_txt = srt_time(
-                          fim
-                      )
+                      # --------------------------------
+                      # QUEBRA CONTROLADA
+                      # --------------------------------
 
-                      # Máximo de aproximadamente
-                      # 32 caracteres por linha.
                       linhas = textwrap.wrap(
                           frase,
-                          width=32
+                          width=28,
+                          break_long_words=False,
+                          break_on_hyphens=False
+                      )
+
+                      legenda = (
+                          r"\N".join(
+                              linhas
+                          )
                       )
 
                       f.write(
-                          f"{numero}\n"
-                          f"{inicio_txt} --> "
-                          f"{fim_txt}\n"
-                          f"{chr(10).join(linhas)}\n\n"
+                          "Dialogue: 0,"
+                          + ass_time(inicio)
+                          + ","
+                          + ass_time(fim)
+                          + ",Default,,0,0,0,,"
+                          + legenda
+                          + "\n"
                       )
 
                       tempo_atual = fim
 
               # --------------------------------------
-              # OS PRIMEIROS 5 CLIPES GANHAM 0,3s
-              # PARA PERMITIR A TRANSIÇÃO.
+              # PRIMEIROS 5 CLIPES GANHAM 0,3s
               # --------------------------------------
 
               if i < 6:
-
                   duracao_clip = (
                       duracao + 0.30
                   )
-
               else:
-
                   duracao_clip = duracao
 
               # --------------------------------------
-              # VÍDEO + LEGENDAS
+              # VÍDEO + LEGENDA ASS
               # --------------------------------------
 
               filtro = (
@@ -1050,64 +1070,46 @@ jobs:
                   "setsar=1,"
                   "fps=30,"
                   "subtitles="
-                  + srt
-                  + ":original_size=1080x1920:"
-                  "force_style='"
-                  "FontName=DejaVu Sans,"
-                  "FontSize=48,"
-                  "PrimaryColour=&H00FFFFFF,"
-                  "OutlineColour=&H00000000,"
-                  "BorderStyle=1,"
-                  "Outline=3,"
-                  "Shadow=1,"
-                  "Bold=1,"
-                  "Alignment=2,"
-                  "MarginV=180"
-                  "'"
+                  + ass
               )
 
-              comando = [
-                  "ffmpeg",
-                  "-y",
-
-                  "-stream_loop",
-                  "-1",
-
-                  "-i",
-                  video,
-
-                  "-t",
-                  f"{duracao_clip:.3f}",
-
-                  "-vf",
-                  filtro,
-
-                  "-an",
-
-                  "-c:v",
-                  "libx264",
-
-                  "-preset",
-                  "veryfast",
-
-                  "-crf",
-                  "23",
-
-                  "-pix_fmt",
-                  "yuv420p",
-
-                  clip
-              ]
-
               subprocess.run(
-                  comando,
+                  [
+                      "ffmpeg",
+                      "-y",
+
+                      "-stream_loop",
+                      "-1",
+
+                      "-i",
+                      video,
+
+                      "-t",
+                      f"{duracao_clip:.3f}",
+
+                      "-vf",
+                      filtro,
+
+                      "-an",
+
+                      "-c:v",
+                      "libx264",
+
+                      "-preset",
+                      "veryfast",
+
+                      "-crf",
+                      "23",
+
+                      "-pix_fmt",
+                      "yuv420p",
+
+                      clip
+                  ],
                   check=True
               )
 
-              if not os.path.exists(
-                  clip
-              ):
-
+              if not os.path.exists(clip):
                   raise Exception(
                       f"Clip {i} não foi criado."
                   )
@@ -1123,7 +1125,7 @@ jobs:
           PY
 
       # ==========================================
-      # 9. MONTAR VÍDEO COM TRANSIÇÕES
+      # 9. TRANSIÇÕES
       # ==========================================
 
       - name: Montar vídeo com transições
@@ -1132,10 +1134,6 @@ jobs:
           import subprocess
 
           duracoes = []
-
-          # --------------------------------------
-          # PEGAR DURAÇÃO REAL DE CADA NARRAÇÃO
-          # --------------------------------------
 
           for i in range(1, 7):
 
@@ -1164,7 +1162,7 @@ jobs:
 
           print("")
           print("================================")
-          print("⏱️ DURAÇÕES DAS CENAS")
+          print("⏱️ DURAÇÕES")
           print("================================")
 
           for i, duracao in enumerate(
@@ -1177,10 +1175,6 @@ jobs:
                   f"{duracao:.2f}s"
               )
 
-          # --------------------------------------
-          # TRANSIÇÕES
-          # --------------------------------------
-
           transicoes = [
               "fade",
               "smoothleft",
@@ -1191,10 +1185,6 @@ jobs:
 
           duracao_transicao = 0.30
 
-          # --------------------------------------
-          # ENTRADAS
-          # --------------------------------------
-
           entradas = []
 
           for i in range(1, 7):
@@ -1204,34 +1194,22 @@ jobs:
                   f"clips/cena-{i:02d}.mp4"
               ])
 
-          # --------------------------------------
-          # FILTROS XFADES
-          #
-          # Os primeiros 5 clipes têm 0,3s extras.
-          # Isso permite que cada transição aconteça
-          # sem diminuir a duração final da narração.
-          # --------------------------------------
-
           filtros = []
 
-          acumulado_original = (
-              duracoes[0]
-          )
+          acumulado = duracoes[0]
 
-          # Primeira transição
           filtros.append(
               "[0:v][1:v]"
               f"xfade=transition={transicoes[0]}:"
               f"duration={duracao_transicao}:"
-              f"offset={acumulado_original:.3f}"
+              f"offset={acumulado:.3f}"
               "[v01]"
           )
 
           anterior = "v01"
 
-          acumulado_original += duracoes[1]
+          acumulado += duracoes[1]
 
-          # Demais transições
           for indice in range(2, 6):
 
               proximo = f"v{indice}"
@@ -1241,13 +1219,13 @@ jobs:
                   f"xfade=transition="
                   f"{transicoes[indice-1]}:"
                   f"duration={duracao_transicao}:"
-                  f"offset={acumulado_original:.3f}"
+                  f"offset={acumulado:.3f}"
                   f"[{proximo}]"
               )
 
               anterior = proximo
 
-              acumulado_original += (
+              acumulado += (
                   duracoes[indice]
               )
 
@@ -1308,7 +1286,7 @@ jobs:
           PY
 
       # ==========================================
-      # 10. JUNTAR NARRAÇÕES
+      # 10. JUNTAR ÁUDIO
       # ==========================================
 
       - name: Juntar narrações
@@ -1319,12 +1297,6 @@ jobs:
           do
             echo "file '$(pwd)/audios/cena-$i.wav'" >> lista-audios.txt
           done
-
-          echo "================================"
-          echo "🎙️ JUNTANDO NARRAÇÕES"
-          echo "================================"
-
-          cat lista-audios.txt
 
           ffmpeg \
             -y \
@@ -1341,7 +1313,7 @@ jobs:
           echo "================================"
 
       # ==========================================
-      # 11. CRIAR SHORT FINAL
+      # 11. SHORT FINAL
       # ==========================================
 
       - name: Criar Short final
@@ -1373,7 +1345,7 @@ jobs:
           ls -lh short-final.mp4
 
       # ==========================================
-      # 12. CRIAR CRÉDITOS PEXELS
+      # 12. CRÉDITOS PEXELS
       # ==========================================
 
       - name: Criar créditos Pexels
@@ -1423,7 +1395,6 @@ jobs:
                   )
 
                   if pagina:
-
                       f.write(
                           pagina + "\n"
                       )
@@ -1436,7 +1407,7 @@ jobs:
           PY
 
       # ==========================================
-      # 13. VERIFICAR SHORT
+      # 13. VERIFICAR
       # ==========================================
 
       - name: Verificar Short
@@ -1456,7 +1427,7 @@ jobs:
 
           echo ""
           echo "================================"
-          echo "📦 TAMANHO DO ARQUIVO"
+          echo "📦 TAMANHO"
           echo "================================"
 
           ls -lh short-final.mp4
