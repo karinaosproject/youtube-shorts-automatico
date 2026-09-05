@@ -60,7 +60,7 @@ jobs:
               ]
           }
 
-          url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+          url = "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent"
 
           request = urllib.request.Request(
               url,
