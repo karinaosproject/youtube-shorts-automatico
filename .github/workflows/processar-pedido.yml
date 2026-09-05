@@ -168,7 +168,7 @@ jobs:
           try:
               with urllib.request.urlopen(
                   request,
-                  timeout=60
+                  timeout=180
               ) as response:
                   resultado = json.load(response)
 
