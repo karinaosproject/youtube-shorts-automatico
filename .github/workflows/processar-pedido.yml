@@ -10,6 +10,11 @@ jobs:
 
     steps:
 
+      - name: Instalar FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
       - name: Ler pedido
         env:
           ISSUE_TITLE: ${{ github.event.issue.title }}
@@ -112,8 +117,9 @@ jobs:
           import urllib.request
           import urllib.error
           import base64
+          import os
 
-          api_key = __import__("os").environ["GEMINI_API_KEY"]
+          api_key = os.environ["GEMINI_API_KEY"]
 
           with open("roteiro.txt", "r", encoding="utf-8") as f:
               roteiro = f.read()
@@ -177,10 +183,153 @@ jobs:
           print("================================")
           print("🎙️ NARRAÇÃO GERADA COM SUCESSO")
           print("================================")
-          print("Arquivo: narracao.wav")
-          print("Tamanho:", len(audio_bytes), "bytes")
-          print("================================")
           PY
+
+      - name: Preparar busca do Pexels
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          python - <<'PY'
+          import os
+          import json
+          import urllib.request
+          import urllib.error
+
+          api_key = os.environ["GEMINI_API_KEY"]
+          pedido = os.environ["ISSUE_BODY"]
+
+          prompt = f"""
+          Analise o pedido abaixo e escolha UMA expressão curta em inglês
+          para pesquisar um vídeo de banco de imagens no Pexels.
+
+          A expressão deve representar visualmente o tema principal.
+          Use de 1 a 4 palavras.
+          Responda SOMENTE com a expressão em inglês.
+
+          PEDIDO:
+          {pedido}
+          """
+
+          data = {
+              "contents": [
+                  {
+                      "parts": [
+                          {"text": prompt}
+                      ]
+                  }
+              ]
+          }
+
+          url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent"
+
+          request = urllib.request.Request(
+              url,
+              data=json.dumps(data).encode("utf-8"),
+              headers={
+                  "Content-Type": "application/json",
+                  "x-goog-api-key": api_key
+              },
+              method="POST"
+          )
+
+          with urllib.request.urlopen(request) as response:
+              resultado = json.load(response)
+
+          busca = resultado["candidates"][0]["content"]["parts"][0]["text"].strip()
+
+          with open("busca.txt", "w", encoding="utf-8") as f:
+              f.write(busca)
+
+          print("🔎 Busca escolhida:", busca)
+          PY
+
+      - name: Buscar vídeo no Pexels
+        env:
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+        run: |
+          python - <<'PY'
+          import os
+          import json
+          import urllib.request
+          import urllib.error
+          import urllib.parse
+
+          api_key = os.environ["PEXELS_API_KEY"]
+
+          with open("busca.txt", "r", encoding="utf-8") as f:
+              busca = f.read().strip()
+
+          params = urllib.parse.urlencode({
+              "query": busca,
+              "orientation": "portrait",
+              "size": "medium",
+              "per_page": 10
+          })
+
+          url = "https://api.pexels.com/videos/search?" + params
+
+          request = urllib.request.Request(
+              url,
+              headers={
+                  "Authorization": api_key
+              }
+          )
+
+          try:
+              with urllib.request.urlopen(request) as response:
+                  resultado = json.load(response)
+
+          except urllib.error.HTTPError as e:
+              print("❌ ERRO DO PEXELS")
+              print("Código:", e.code)
+              print(e.read().decode("utf-8"))
+              raise
+
+          videos = resultado.get("videos", [])
+
+          if not videos:
+              raise Exception("Nenhum vídeo encontrado no Pexels.")
+
+          video_url = None
+
+          for video in videos:
+              for arquivo in video.get("video_files", []):
+                  largura = arquivo.get("width", 0)
+                  altura = arquivo.get("height", 0)
+
+                  if altura > largura:
+                      video_url = arquivo["link"]
+                      break
+
+              if video_url:
+                  break
+
+          if not video_url:
+              raise Exception("Nenhum vídeo vertical encontrado.")
+
+          print("🎞️ Vídeo encontrado:")
+          print(video_url)
+
+          urllib.request.urlretrieve(video_url, "video-pexels.mp4")
+
+          print("Download concluído.")
+          PY
+
+      - name: Montar Short vertical
+        run: |
+          ffmpeg \
+            -i video-pexels.mp4 \
+            -i narracao.wav \
+            -map 0:v:0 \
+            -map 1:a:0 \
+            -vf "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920" \
+            -c:v libx264 \
+            -preset veryfast \
+            -c:a aac \
+            -shortest \
+            -movflags +faststart \
+            short-final.mp4
 
       - name: Salvar arquivos gerados
         uses: actions/upload-artifact@v4
@@ -189,3 +338,6 @@ jobs:
           path: |
             roteiro.txt
             narracao.wav
+            busca.txt
+            video-pexels.mp4
+            short-final.mp4
