@@ -11,12 +11,18 @@ jobs:
     steps:
       - name: Ler pedido
         env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
           ISSUE_BODY: ${{ github.event.issue.body }}
         run: |
           echo "================================"
-          echo "🎬 NOVO PEDIDO"
+          echo "🎬 NOVO PEDIDO DE SHORT"
           echo "================================"
+          echo "Título:"
+          echo "$ISSUE_TITLE"
+          echo ""
+          echo "Pedido:"
           echo "$ISSUE_BODY"
+          echo "================================"
 
       - name: Gerar roteiro com Gemini
         env:
@@ -27,6 +33,7 @@ jobs:
           import os
           import json
           import urllib.request
+          import urllib.error
 
           api_key = os.environ["GEMINI_API_KEY"]
           pedido = os.environ["ISSUE_BODY"]
@@ -34,16 +41,17 @@ jobs:
           prompt = f"""
           Você é um roteirista profissional de YouTube Shorts.
 
-          Receba o pedido abaixo e crie um roteiro curto, envolvente
-          e pronto para narração.
+          Crie um roteiro curto, envolvente e pronto para narração
+          baseado no pedido abaixo.
 
           REGRAS:
           - Comece com um gancho forte.
           - Não use introdução desnecessária.
           - Use frases curtas.
           - Mantenha ritmo rápido.
+          - Seja interessante e fácil de entender.
           - Termine com uma frase de impacto.
-          - Respeite o idioma indicado no pedido.
+          - Respeite o idioma solicitado.
           - Entregue somente o roteiro.
 
           PEDIDO:
@@ -54,13 +62,15 @@ jobs:
               "contents": [
                   {
                       "parts": [
-                          {"text": prompt}
+                          {
+                              "text": prompt
+                          }
                       ]
                   }
               ]
           }
 
-          url = "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent"
+          url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 
           request = urllib.request.Request(
               url,
@@ -72,10 +82,38 @@ jobs:
               method="POST"
           )
 
-          with urllib.request.urlopen(request) as response:
-              resultado = json.load(response)
+          try:
+              with urllib.request.urlopen(request) as response:
+                  resultado = json.load(response)
 
-          roteiro = resultado["candidates"][0]["content"]["parts"][0]["text"]
+          except urllib.error.HTTPError as e:
+              print("================================")
+              print("❌ ERRO DA API GEMINI")
+              print("================================")
+              print("Código HTTP:", e.code)
+              print("Resposta do Google:")
+              print(e.read().decode("utf-8"))
+              print("================================")
+              raise
+
+          except Exception as e:
+              print("================================")
+              print("❌ ERRO AO CHAMAR GEMINI")
+              print("================================")
+              print(str(e))
+              print("================================")
+              raise
+
+          try:
+              roteiro = resultado["candidates"][0]["content"]["parts"][0]["text"]
+
+          except Exception:
+              print("================================")
+              print("❌ RESPOSTA INESPERADA DO GEMINI")
+              print("================================")
+              print(json.dumps(resultado, indent=2, ensure_ascii=False))
+              print("================================")
+              raise
 
           print("")
           print("================================")
