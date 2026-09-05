@@ -45,11 +45,15 @@ jobs:
 
       # =========================================================
       # 3. GEMINI
-      # GERA ROTEIRO + BUSCA DO PEXELS
-      # APENAS UMA CHAMADA AO GEMINI
+      #
+      # UMA ÚNICA CHAMADA
+      #
+      # Gera:
+      # - roteiro dividido em 6 cenas
+      # - busca visual para cada cena
       # =========================================================
 
-      - name: Gerar roteiro e busca com Gemini
+      - name: Gerar roteiro e cenas com Gemini
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           ISSUE_BODY: ${{ github.event.issue.body }}
@@ -69,39 +73,64 @@ jobs:
           prompt = f"""
           Você é um roteirista profissional de YouTube Shorts.
 
-          Analise o pedido abaixo e produza:
+          Crie um Short em português brasileiro baseado no pedido abaixo.
 
-          1. Um roteiro curto, envolvente e pronto para narração.
-          2. Uma expressão curta em inglês para pesquisar um vídeo
-             vertical relacionado ao tema no Pexels.
+          O roteiro deve ter aproximadamente 30 a 60 segundos.
 
-          REGRAS DO ROTEIRO:
+          DIVIDA o roteiro em EXATAMENTE 6 cenas.
+
+          Cada cena deve conter:
+          - texto que será narrado naquela cena
+          - uma busca curta em inglês para encontrar um vídeo
+            visualmente relacionado no Pexels.
+
+          REGRAS:
           - Comece com um gancho forte.
+          - Frases curtas.
+          - Ritmo rápido.
+          - Informações interessantes.
           - Não use introdução desnecessária.
-          - Use frases curtas.
-          - Mantenha ritmo rápido.
-          - Seja interessante e fácil de entender.
           - Termine com uma frase de impacto.
-          - Escreva em português brasileiro.
-          - O roteiro deve ter aproximadamente 30 a 60 segundos.
-          - Não coloque título.
-          - Não coloque explicações.
-          - Entregue somente o texto que será narrado.
-
-          REGRAS DA BUSCA:
-          - Escreva em inglês.
-          - Use de 1 a 4 palavras.
-          - A expressão deve representar visualmente o tema principal.
-          - Evite termos abstratos quando existir uma representação visual.
+          - Cada cena deve representar uma parte diferente da história.
+          - As buscas devem ser visuais e concretas.
+          - Use de 1 a 4 palavras em cada busca.
+          - Evite buscas abstratas.
+          - Não repita a mesma busca.
+          - Não coloque título dentro dos textos.
+          - Não coloque explicações fora do JSON.
 
           PEDIDO:
           {pedido}
 
-          Responda SOMENTE em JSON válido:
+          Responda SOMENTE com JSON válido neste formato:
 
           {{
-            "roteiro": "texto completo do roteiro",
-            "busca": "english search query"
+            "cenas": [
+              {{
+                "texto": "texto da primeira cena",
+                "busca": "english visual search"
+              }},
+              {{
+                "texto": "texto da segunda cena",
+                "busca": "english visual search"
+              }},
+              {{
+                "texto": "texto da terceira cena",
+                "busca": "english visual search"
+              }},
+              {{
+                "texto": "texto da quarta cena",
+                "busca": "english visual search"
+              }},
+              {{
+                "texto": "texto da quinta cena",
+                "busca": "english visual search"
+              }},
+              {{
+                "texto": "texto da sexta cena",
+                "busca": "english visual search"
+              }}
+            ]
           }}
           """
 
@@ -156,35 +185,65 @@ jobs:
 
           dados = json.loads(texto)
 
-          roteiro = dados["roteiro"].strip()
-          busca = dados["busca"].strip()
+          cenas = dados.get("cenas", [])
 
-          if not roteiro:
-              raise Exception("Gemini não gerou roteiro.")
+          if len(cenas) != 6:
+              raise Exception(
+                  f"Gemini retornou {len(cenas)} cenas. "
+                  "Esperadas exatamente 6."
+              )
 
-          if not busca:
-              raise Exception("Gemini não gerou busca para o Pexels.")
+          for i, cena in enumerate(cenas, start=1):
 
-          with open("roteiro.txt", "w", encoding="utf-8") as f:
-              f.write(roteiro)
+              if not cena.get("texto"):
+                  raise Exception(
+                      f"Cena {i} não possui texto."
+                  )
 
-          with open("busca.txt", "w", encoding="utf-8") as f:
-              f.write(busca)
+              if not cena.get("busca"):
+                  raise Exception(
+                      f"Cena {i} não possui busca."
+                  )
+
+          with open(
+              "cenas.json",
+              "w",
+              encoding="utf-8"
+          ) as f:
+              json.dump(
+                  cenas,
+                  f,
+                  ensure_ascii=False,
+                  indent=2
+              )
+
+          with open(
+              "roteiro.txt",
+              "w",
+              encoding="utf-8"
+          ) as f:
+
+              for cena in cenas:
+                  f.write(
+                      cena["texto"].strip()
+                      + "\n\n"
+                  )
 
           print("================================")
-          print("🧠 ROTEIRO GERADO")
+          print("🧠 6 CENAS GERADAS")
           print("================================")
-          print(roteiro)
-          print("")
-          print("================================")
-          print("🔎 BUSCA PEXELS")
-          print("================================")
-          print(busca)
+
+          for i, cena in enumerate(cenas, start=1):
+              print("")
+              print(f"CENA {i}")
+              print("Texto:", cena["texto"])
+              print("Busca:", cena["busca"])
+
           print("================================")
           PY
 
       # =========================================================
-      # 4. BAIXAR VOZ PIPER PT-BR
+      # 4. BAIXAR VOZ PIPER
       # =========================================================
 
       - name: Baixar voz Piper PT-BR
@@ -202,39 +261,76 @@ jobs:
           test -s models/pt_BR-faber-medium.onnx
           test -s models/pt_BR-faber-medium.onnx.json
 
-          echo "✅ Modelo Piper baixado."
+          echo "✅ Modelo Piper pronto."
 
       # =========================================================
-      # 5. GERAR NARRAÇÃO
+      # 5. GERAR UMA NARRAÇÃO PARA CADA CENA
+      #
+      # Isso permite sincronizar cada vídeo com sua fala.
       # =========================================================
 
-      - name: Gerar narração com Piper
+      - name: Gerar narrações das cenas
         run: |
-          echo "================================"
-          echo "🎙️ GERANDO NARRAÇÃO"
-          echo "================================"
+          python - <<'PY'
+          import json
+          import subprocess
+          import os
 
-          cat roteiro.txt | \
-            python -m piper \
-            --model models/pt_BR-faber-medium.onnx \
-            --output_file narracao.wav
+          with open(
+              "cenas.json",
+              "r",
+              encoding="utf-8"
+          ) as f:
+              cenas = json.load(f)
 
-          test -s narracao.wav
+          os.makedirs("audios", exist_ok=True)
 
-          echo "================================"
-          echo "✅ NARRAÇÃO GERADA"
-          echo "================================"
+          for i, cena in enumerate(cenas, start=1):
 
-          ffprobe -v error \
-            -show_entries format=duration \
-            -of default=noprint_wrappers=1:nokey=1 \
-            narracao.wav
+              texto = cena["texto"].strip()
+
+              arquivo = (
+                  f"audios/cena-{i:02d}.wav"
+              )
+
+              print("")
+              print("🎙️ Gerando:", arquivo)
+
+              processo = subprocess.run(
+                  [
+                      "python",
+                      "-m",
+                      "piper",
+                      "--model",
+                      "models/pt_BR-faber-medium.onnx",
+                      "--output_file",
+                      arquivo
+                  ],
+                  input=texto,
+                  text=True
+              )
+
+              if processo.returncode != 0:
+                  raise Exception(
+                      f"Piper falhou na cena {i}."
+                  )
+
+              if not os.path.exists(arquivo):
+                  raise Exception(
+                      f"Áudio da cena {i} não foi criado."
+                  )
+
+          print("")
+          print("================================")
+          print("🎙️ TODAS AS NARRAÇÕES PRONTAS")
+          print("================================")
+          PY
 
       # =========================================================
-      # 6. BUSCAR VÍDEO NO PEXELS
+      # 6. BUSCAR 6 VÍDEOS NO PEXELS
       # =========================================================
 
-      - name: Buscar vídeo no Pexels
+      - name: Buscar vídeos no Pexels
         env:
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
         run: |
@@ -246,30 +342,24 @@ jobs:
           import urllib.parse
           import time
 
-          api_key = os.environ.get("PEXELS_API_KEY", "").strip()
+          api_key = os.environ.get(
+              "PEXELS_API_KEY",
+              ""
+          ).strip()
 
           if not api_key:
               raise Exception(
-                  "PEXELS_API_KEY não foi encontrada nos GitHub Secrets."
+                  "PEXELS_API_KEY não foi encontrada."
               )
 
-          with open("busca.txt", "r", encoding="utf-8") as f:
-              busca = f.read().strip()
+          with open(
+              "cenas.json",
+              "r",
+              encoding="utf-8"
+          ) as f:
+              cenas = json.load(f)
 
-          if not busca:
-              raise Exception("A busca do Pexels está vazia.")
-
-          params = urllib.parse.urlencode({
-              "query": busca,
-              "orientation": "portrait",
-              "size": "medium",
-              "per_page": 10
-          })
-
-          url = (
-              "https://api.pexels.com/v1/videos/search?"
-              + params
-          )
+          os.makedirs("videos", exist_ok=True)
 
           user_agent = (
               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -277,263 +367,379 @@ jobs:
               "Chrome/120.0 Safari/537.36"
           )
 
-          print("================================")
-          print("🔎 PESQUISANDO NO PEXELS")
-          print("================================")
-          print("Busca:", busca)
-          print("")
+          usados = set()
 
-          request = urllib.request.Request(
-              url,
-              headers={
-                  "Authorization": api_key,
-                  "User-Agent": user_agent,
-                  "Accept": "application/json"
-              },
-              method="GET"
-          )
+          for indice, cena in enumerate(
+              cenas,
+              start=1
+          ):
 
-          resultado = None
+              busca = cena["busca"].strip()
 
-          for tentativa in range(1, 4):
+              print("")
+              print("================================")
+              print(f"🎞️ CENA {indice}/6")
+              print("================================")
+              print("Busca:", busca)
 
-              try:
-                  print(
-                      f"📡 Tentativa {tentativa}/3..."
-                  )
+              params = urllib.parse.urlencode({
+                  "query": busca,
+                  "orientation": "portrait",
+                  "size": "medium",
+                  "per_page": 20
+              })
 
-                  with urllib.request.urlopen(
-                      request,
-                      timeout=60
-                  ) as response:
-
-                      resultado = json.load(response)
-
-                  print("✅ API Pexels respondeu.")
-                  break
-
-              except urllib.error.HTTPError as e:
-
-                  corpo = e.read().decode(
-                      "utf-8",
-                      errors="replace"
-                  )
-
-                  print("⚠️ Erro HTTP:", e.code)
-                  print("Resposta:", corpo)
-
-                  if e.code == 429:
-                      print(
-                          "⏳ Limite do Pexels atingido."
-                      )
-                      time.sleep(10)
-                      continue
-
-                  if e.code == 403:
-                      print(
-                          "🚫 Pexels recusou o acesso."
-                      )
-                      print(
-                          "Isso não é limite de requisições."
-                      )
-                      print(
-                          "Verifique a chave e o acesso da API."
-                      )
-
-                  raise
-
-              except Exception as e:
-
-                  print(
-                      "⚠️ Erro temporário:",
-                      str(e)
-                  )
-
-                  if tentativa < 3:
-                      time.sleep(5)
-                  else:
-                      raise
-
-          if resultado is None:
-              raise Exception(
-                  "Não foi possível obter resposta do Pexels."
+              url = (
+                  "https://api.pexels.com/v1/videos/search?"
+                  + params
               )
 
-          videos = resultado.get("videos", [])
-
-          if not videos:
-              raise Exception(
-                  "Nenhum vídeo encontrado para: " + busca
+              request = urllib.request.Request(
+                  url,
+                  headers={
+                      "Authorization": api_key,
+                      "User-Agent": user_agent,
+                      "Accept": "application/json"
+                  },
+                  method="GET"
               )
 
-          print(
-              f"🎞️ {len(videos)} vídeos encontrados."
-          )
+              resultado = None
 
-          video_url = None
-          video_id = None
-          video_page = None
+              for tentativa in range(1, 4):
 
-          # -----------------------------------------------------
-          # Primeiro tenta vídeo vertical
-          # -----------------------------------------------------
+                  try:
 
-          for video in videos:
+                      print(
+                          f"📡 Tentativa {tentativa}/3"
+                      )
 
-              for arquivo in video.get(
-                  "video_files",
-                  []
-              ):
+                      with urllib.request.urlopen(
+                          request,
+                          timeout=60
+                      ) as response:
 
-                  largura = arquivo.get("width", 0)
-                  altura = arquivo.get("height", 0)
-                  link = arquivo.get("link")
+                          resultado = json.load(
+                              response
+                          )
 
-                  if (
-                      link
-                      and altura
-                      and largura
-                      and altura > largura
-                  ):
-
-                      video_url = link
-                      video_id = video.get("id")
-                      video_page = video.get("url")
                       break
 
-              if video_url:
-                  break
+                  except urllib.error.HTTPError as e:
 
-          # -----------------------------------------------------
-          # Se não houver vertical, usa qualquer vídeo
-          # -----------------------------------------------------
+                      corpo = e.read().decode(
+                          "utf-8",
+                          errors="replace"
+                      )
 
-          if not video_url:
+                      print(
+                          "⚠️ Erro HTTP:",
+                          e.code
+                      )
+                      print(corpo)
+
+                      if e.code == 429:
+                          time.sleep(10)
+                          continue
+
+                      raise
+
+              if resultado is None:
+                  raise Exception(
+                      f"Pexels não respondeu para cena {indice}."
+                  )
+
+              videos = resultado.get(
+                  "videos",
+                  []
+              )
+
+              if not videos:
+                  raise Exception(
+                      f"Nenhum vídeo encontrado para: {busca}"
+                  )
+
+              escolhido = None
+
+              # -------------------------------------------------
+              # Procurar vídeo vertical que ainda não foi usado
+              # -------------------------------------------------
 
               for video in videos:
+
+                  video_id = video.get("id")
+
+                  if video_id in usados:
+                      continue
 
                   for arquivo in video.get(
                       "video_files",
                       []
                   ):
 
-                      link = arquivo.get("link")
+                      largura = arquivo.get(
+                          "width",
+                          0
+                      )
 
-                      if link:
-                          video_url = link
-                          video_id = video.get("id")
-                          video_page = video.get("url")
+                      altura = arquivo.get(
+                          "height",
+                          0
+                      )
+
+                      link = arquivo.get(
+                          "link"
+                      )
+
+                      if (
+                          link
+                          and altura
+                          and largura
+                          and altura > largura
+                      ):
+
+                          escolhido = {
+                              "id": video_id,
+                              "page": video.get("url"),
+                              "link": link
+                          }
+
                           break
 
-                  if video_url:
+                  if escolhido:
                       break
 
-          if not video_url:
-              raise Exception(
-                  "O Pexels encontrou vídeos, "
-                  "mas nenhum arquivo de vídeo disponível."
-              )
+              # -------------------------------------------------
+              # Fallback: qualquer vídeo
+              # -------------------------------------------------
 
-          print("================================")
-          print("🎞️ VÍDEO ESCOLHIDO")
-          print("================================")
-          print("ID:", video_id)
-          print("Página:", video_page)
-          print("================================")
+              if not escolhido:
 
-          # -----------------------------------------------------
-          # Baixar vídeo
-          # -----------------------------------------------------
+                  for video in videos:
 
-          download_request = urllib.request.Request(
-              video_url,
-              headers={
-                  "User-Agent": user_agent,
-                  "Accept": "*/*"
-              },
-              method="GET"
-          )
+                      video_id = video.get("id")
 
-          print("⬇️ Baixando vídeo...")
+                      if video_id in usados:
+                          continue
 
-          with urllib.request.urlopen(
-              download_request,
-              timeout=180
-          ) as response:
+                      for arquivo in video.get(
+                          "video_files",
+                          []
+                      ):
 
-              with open(
-                  "video-pexels.mp4",
-                  "wb"
-              ) as f:
+                          link = arquivo.get(
+                              "link"
+                          )
 
-                  while True:
+                          if link:
 
-                      bloco = response.read(1024 * 1024)
+                              escolhido = {
+                                  "id": video_id,
+                                  "page": video.get("url"),
+                                  "link": link
+                              }
 
-                      if not bloco:
+                              break
+
+                      if escolhido:
                           break
 
-                      f.write(bloco)
+              if not escolhido:
+                  raise Exception(
+                      f"Não foi possível escolher "
+                      f"vídeo para cena {indice}."
+                  )
 
-          print("✅ Download concluído.")
+              usados.add(
+                  escolhido["id"]
+              )
+
+              print(
+                  "✅ Vídeo escolhido:",
+                  escolhido["id"]
+              )
+
+              # -------------------------------------------------
+              # Download
+              # -------------------------------------------------
+
+              download_request = urllib.request.Request(
+                  escolhido["link"],
+                  headers={
+                      "User-Agent": user_agent,
+                      "Accept": "*/*"
+                  },
+                  method="GET"
+              )
+
+              arquivo_saida = (
+                  f"videos/cena-{indice:02d}.mp4"
+              )
+
+              with urllib.request.urlopen(
+                  download_request,
+                  timeout=180
+              ) as response:
+
+                  with open(
+                      arquivo_saida,
+                      "wb"
+                  ) as f:
+
+                      while True:
+
+                          bloco = response.read(
+                              1024 * 1024
+                          )
+
+                          if not bloco:
+                              break
+
+                          f.write(bloco)
+
+              if not os.path.getsize(
+                  arquivo_saida
+              ):
+                  raise Exception(
+                      f"Vídeo vazio na cena {indice}."
+                  )
+
+              cena["pexels_id"] = escolhido["id"]
+              cena["pexels_page"] = escolhido["page"]
+
+              print(
+                  "✅ Download concluído."
+              )
 
           with open(
-              "pexels-credit.txt",
+              "cenas.json",
               "w",
               encoding="utf-8"
           ) as f:
 
-              f.write(
-                  "Vídeo fornecido por Pexels\n"
+              json.dump(
+                  cenas,
+                  f,
+                  ensure_ascii=False,
+                  indent=2
               )
 
-              f.write(
-                  "https://www.pexels.com/\n"
-              )
-
-              if video_page:
-                  f.write(
-                      "Vídeo utilizado:\n"
-                  )
-                  f.write(
-                      video_page + "\n"
-                  )
-
+          print("")
+          print("================================")
+          print("🎞️ 6 VÍDEOS BAIXADOS")
+          print("================================")
           PY
 
-          test -s video-pexels.mp4
-
-          echo "================================"
-          echo "🎞️ VÍDEO PEXELS PRONTO"
-          echo "================================"
-
-          ffprobe -v error \
-            -show_entries format=duration \
-            -of default=noprint_wrappers=1:nokey=1 \
-            video-pexels.mp4
-
       # =========================================================
-      # 7. MONTAR SHORT VERTICAL
+      # 7. PREPARAR DURAÇÃO DE CADA CENA
       # =========================================================
 
-      - name: Montar Short vertical
+      - name: Preparar clipes sincronizados
+        run: |
+          mkdir -p clips
+
+          for i in 01 02 03 04 05 06
+          do
+
+            echo "================================"
+            echo "🎬 Preparando cena $i"
+            echo "================================"
+
+            DURACAO=$(ffprobe \
+              -v error \
+              -show_entries format=duration \
+              -of default=noprint_wrappers=1:nokey=1 \
+              "audios/cena-$i.wav")
+
+            echo "Duração da narração: $DURACAO segundos"
+
+            ffmpeg \
+              -y \
+              -stream_loop -1 \
+              -i "videos/cena-$i.mp4" \
+              -t "$DURACAO" \
+              -vf "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,setsar=1" \
+              -an \
+              -c:v libx264 \
+              -preset veryfast \
+              -crf 23 \
+              -pix_fmt yuv420p \
+              "clips/cena-$i.mp4"
+
+          done
+
+          echo "================================"
+          echo "✅ CLIPES PREPARADOS"
+          echo "================================"
+
+      # =========================================================
+      # 8. CRIAR LISTA DOS VÍDEOS
+      # =========================================================
+
+      - name: Criar lista de montagem
+        run: |
+          rm -f lista-videos.txt
+          rm -f lista-audios.txt
+
+          for i in 01 02 03 04 05 06
+          do
+            echo "file '$(pwd)/clips/cena-$i.mp4'" >> lista-videos.txt
+            echo "file '$(pwd)/audios/cena-$i.wav'" >> lista-audios.txt
+          done
+
+          cat lista-videos.txt
+          echo ""
+          cat lista-audios.txt
+
+      # =========================================================
+      # 9. JUNTAR OS VÍDEOS
+      # =========================================================
+
+      - name: Juntar vídeos
+        run: |
+          ffmpeg \
+            -y \
+            -f concat \
+            -safe 0 \
+            -i lista-videos.txt \
+            -c copy \
+            video-completo.mp4
+
+          test -s video-completo.mp4
+
+      # =========================================================
+      # 10. JUNTAR AS NARRAÇÕES
+      # =========================================================
+
+      - name: Juntar narrações
+        run: |
+          ffmpeg \
+            -y \
+            -f concat \
+            -safe 0 \
+            -i lista-audios.txt \
+            -c:a pcm_s16le \
+            narracao-completa.wav
+
+          test -s narracao-completa.wav
+
+      # =========================================================
+      # 11. JUNTAR VÍDEO + NARRAÇÃO
+      # =========================================================
+
+      - name: Criar Short final
         run: |
           echo "================================"
-          echo "🎬 MONTANDO SHORT"
+          echo "🎬 CRIANDO SHORT FINAL"
           echo "================================"
 
           ffmpeg \
             -y \
-            -stream_loop -1 \
-            -i video-pexels.mp4 \
-            -i narracao.wav \
+            -i video-completo.mp4 \
+            -i narracao-completa.wav \
             -map 0:v:0 \
             -map 1:a:0 \
-            -vf "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,setsar=1" \
-            -c:v libx264 \
-            -preset veryfast \
-            -crf 23 \
-            -pix_fmt yuv420p \
+            -c:v copy \
             -c:a aac \
             -b:a 128k \
             -shortest \
@@ -543,22 +749,83 @@ jobs:
           test -s short-final.mp4
 
           echo "================================"
-          echo "✅ SHORT FINALIZADO"
+          echo "✅ SHORT FINAL CRIADO"
           echo "================================"
 
           ls -lh short-final.mp4
 
       # =========================================================
-      # 8. VERIFICAR ARQUIVO FINAL
+      # 12. CRÉDITOS PEXELS
       # =========================================================
 
-      - name: Verificar Short final
+      - name: Criar créditos Pexels
+        run: |
+          python - <<'PY'
+          import json
+
+          with open(
+              "cenas.json",
+              "r",
+              encoding="utf-8"
+          ) as f:
+              cenas = json.load(f)
+
+          with open(
+              "pexels-credit.txt",
+              "w",
+              encoding="utf-8"
+          ) as f:
+
+              f.write(
+                  "Vídeos utilizados neste Short:\n\n"
+              )
+
+              f.write(
+                  "Conteúdo fornecido por Pexels:\n"
+              )
+
+              f.write(
+                  "https://www.pexels.com/\n\n"
+              )
+
+              for i, cena in enumerate(
+                  cenas,
+                  start=1
+              ):
+
+                  f.write(
+                      f"Cena {i} - "
+                      f"Pexels ID: "
+                      f"{cena.get('pexels_id', '')}\n"
+                  )
+
+                  pagina = cena.get(
+                      "pexels_page"
+                  )
+
+                  if pagina:
+                      f.write(
+                          pagina + "\n"
+                      )
+
+                  f.write("\n")
+
+          print(
+              "✅ Créditos Pexels criados."
+          )
+
+      # =========================================================
+      # 13. VERIFICAR RESULTADO
+      # =========================================================
+
+      - name: Verificar Short
         run: |
           echo "================================"
-          echo "🔍 VERIFICANDO SHORT"
+          echo "🔍 VERIFICANDO RESULTADO"
           echo "================================"
 
-          ffprobe -v error \
+          ffprobe \
+            -v error \
             -show_entries \
             stream=codec_type,codec_name,width,height \
             -show_entries \
@@ -567,11 +834,11 @@ jobs:
             short-final.mp4
 
           echo "================================"
-          echo "✅ VERIFICAÇÃO CONCLUÍDA"
+          echo "✅ SHORT VALIDADO"
           echo "================================"
 
       # =========================================================
-      # 9. SALVAR ARQUIVOS
+      # 14. SALVAR ARQUIVOS
       # =========================================================
 
       - name: Salvar arquivos gerados
@@ -579,9 +846,10 @@ jobs:
         with:
           name: short-gerado
           path: |
-            roteiro.txt
-            busca.txt
-            narracao.wav
-            video-pexels.mp4
             short-final.mp4
+            roteiro.txt
+            cenas.json
+            narracao-completa.wav
             pexels-credit.txt
+            videos/
+            clips/
