@@ -228,9 +228,13 @@ HASHTAGS: exatamente 5 hashtags relevantes para o tema.
 
           cenas = []
 
-          cena_atual = None
-          texto_atual = []
-          busca_atual = None
+titulo = ""
+descricao = ""
+hashtags = ""
+
+cena_atual = None
+texto_atual = []
+busca_atual = None
 
           for linha in linhas:
 
