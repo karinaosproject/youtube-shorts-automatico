@@ -1311,6 +1311,22 @@ jobs:
           echo "================================"
           echo "✅ NARRAÇÃO COMPLETA PRONTA"
           echo "================================"
+     
+      # ==========================================
+      # 8. MÚSICA DE FUNDO
+      # ==========================================
+
+      - name: Baixar música de fundo
+        run: |
+          mkdir -p musica
+
+          wget -q \
+            -O musica/background.mp3 \
+            "https://cdn.pixabay.com/download/audio/2022/10/25/audio_946b8f6c52.mp3"
+
+          test -s musica/background.mp3
+
+          echo "✅ Música de fundo pronta."
 
       # ==========================================
       # 11. SHORT FINAL
