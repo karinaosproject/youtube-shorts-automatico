@@ -116,14 +116,15 @@ jobs:
 
           METADADOS PARA O YOUTUBE:
 
-TITULO: um título curto, curioso e forte, com até 70 caracteres.
+          TITULO: um título curto, curioso e forte, com até 70 caracteres.
 
-DESCRICAO: uma descrição natural e envolvente, relacionada ao tema, com palavras-chave relevantes. Não faça spam de palavras-chave.
+          DESCRICAO: uma descrição natural e envolvente, relacionada ao tema,
+          com palavras-chave relevantes. Não faça spam de palavras-chave.
 
-HASHTAGS: exatamente 5 hashtags relevantes para o tema.
+          HASHTAGS: exatamente 5 hashtags relevantes para o tema.
 
           FORMATO OBRIGATÓRIO:
-          
+
           TITULO: título aqui
           DESCRICAO: descrição aqui, sem quebrar linha
           HASHTAGS: #hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5
@@ -228,13 +229,13 @@ HASHTAGS: exatamente 5 hashtags relevantes para o tema.
 
           cenas = []
 
-titulo = ""
-descricao = ""
-hashtags = ""
+          titulo = ""
+          descricao = ""
+          hashtags = ""
 
-cena_atual = None
-texto_atual = []
-busca_atual = None
+          cena_atual = None
+          texto_atual = []
+          busca_atual = None
 
           for linha in linhas:
 
@@ -243,7 +244,25 @@ busca_atual = None
 
               linha_upper = linha.upper()
 
-              if linha_upper.startswith("CENA "):
+              if linha_upper.startswith("TITULO:"):
+
+                  titulo = linha[
+                      len("TITULO:"):
+                  ].strip()
+
+              elif linha_upper.startswith("DESCRICAO:"):
+
+                  descricao = linha[
+                      len("DESCRICAO:"):
+                  ].strip()
+
+              elif linha_upper.startswith("HASHTAGS:"):
+
+                  hashtags = linha[
+                      len("HASHTAGS:"):
+                  ].strip()
+
+              elif linha_upper.startswith("CENA "):
 
                   if cena_atual is not None:
                       cenas.append({
@@ -284,6 +303,44 @@ busca_atual = None
                   ).strip()
               })
 
+          # ==========================================
+          # VALIDAR METADADOS
+          # ==========================================
+
+          if not titulo:
+              raise Exception(
+                  "Gemini não gerou TITULO."
+              )
+
+          if len(titulo) > 70:
+              titulo = titulo[:70].rstrip()
+
+          if not descricao:
+              raise Exception(
+                  "Gemini não gerou DESCRICAO."
+              )
+
+          lista_hashtags = [
+              h
+              for h in hashtags.split()
+              if h.startswith("#")
+          ]
+
+          if len(lista_hashtags) != 5:
+              raise Exception(
+                  f"Gemini retornou "
+                  f"{len(lista_hashtags)} hashtags. "
+                  "Esperadas exatamente 5."
+              )
+
+          hashtags = " ".join(
+              lista_hashtags
+          )
+
+          # ==========================================
+          # VALIDAR CENAS
+          # ==========================================
+
           if len(cenas) != 6:
               raise Exception(
                   f"Gemini retornou {len(cenas)} cenas. "
@@ -305,6 +362,10 @@ busca_atual = None
                       f"Cena {i} sem busca."
                   )
 
+          # ==========================================
+          # SALVAR CENAS
+          # ==========================================
+
           with open(
               "cenas.json",
               "w",
@@ -318,6 +379,10 @@ busca_atual = None
                   indent=2
               )
 
+          # ==========================================
+          # SALVAR ROTEIRO
+          # ==========================================
+
           with open(
               "roteiro.txt",
               "w",
@@ -325,10 +390,40 @@ busca_atual = None
           ) as f:
 
               for cena in cenas:
+
                   f.write(
                       cena["texto"].strip()
                       + "\n\n"
                   )
+
+          # ==========================================
+          # SALVAR METADADOS
+          # ==========================================
+
+          with open(
+              "youtube-metadata.json",
+              "w",
+              encoding="utf-8"
+          ) as f:
+
+              json.dump(
+                  {
+                      "titulo": titulo,
+                      "descricao": descricao,
+                      "hashtags": hashtags
+                  },
+                  f,
+                  ensure_ascii=False,
+                  indent=2
+              )
+
+          print("")
+          print("================================")
+          print("✅ METADADOS GERADOS")
+          print("================================")
+          print("Título:", titulo)
+          print("Descrição:", descricao)
+          print("Hashtags:", hashtags)
 
           print("")
           print("================================")
@@ -591,6 +686,7 @@ busca_atual = None
 
               escolhido = None
 
+              # Primeiro tenta vídeo vertical
               for video in videos:
 
                   video_id = video.get("id")
@@ -637,6 +733,7 @@ busca_atual = None
                   if escolhido:
                       break
 
+              # Fallback para qualquer vídeo
               if not escolhido:
 
                   for video in videos:
@@ -753,6 +850,27 @@ busca_atual = None
                   indent=2
               )
 
+          # Créditos Pexels
+          with open(
+              "pexels-credit.txt",
+              "w",
+              encoding="utf-8"
+          ) as f:
+
+              f.write(
+                  "Vídeos utilizados neste Short:\n\n"
+              )
+
+              for i, cena in enumerate(
+                  cenas,
+                  start=1
+              ):
+
+                  f.write(
+                      f"Cena {i}: "
+                      f"{cena.get('pexels_page', '')}\n"
+                  )
+
           print("")
           print("================================")
           print("🎞️ 6 VÍDEOS BAIXADOS")
@@ -760,7 +878,7 @@ busca_atual = None
           PY
 
       # ==========================================
-      # 8. CRIAR LEGENDAS ASS + CLIPES
+      # 8. CRIAR LEGENDAS E CLIPES
       # ==========================================
 
       - name: Criar legendas e clipes
@@ -774,7 +892,6 @@ busca_atual = None
           import os
           import re
           import textwrap
-          import math
 
           with open(
               "cenas.json",
@@ -1001,161 +1118,134 @@ busca_atual = None
                   f.write(
                       "Format: Layer, "
                       "Start, End, Style, "
-                      "Name, MarginL, MarginR, "
-                      "MarginV, Effect, Text\n"
+                      "Name, MarginL, "
+                      "MarginR, MarginV, "
+                      "Effect, Text\n"
                   )
 
                   tempo_atual = 0.0
 
-                  for numero, frase in enumerate(
-                      frases,
-                      start=1
-                  ):
+                  for frase in frases:
 
                       palavras = max(
                           1,
                           len(frase.split())
                       )
 
-                      tempo_frase = (
+                      duracao_frase = (
                           duracao
                           * palavras
                           / total_palavras
                       )
 
                       inicio = tempo_atual
-
                       fim = min(
                           duracao,
                           tempo_atual
-                          + tempo_frase
+                          + duracao_frase
                       )
 
-                      frase = limpar_ass(
+                      frase_limpa = limpar_ass(
                           frase
                       )
 
-                      # --------------------------------
-                      # QUEBRA CONTROLADA
-                      # --------------------------------
-
-                      linhas = textwrap.wrap(
-                          frase,
-                          width=28,
-                          break_long_words=False,
-                          break_on_hyphens=False
+                      # Quebra linhas longas
+                      linhas_frase = textwrap.wrap(
+                          frase_limpa,
+                          width=28
                       )
 
-                      legenda = (
-                          r"\N".join(
-                              linhas
+                      texto_ass = (
+                          "\\N".join(
+                              linhas_frase
                           )
                       )
 
                       f.write(
                           "Dialogue: 0,"
-                          + ass_time(inicio)
-                          + ","
-                          + ass_time(fim)
-                          + ",Default,,0,0,0,,"
-                          + legenda
-                          + "\n"
+                          f"{ass_time(inicio)},"
+                          f"{ass_time(fim)},"
+                          "Default,,"
+                          "0,0,0,0,,"
+                          f"{texto_ass}\n"
                       )
 
                       tempo_atual = fim
 
               # --------------------------------------
-              # PRIMEIROS 5 CLIPES GANHAM 0,3s
+              # CRIAR CLIP
               # --------------------------------------
-
-              if i < 6:
-                  duracao_clip = (
-                      duracao + 0.30
-                  )
-              else:
-                  duracao_clip = duracao
-
-              # --------------------------------------
-              # VÍDEO + LEGENDA ASS
-              # --------------------------------------
-
-              filtro = (
-                  "scale=1080:1920:"
-                  "force_original_aspect_ratio=increase,"
-                  "crop=1080:1920,"
-                  "setsar=1,"
-                  "fps=30,"
-                  "subtitles="
-                  + ass
-              )
 
               subprocess.run(
                   [
                       "ffmpeg",
                       "-y",
-
                       "-stream_loop",
                       "-1",
-
                       "-i",
                       video,
-
-                      "-t",
-                      f"{duracao_clip:.3f}",
-
+                      "-i",
+                      audio,
                       "-vf",
-                      filtro,
-
-                      "-an",
-
+                      (
+                          "scale=1080:1920:"
+                          "force_original_aspect_ratio=increase,"
+                          "crop=1080:1920,"
+                          f"subtitles={ass}"
+                      ),
+                      "-map",
+                      "0:v:0",
+                      "-map",
+                      "1:a:0",
+                      "-t",
+                      str(duracao),
                       "-c:v",
                       "libx264",
-
                       "-preset",
                       "veryfast",
-
                       "-crf",
                       "23",
-
                       "-pix_fmt",
                       "yuv420p",
-
+                      "-c:a",
+                      "aac",
+                      "-b:a",
+                      "192k",
+                      "-movflags",
+                      "+faststart",
                       clip
                   ],
                   check=True
               )
 
-              if not os.path.exists(clip):
-                  raise Exception(
-                      f"Clip {i} não foi criado."
-                  )
-
               print(
-                  f"✅ Cena {i} pronta."
+                  f"✅ Clip da cena {i} pronto."
               )
 
           print("")
           print("================================")
-          print("✅ 6 CLIPES COM LEGENDAS PRONTOS")
+          print("🎬 6 CLIPES PRONTOS")
           print("================================")
           PY
 
       # ==========================================
-      # 9. TRANSIÇÕES
+      # 9. JUNTAR CENAS COM TRANSIÇÕES
       # ==========================================
 
-      - name: Montar vídeo com transições
+      - name: Montar vídeo completo
         run: |
           python - <<'PY'
           import subprocess
+          import os
+
+          clips = [
+              f"clips/cena-{i:02d}.mp4"
+              for i in range(1, 7)
+          ]
 
           duracoes = []
 
-          for i in range(1, 7):
-
-              audio = (
-                  f"audios/cena-{i:02d}.wav"
-              )
+          for clip in clips:
 
               duracao = float(
                   subprocess.check_output(
@@ -1167,82 +1257,59 @@ busca_atual = None
                           "format=duration",
                           "-of",
                           "default=noprint_wrappers=1:nokey=1",
-                          audio
+                          clip
                       ]
                   ).decode().strip()
               )
 
-              duracoes.append(
-                  duracao
-              )
+              duracoes.append(duracao)
 
-          print("")
-          print("================================")
-          print("⏱️ DURAÇÕES")
-          print("================================")
-
-          for i, duracao in enumerate(
-              duracoes,
-              start=1
-          ):
-
-              print(
-                  f"Cena {i}: "
-                  f"{duracao:.2f}s"
-              )
-
-          transicoes = [
-              "fade",
-              "smoothleft",
-              "wiperight",
-              "slideup",
-              "circleopen"
-          ]
-
-          duracao_transicao = 0.30
-
-          entradas = []
-
-          for i in range(1, 7):
-
-              entradas.extend([
-                  "-i",
-                  f"clips/cena-{i:02d}.mp4"
-              ])
+          transicao = 0.35
 
           filtros = []
+          entradas = []
 
-          acumulado = duracoes[0]
-
-          filtros.append(
-              "[0:v][1:v]"
-              f"xfade=transition={transicoes[0]}:"
-              f"duration={duracao_transicao}:"
-              f"offset={acumulado:.3f}"
-              "[v01]"
-          )
-
-          anterior = "v01"
-
-          acumulado += duracoes[1]
-
-          for indice in range(2, 6):
-
-              proximo = f"v{indice}"
+          for i in range(6):
 
               filtros.append(
-                  f"[{anterior}][{indice}:v]"
-                  f"xfade=transition="
-                  f"{transicoes[indice-1]}:"
-                  f"duration={duracao_transicao}:"
-                  f"offset={acumulado:.3f}"
-                  f"[{proximo}]"
+                  f"[{i}:v]"
+                  f"setpts=PTS-STARTPTS"
+                  f"[v{i}]"
               )
 
-              anterior = proximo
+              entradas.append(
+                  f"[v{i}]"
+              )
 
-              acumulado += (
-                  duracoes[indice]
+          atual = "v0"
+          offset = duracoes[0] - transicao
+
+          for i in range(1, 6):
+
+              saida = f"x{i}"
+
+              transicao_tipo = [
+                  "fade",
+                  "smoothleft",
+                  "wiperight",
+                  "slideup",
+                  "circleopen"
+              ][i - 1]
+
+              filtros.append(
+                  f"[{atual}][v{i}]"
+                  f"xfade="
+                  f"transition={transicao_tipo}:"
+                  f"duration={transicao}:"
+                  f"offset={offset}"
+                  f"[{saida}]"
+              )
+
+              atual = saida
+
+              offset += (
+                  duracoes[i]
+                  - transicao
               )
 
           filtro_final = ";".join(
@@ -1254,41 +1321,31 @@ busca_atual = None
               "-y"
           ]
 
+          for clip in clips:
+              comando.extend(
+                  [
+                      "-i",
+                      clip
+                  ]
+              )
+
           comando.extend(
-              entradas
+              [
+                  "-filter_complex",
+                  filtro_final,
+                  "-map",
+                  f"[{atual}]",
+                  "-c:v",
+                  "libx264",
+                  "-preset",
+                  "veryfast",
+                  "-crf",
+                  "23",
+                  "-pix_fmt",
+                  "yuv420p",
+                  "video-completo.mp4"
+              ]
           )
-
-          comando.extend([
-              "-filter_complex",
-              filtro_final,
-
-              "-map",
-              f"[{anterior}]",
-
-              "-an",
-
-              "-c:v",
-              "libx264",
-
-              "-preset",
-              "veryfast",
-
-              "-crf",
-              "23",
-
-              "-pix_fmt",
-              "yuv420p",
-
-              "-movflags",
-              "+faststart",
-
-              "video-completo.mp4"
-          ])
-
-          print("")
-          print("================================")
-          print("🎬 APLICANDO TRANSIÇÕES")
-          print("================================")
 
           subprocess.run(
               comando,
@@ -1297,39 +1354,58 @@ busca_atual = None
 
           print("")
           print("================================")
-          print("✅ TRANSIÇÕES CONCLUÍDAS")
+          print("🎬 VÍDEO COMPLETO PRONTO")
           print("================================")
           PY
 
       # ==========================================
-      # 10. JUNTAR ÁUDIO
+      # 10. JUNTAR NARRAÇÃO
       # ==========================================
 
       - name: Juntar narrações
         run: |
-          rm -f lista-audios.txt
+          python - <<'PY'
+          import subprocess
 
-          for i in 01 02 03 04 05 06
-          do
-            echo "file '$(pwd)/audios/cena-$i.wav'" >> lista-audios.txt
-          done
+          lista = "audios.txt"
 
-          ffmpeg \
-            -y \
-            -f concat \
-            -safe 0 \
-            -i lista-audios.txt \
-            -c:a pcm_s16le \
-            narracao-completa.wav
+          with open(
+              lista,
+              "w",
+              encoding="utf-8"
+          ) as f:
 
-          test -s narracao-completa.wav
+              for i in range(1, 7):
 
-          echo "================================"
-          echo "✅ NARRAÇÃO COMPLETA PRONTA"
-          echo "================================"
-     
-     # ==========================================
-      # 8. MÚSICA DE FUNDO
+                  f.write(
+                      f"file 'audios/cena-{i:02d}.wav'\n"
+                  )
+
+          subprocess.run(
+              [
+                  "ffmpeg",
+                  "-y",
+                  "-f",
+                  "concat",
+                  "-safe",
+                  "0",
+                  "-i",
+                  lista,
+                  "-c:a",
+                  "pcm_s16le",
+                  "narracao-completa.wav"
+              ],
+              check=True
+          )
+
+          print("")
+          print("================================")
+          print("🎙️ NARRAÇÃO COMPLETA PRONTA")
+          print("================================")
+          PY
+
+      # ==========================================
+      # 11. MÚSICA DE FUNDO
       # ==========================================
 
       - name: Criar música de fundo
@@ -1350,27 +1426,22 @@ busca_atual = None
             -b:a 128k \
             musica/background.mp3
 
-          test -s musica/background.mp3
-
-          echo "✅ Música de fundo criada."
+          echo "✅ Música de fundo pronta."
 
       # ==========================================
-      # 11. SHORT FINAL
+      # 12. MIXAGEM FINAL
       # ==========================================
 
       - name: Criar Short final
         run: |
-          echo "================================"
-          echo "🎬 CRIANDO SHORT FINAL"
-          echo "================================"
-
-           ffmpeg \
+          ffmpeg \
             -y \
             -i video-completo.mp4 \
             -i narracao-completa.wav \
             -stream_loop -1 \
             -i musica/background.mp3 \
-            -filter_complex "[2:a]volume=0.12[musica];[1:a][musica]amix=inputs=2:duration=first:dropout_transition=2[audio]" \
+            -filter_complex \
+            "[2:a]volume=0.12[musica];[1:a][musica]amix=inputs=2:duration=first:dropout_transition=2[audio]" \
             -map 0:v:0 \
             -map "[audio]" \
             -c:v copy \
@@ -1380,113 +1451,25 @@ busca_atual = None
             -movflags +faststart \
             short-final.mp4
 
-          test -s short-final.mp4
-
           echo ""
           echo "================================"
-          echo "✅ SHORT FINAL CRIADO"
-          echo "================================"
-
-          ls -lh short-final.mp4
-
-      # ==========================================
-      # 12. CRÉDITOS PEXELS
-      # ==========================================
-
-      - name: Criar créditos Pexels
-        run: |
-          python - <<'PY'
-          import json
-
-          with open(
-              "cenas.json",
-              "r",
-              encoding="utf-8"
-          ) as f:
-
-              cenas = json.load(f)
-
-          with open(
-              "pexels-credit.txt",
-              "w",
-              encoding="utf-8"
-          ) as f:
-
-              f.write(
-                  "Vídeos utilizados neste Short\n\n"
-              )
-
-              f.write(
-                  "Conteúdo fornecido por Pexels:\n"
-              )
-
-              f.write(
-                  "https://www.pexels.com/\n\n"
-              )
-
-              for i, cena in enumerate(
-                  cenas,
-                  start=1
-              ):
-
-                  f.write(
-                      f"Cena {i} - "
-                      f"Pexels ID: "
-                      f"{cena.get('pexels_id', '')}\n"
-                  )
-
-                  pagina = cena.get(
-                      "pexels_page"
-                  )
-
-                  if pagina:
-                      f.write(
-                          pagina + "\n"
-                      )
-
-                  f.write("\n")
-
-          print(
-              "✅ Créditos Pexels criados."
-          )
-          PY
-
-      # ==========================================
-      # 13. VERIFICAR
-      # ==========================================
-
-      - name: Verificar Short
-        run: |
-          echo "================================"
-          echo "🔍 VERIFICANDO RESULTADO"
+          echo "🎉 SHORT FINALIZADO"
           echo "================================"
 
           ffprobe \
             -v error \
             -show_entries \
-            stream=codec_type,codec_name,width,height \
-            -show_entries \
             format=duration \
+            -show_entries \
+            stream=width,height \
             -of default=noprint_wrappers=1 \
             short-final.mp4
 
-          echo ""
-          echo "================================"
-          echo "📦 TAMANHO"
-          echo "================================"
-
-          ls -lh short-final.mp4
-
-          echo ""
-          echo "================================"
-          echo "✅ SHORT VALIDADO"
-          echo "================================"
-
       # ==========================================
-      # 14. SALVAR ARQUIVOS
+      # 13. ARTEFATO
       # ==========================================
 
-      - name: Salvar arquivos gerados
+      - name: Salvar Short gerado
         uses: actions/upload-artifact@v4
         with:
           name: short-gerado
@@ -1494,8 +1477,11 @@ busca_atual = None
             short-final.mp4
             roteiro.txt
             cenas.json
+            youtube-metadata.json
             narracao-completa.wav
             pexels-credit.txt
             subtitles/
             videos/
             clips/
+            audios/
+            musica/
