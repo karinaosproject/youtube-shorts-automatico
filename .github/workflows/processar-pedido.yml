@@ -123,6 +123,10 @@ DESCRICAO: uma descrição natural e envolvente, relacionada ao tema, com palavr
 HASHTAGS: exatamente 5 hashtags relevantes para o tema.
 
           FORMATO OBRIGATÓRIO:
+          
+          TITULO: título aqui
+          DESCRICAO: descrição aqui, sem quebrar linha
+          HASHTAGS: #hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5
 
           CENA 1
           TEXTO: texto da cena 1
