@@ -1338,15 +1338,18 @@ jobs:
           echo "🎬 CRIANDO SHORT FINAL"
           echo "================================"
 
-          ffmpeg \
+           ffmpeg \
             -y \
             -i video-completo.mp4 \
             -i narracao-completa.wav \
+            -stream_loop -1 \
+            -i musica/background.mp3 \
+            -filter_complex "[2:a]volume=0.12[musica];[1:a][musica]amix=inputs=2:duration=first:dropout_transition=2[audio]" \
             -map 0:v:0 \
-            -map 1:a:0 \
+            -map "[audio]" \
             -c:v copy \
             -c:a aac \
-            -b:a 128k \
+            -b:a 192k \
             -shortest \
             -movflags +faststart \
             short-final.mp4
