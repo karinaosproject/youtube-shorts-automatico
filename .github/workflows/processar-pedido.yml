@@ -1312,21 +1312,31 @@ jobs:
           echo "✅ NARRAÇÃO COMPLETA PRONTA"
           echo "================================"
      
-      # ==========================================
+     # ==========================================
       # 8. MÚSICA DE FUNDO
       # ==========================================
 
-      - name: Baixar música de fundo
+      - name: Criar música de fundo
         run: |
           mkdir -p musica
 
-          wget -q \
-            -O musica/background.mp3 \
-            "https://cdn.pixabay.com/download/audio/2022/10/25/audio_946b8f6c52.mp3"
+          ffmpeg -y \
+            -f lavfi \
+            -i "sine=frequency=220:sample_rate=44100" \
+            -f lavfi \
+            -i "sine=frequency=277.18:sample_rate=44100" \
+            -f lavfi \
+            -i "sine=frequency=329.63:sample_rate=44100" \
+            -filter_complex \
+            "[0:a]volume=0.18[a0];[1:a]volume=0.12[a1];[2:a]volume=0.10[a2];[a0][a1][a2]amix=inputs=3:duration=longest,afade=t=in:st=0:d=2,afade=t=out:st=55:d=5" \
+            -t 60 \
+            -c:a libmp3lame \
+            -b:a 128k \
+            musica/background.mp3
 
           test -s musica/background.mp3
 
-          echo "✅ Música de fundo pronta."
+          echo "✅ Música de fundo criada."
 
       # ==========================================
       # 11. SHORT FINAL
