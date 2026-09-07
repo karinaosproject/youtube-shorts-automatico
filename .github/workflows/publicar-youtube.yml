@@ -15,6 +15,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+      # ==========================================
+      # 1. BAIXAR SHORT
+      # ==========================================
+
       - name: Baixar Short gerado
         uses: actions/download-artifact@v4
         with:
@@ -23,78 +28,363 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
 
+
+      # ==========================================
+      # 2. CONFIGURAR PYTHON
+      # ==========================================
+
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
+
+      # ==========================================
+      # 3. INSTALAR BIBLIOTECAS
+      # ==========================================
+
       - name: Instalar bibliotecas do YouTube
         run: |
-          pip install google-api-python-client google-auth google-auth-oauthlib google-auth-httplib2
+          pip install \
+            google-api-python-client \
+            google-auth \
+            google-auth-oauthlib \
+            google-auth-httplib2
 
-      - name: Publicar no YouTube
+
+      # ==========================================
+      # 4. PUBLICAR
+      # ==========================================
+
+      - name: Publicar Short no YouTube
         env:
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
-          TITULO_ISSUE: ${{ github.event.workflow_run.display_title }}
         run: |
           python <<'PY'
+
           import os
+          import json
+          import re
 
           from google.oauth2.credentials import Credentials
           from googleapiclient.discovery import build
           from googleapiclient.http import MediaFileUpload
 
-          refresh_token = os.environ["YOUTUBE_REFRESH_TOKEN"]
-          client_id = os.environ["YOUTUBE_CLIENT_ID"]
-          client_secret = os.environ["YOUTUBE_CLIENT_SECRET"]
+
+          # ==========================================
+          # VERIFICAR ARQUIVOS
+          # ==========================================
+
+          arquivo = "resultado/short-final.mp4"
+
+          metadata_file = (
+              "resultado/youtube-metadata.json"
+          )
+
+          if not os.path.isfile(arquivo):
+              raise Exception(
+                  "short-final.mp4 não encontrado."
+              )
+
+          if not os.path.isfile(metadata_file):
+              raise Exception(
+                  "youtube-metadata.json não encontrado."
+              )
+
+
+          # ==========================================
+          # LER METADADOS DO GEMINI
+          # ==========================================
+
+          with open(
+              metadata_file,
+              "r",
+              encoding="utf-8"
+          ) as f:
+
+              metadata = json.load(f)
+
+
+          titulo = str(
+              metadata.get(
+                  "titulo",
+                  ""
+              )
+          ).strip()
+
+
+          descricao = str(
+              metadata.get(
+                  "descricao",
+                  ""
+              )
+          ).strip()
+
+
+          hashtags = str(
+              metadata.get(
+                  "hashtags",
+                  ""
+              )
+          ).strip()
+
+
+          # ==========================================
+          # VALIDAR TÍTULO
+          # ==========================================
+
+          if not titulo:
+
+              raise Exception(
+                  "O Gemini não gerou um título."
+              )
+
+          titulo = titulo[:70].strip()
+
+
+          # ==========================================
+          # VALIDAR DESCRIÇÃO
+          # ==========================================
+
+          if not descricao:
+
+              raise Exception(
+                  "O Gemini não gerou uma descrição."
+              )
+
+
+          # ==========================================
+          # LIMPAR HASHTAGS
+          # ==========================================
+
+          hashtags_encontradas = re.findall(
+              r"#[A-Za-zÀ-ÿ0-9_]+",
+              hashtags
+          )
+
+
+          # Remove duplicadas mantendo a ordem
+          hashtags_unicas = []
+
+          for hashtag in hashtags_encontradas:
+
+              if hashtag.lower() not in [
+                  h.lower()
+                  for h in hashtags_unicas
+              ]:
+
+                  hashtags_unicas.append(
+                      hashtag
+                  )
+
+
+          # ==========================================
+          # GARANTIR 5 HASHTAGS
+          # ==========================================
+
+          if len(hashtags_unicas) != 5:
+
+              raise Exception(
+                  "O Gemini não gerou exatamente "
+                  f"5 hashtags. Recebidas: "
+                  f"{len(hashtags_unicas)}"
+              )
+
+
+          hashtags_final = " ".join(
+              hashtags_unicas
+          )
+
+
+          # ==========================================
+          # MONTAR DESCRIÇÃO FINAL
+          # ==========================================
+
+          descricao_final = (
+              descricao.strip()
+              + "\n\n"
+              + hashtags_final
+              + "\n\n"
+              + "🎬 Vídeo criado automaticamente.\n"
+              + "🎥 Vídeos utilizados: Pexels.\n"
+              + "https://www.pexels.com/"
+          )
+
+
+          # ==========================================
+          # MOSTRAR O QUE SERÁ PUBLICADO
+          # ==========================================
+
+          print("")
+          print("======================================")
+          print("METADADOS DO SHORT")
+          print("======================================")
+
+          print("")
+          print("TÍTULO:")
+          print(titulo)
+
+          print("")
+          print("DESCRIÇÃO:")
+          print(descricao_final)
+
+          print("")
+          print("HASHTAGS:")
+          print(hashtags_final)
+
+          print("")
+          print("======================================")
+
+
+          # ==========================================
+          # AUTENTICAÇÃO
+          # ==========================================
+
+          refresh_token = os.environ[
+              "YOUTUBE_REFRESH_TOKEN"
+          ].strip()
+
+          client_id = os.environ[
+              "YOUTUBE_CLIENT_ID"
+          ].strip()
+
+          client_secret = os.environ[
+              "YOUTUBE_CLIENT_SECRET"
+          ].strip()
+
+
+          if not refresh_token:
+              raise Exception(
+                  "YOUTUBE_REFRESH_TOKEN não encontrada."
+              )
+
+          if not client_id:
+              raise Exception(
+                  "YOUTUBE_CLIENT_ID não encontrada."
+              )
+
+          if not client_secret:
+              raise Exception(
+                  "YOUTUBE_CLIENT_SECRET não encontrada."
+              )
+
 
           credentials = Credentials(
               token=None,
               refresh_token=refresh_token,
-              token_uri="https://oauth2.googleapis.com/token",
+              token_uri=(
+                  "https://oauth2.googleapis.com/token"
+              ),
               client_id=client_id,
               client_secret=client_secret,
-              scopes=["https://www.googleapis.com/auth/youtube.upload"],
+              scopes=[
+                  "https://www.googleapis.com/auth/"
+                  "youtube.upload"
+              ],
           )
 
-          youtube = build("youtube", "v3", credentials=credentials)
 
-          titulo = os.environ.get("TITULO_ISSUE", "Short automático")
-          titulo = titulo.replace("Criar Short:", "").strip()
-          titulo = titulo[:100]
+          youtube = build(
+              "youtube",
+              "v3",
+              credentials=credentials
+          )
+
+
+          # ==========================================
+          # DADOS DO VÍDEO
+          # ==========================================
 
           body = {
+
               "snippet": {
+
                   "title": titulo,
-                  "description": "Short criado automaticamente.\n\nVídeos utilizados: Pexels\nhttps://www.pexels.com/",
+
+                  "description": descricao_final,
+
                   "categoryId": "22",
+
               },
+
               "status": {
+
                   "privacyStatus": "private",
+
                   "selfDeclaredMadeForKids": False,
+
               },
+
           }
 
-          arquivo = "resultado/short-final.mp4"
+
+          # ==========================================
+          # UPLOAD
+          # ==========================================
+
+          print("")
+          print(
+              "Enviando vídeo para o YouTube..."
+          )
+
 
           request = youtube.videos().insert(
+
               part="snippet,status",
+
               body=body,
+
               media_body=MediaFileUpload(
+
                   arquivo,
+
                   mimetype="video/mp4",
+
                   resumable=True,
+
               ),
+
           )
+
 
           resposta = request.execute()
 
+
           video_id = resposta["id"]
 
+
+          # ==========================================
+          # SUCESSO
+          # ==========================================
+
+          print("")
           print("======================================")
-          print("SHORT PUBLICADO COM SUCESSO!")
-          print(f"https://www.youtube.com/watch?v={video_id}")
+          print("✅ SHORT PUBLICADO COM SUCESSO")
           print("======================================")
+
+          print(
+              "ID:",
+              video_id
+          )
+
+          print(
+              "Título:",
+              titulo
+          )
+
+          print(
+              "Hashtags:",
+              hashtags_final
+          )
+
+          print(
+              "https://www.youtube.com/watch?v="
+              + video_id
+          )
+
+          print("======================================")
+
+
           PY
