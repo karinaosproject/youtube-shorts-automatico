@@ -443,7 +443,7 @@ jobs:
 
           TITULO: título aqui
           DESCRICAO: descrição aqui
-          HASHTAGS: #tag1 #tag2 #tag3 #tag4 #tag5
+          HASHTAGS: #hashtag1, #hashtag2, #hashtag3, #hashtag4, #hashtag5 
 
           CENA 1
           TEXTO: texto da cena
