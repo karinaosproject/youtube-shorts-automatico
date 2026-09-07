@@ -3,157 +3,609 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Criador de Shorts</title>
+
+  <title>Karina OS — Criador de Conteúdo</title>
 
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 500px;
-      margin: 0 auto;
-      padding: 25px;
-      background: #f5f5f5;
+    * {
+      box-sizing: border-box;
     }
 
-    .box {
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f4f4f4;
+      font-family: Arial, sans-serif;
+      color: #222;
+    }
+
+    .container {
+      max-width: 650px;
+      margin: 0 auto;
       background: white;
       padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+      border-radius: 18px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     }
 
     h1 {
       text-align: center;
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+
+    .subtitulo {
+      text-align: center;
+      color: #666;
       margin-bottom: 25px;
     }
 
     label {
       display: block;
-      margin-top: 18px;
       font-weight: bold;
+      margin-top: 18px;
+      margin-bottom: 8px;
     }
 
     input,
-    select,
-    button {
+    select {
       width: 100%;
-      box-sizing: border-box;
       padding: 13px;
-      margin-top: 7px;
-      border-radius: 8px;
       border: 1px solid #ccc;
+      border-radius: 10px;
       font-size: 16px;
+      background: white;
     }
 
-    button {
-      margin-top: 25px;
+    .tipo-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .tipo-btn {
+      flex: 1;
+      padding: 14px 10px;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      background: white;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .tipo-btn.ativo {
+      border-color: #111;
       background: #111;
       color: white;
+    }
+
+    .duracao-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .duracao-btn {
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      background: white;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .duracao-btn.ativo {
+      border-color: #111;
+      background: #111;
+      color: white;
+    }
+
+    .referencias {
+      margin-top: 10px;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 12px;
+      background: #fafafa;
+    }
+
+    .referencia-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 9px 0;
+      font-size: 14px;
+    }
+
+    .referencia-item input {
+      width: auto;
+    }
+
+    .aviso {
+      margin-top: 10px;
+      padding: 12px;
+      background: #fff7df;
+      border-radius: 10px;
+      font-size: 13px;
+      color: #665300;
+    }
+
+    #duracaoPersonalizada {
+      display: none;
+      margin-top: 10px;
+    }
+
+    button.criar {
+      width: 100%;
+      margin-top: 25px;
+      padding: 16px;
       border: none;
+      border-radius: 12px;
+      background: #111;
+      color: white;
+      font-size: 17px;
       font-weight: bold;
       cursor: pointer;
     }
 
-    button:active {
-      transform: scale(0.98);
+    button.criar:hover {
+      opacity: 0.9;
     }
 
-    #resultado {
-      text-align: center;
+    .info {
       margin-top: 18px;
-      font-weight: bold;
+      padding: 14px;
+      background: #f2f2f2;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.5;
     }
   </style>
 </head>
 
 <body>
 
-<div class="box">
+  <div class="container">
 
-  <h1>🎬 Criador de Shorts</h1>
+    <h1>🎬 Karina OS</h1>
 
-  <label for="tema">Tema do vídeo</label>
-  <input
-    id="tema"
-    type="text"
-    placeholder="Ex.: 5 curiosidades sobre o espaço"
-  >
+    <div class="subtitulo">
+      Criador automático de conteúdo
+    </div>
 
-  <label for="duracao">Duração</label>
-  <select id="duracao">
-    <option value="30 segundos">30 segundos</option>
-    <option value="45 segundos">45 segundos</option>
-    <option value="60 segundos" selected>60 segundos</option>
-    <option value="90 segundos">90 segundos</option>
-  </select>
+    <label>Tipo de conteúdo</label>
 
-  <label for="estilo">Estilo do vídeo</label>
-  <select id="estilo">
-    <option>Curiosidades</option>
-    <option>Mistério</option>
-    <option>História</option>
-    <option>Motivacional</option>
-    <option>Notícias</option>
-    <option>Fatos surpreendentes</option>
-  </select>
+    <div class="tipo-container">
 
-  <label for="voz">Tipo de voz</label>
-  <select id="voz">
-    <option>Feminina</option>
-    <option>Masculina</option>
-    <option>Automática</option>
-  </select>
+      <button
+        type="button"
+        id="btnShort"
+        class="tipo-btn ativo"
+        onclick="selecionarTipo('Short')">
+        📱 Short
+      </button>
 
-  <label for="idioma">Idioma</label>
-  <select id="idioma">
-    <option>Português brasileiro</option>
-    <option>English</option>
-    <option>Español</option>
-  </select>
+      <button
+        type="button"
+        id="btnLongo"
+        class="tipo-btn"
+        onclick="selecionarTipo('Vídeo Longo')">
+        🎥 Vídeo longo
+      </button>
 
-  <label for="visual">Estilo visual</label>
-  <select id="visual">
-    <option>Realista</option>
-    <option>Cinematográfico</option>
-    <option>Documentário</option>
-    <option>Notícias</option>
-    <option>Rápido</option>
-    <option>Viral</option>
-  </select>
+    </div>
 
-  <button onclick="enviar()">
-    CRIAR VÍDEO
-  </button>
 
-  <p id="resultado"></p>
+    <label>Tema do vídeo</label>
 
-</div>
+    <input
+      type="text"
+      id="tema"
+      placeholder="Ex.: 7 animais que parecem inventados">
+
+
+    <label>Duração</label>
+
+    <div id="duracoesShort" class="duracao-container">
+
+      <button
+        type="button"
+        class="duracao-btn"
+        onclick="selecionarDuracao('30 segundos', this)">
+        30 segundos
+      </button>
+
+      <button
+        type="button"
+        class="duracao-btn ativo"
+        onclick="selecionarDuracao('45 segundos', this)">
+        45 segundos
+      </button>
+
+      <button
+        type="button"
+        class="duracao-btn"
+        onclick="selecionarDuracao('60 segundos', this)">
+        60 segundos
+      </button>
+
+      <button
+        type="button"
+        class="duracao-btn"
+        onclick="selecionarDuracao('90 segundos', this)">
+        90 segundos
+      </button>
+
+    </div>
+
+
+    <div
+      id="duracoesLongo"
+      class="duracao-container"
+      style="display:none;">
+
+      <button
+        type="button"
+        class="duracao-btn"
+        onclick="selecionarDuracao('5 minutos', this)">
+        5 minutos
+      </button>
+
+      <button
+        type="button"
+        class="duracao-btn"
+        onclick="selecionarDuracao('8 minutos', this)">
+        8 minutos
+      </button>
+
+      <button
+        type="button"
+        class="duracao-btn"
+        onclick="selecionarDuracao('10 minutos', this)">
+        10 minutos
+      </button>
+
+      <button
+        type="button"
+        class="duracao-btn"
+        onclick="selecionarDuracao('15 minutos', this)">
+        15 minutos
+      </button>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="duracao-btn"
+      style="width:100%; margin-top:10px;"
+      onclick="mostrarPersonalizada()">
+      ⏱️ Duração personalizada
+    </button>
+
+
+    <input
+      type="number"
+      id="duracaoPersonalizada"
+      min="10"
+      max="3600"
+      placeholder="Digite a duração em segundos">
+
+
+    <label>Estilo</label>
+
+    <select id="estilo">
+
+      <option>Curiosidades</option>
+      <option>Mistério</option>
+      <option>História</option>
+      <option>Motivacional</option>
+      <option>Notícias</option>
+      <option>Fatos surpreendentes</option>
+
+    </select>
+
+
+    <label>Voz</label>
+
+    <select id="voz">
+
+      <option>Feminina</option>
+      <option>Masculina</option>
+      <option>Automática</option>
+
+    </select>
+
+
+    <label>Idioma</label>
+
+    <select id="idioma">
+
+      <option>Português brasileiro</option>
+      <option>English</option>
+      <option>Español</option>
+
+    </select>
+
+
+    <label>Estilo visual</label>
+
+    <select id="visual">
+
+      <option>Realista</option>
+      <option>Cinematográfico</option>
+      <option>Documentário</option>
+      <option>Notícias</option>
+      <option>Rápido</option>
+      <option>Viral</option>
+
+    </select>
+
+
+    <label>📚 Canais de referência</label>
+
+    <div class="referencias">
+
+      <label class="referencia-item">
+        <input
+          type="checkbox"
+          value="Animais pelo Mundo">
+        Animais pelo Mundo
+      </label>
+
+      <label class="referencia-item">
+        <input
+          type="checkbox"
+          value="Papo de Biólogo">
+        Papo de Biólogo
+      </label>
+
+      <label class="referencia-item">
+        <input
+          type="checkbox"
+          value="Ciência Todo Dia">
+        Ciência Todo Dia
+      </label>
+
+      <label class="referencia-item">
+        <input
+          type="checkbox"
+          value="Manual do Mundo">
+        Manual do Mundo
+      </label>
+
+      <label class="referencia-item">
+        <input
+          type="checkbox"
+          value="Tá Curioso?">
+        Tá Curioso?
+      </label>
+
+      <label class="referencia-item">
+        <input
+          type="checkbox"
+          value="Minutos Psíquicos">
+        Minutos Psíquicos
+      </label>
+
+    </div>
+
+
+    <div class="aviso">
+      💡 As referências servem para orientar estrutura, ritmo,
+      abordagem e estilo. O conteúdo gerado deve ser original,
+      sem copiar roteiros ou textos desses canais.
+    </div>
+
+
+    <button
+      type="button"
+      class="criar"
+      onclick="enviar()">
+      🚀 CRIAR CONTEÚDO
+    </button>
+
+
+    <div class="info">
+
+      <strong>Como funciona:</strong><br><br>
+
+      Você escolhe o tema e as características do vídeo.
+      O pedido será enviado automaticamente para o sistema
+      de produção através de uma Issue do GitHub.
+
+    </div>
+
+  </div>
+
 
 <script>
+
+let tipo = "Short";
+let duracao = "45 segundos";
+
+
+function selecionarTipo(novoTipo) {
+
+  tipo = novoTipo;
+
+  document
+    .getElementById("btnShort")
+    .classList.remove("ativo");
+
+  document
+    .getElementById("btnLongo")
+    .classList.remove("ativo");
+
+
+  if (novoTipo === "Short") {
+
+    document
+      .getElementById("btnShort")
+      .classList.add("ativo");
+
+    document
+      .getElementById("duracoesShort")
+      .style.display = "grid";
+
+    document
+      .getElementById("duracoesLongo")
+      .style.display = "none";
+
+  } else {
+
+    document
+      .getElementById("btnLongo")
+      .classList.add("ativo");
+
+    document
+      .getElementById("duracoesShort")
+      .style.display = "none";
+
+    document
+      .getElementById("duracoesLongo")
+      .style.display = "grid";
+
+  }
+
+  document
+    .getElementById("duracaoPersonalizada")
+    .style.display = "none";
+
+
+  if (novoTipo === "Short") {
+    duracao = "45 segundos";
+  } else {
+    duracao = "10 minutos";
+  }
+
+}
+
+
+function selecionarDuracao(novaDuracao, botao) {
+
+  duracao = novaDuracao;
+
+  const botoes =
+    document.querySelectorAll(".duracao-btn");
+
+  botoes.forEach(function(btn) {
+    btn.classList.remove("ativo");
+  });
+
+  botao.classList.add("ativo");
+
+  document
+    .getElementById("duracaoPersonalizada")
+    .style.display = "none";
+
+}
+
+
+function mostrarPersonalizada() {
+
+  document
+    .getElementById("duracaoPersonalizada")
+    .style.display = "block";
+
+  document
+    .getElementById("duracaoPersonalizada")
+    .focus();
+
+}
+
+
 function enviar() {
 
-  const tema = document.getElementById("tema").value.trim();
-  const duracao = document.getElementById("duracao").value;
-  const estilo = document.getElementById("estilo").value;
-  const voz = document.getElementById("voz").value;
-  const idioma = document.getElementById("idioma").value;
-  const visual = document.getElementById("visual").value;
+  const tema =
+    document.getElementById("tema").value.trim();
 
   if (!tema) {
-    document.getElementById("resultado").innerText =
-      "Digite um tema primeiro.";
+
+    alert("Digite o tema do vídeo.");
+
     return;
   }
 
-  const titulo =
-    encodeURIComponent("Criar Short: " + tema);
+
+  const personalizada =
+    document
+      .getElementById("duracaoPersonalizada")
+      .value;
+
+
+  let duracaoFinal = duracao;
+
+
+  if (personalizada) {
+
+    const segundos =
+      parseInt(personalizada);
+
+    if (
+      isNaN(segundos) ||
+      segundos < 10 ||
+      segundos > 3600
+    ) {
+
+      alert(
+        "A duração personalizada deve estar entre 10 e 3600 segundos."
+      );
+
+      return;
+    }
+
+    duracaoFinal =
+      segundos + " segundos";
+
+  }
+
+
+  const estilo =
+    document.getElementById("estilo").value;
+
+  const voz =
+    document.getElementById("voz").value;
+
+  const idioma =
+    document.getElementById("idioma").value;
+
+  const visual =
+    document.getElementById("visual").value;
+
+
+  const referenciasSelecionadas =
+    document.querySelectorAll(
+      '.referencia-item input:checked'
+    );
+
+
+  const referencias = [];
+
+
+  referenciasSelecionadas.forEach(function(item) {
+
+    referencias.push(item.value);
+
+  });
+
+
+  const tituloIssue =
+    tipo === "Short"
+      ? "Criar Short: " + tema
+      : "Criar Vídeo Longo: " + tema;
+
 
   const corpo =
-    encodeURIComponent(
-`### TEMA
+
+`### TIPO DE CONTEÚDO
+${tipo}
+
+### TEMA
 ${tema}
 
 ### DURAÇÃO
-${duracao}
+${duracaoFinal}
 
 ### ESTILO
 ${estilo}
@@ -167,17 +619,27 @@ ${idioma}
 ### VISUAL
 ${visual}
 
+### REFERÊNCIAS
+${referencias.length
+  ? referencias.join(", ")
+  : "Nenhuma selecionada"}
+
 ### STATUS
-Novo pedido de Short`
-    );
+Novo pedido de conteúdo`;
+
 
   const url =
-    "https://github.com/karinaosproject/youtube-shorts-automatico/issues/new" +
-    "?title=" + titulo +
-    "&body=" + corpo;
+    "https://github.com/karinaosproject/youtube-shorts-automatico/issues/new"
+    + "?title="
+    + encodeURIComponent(tituloIssue)
+    + "&body="
+    + encodeURIComponent(corpo);
+
 
   window.location.href = url;
+
 }
+
 </script>
 
 </body>
