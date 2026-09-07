@@ -5,7 +5,7 @@ on:
     types: [opened]
 
 jobs:
-  criar-short:
+  criar-conteudo:
     runs-on: ubuntu-latest
 
     steps:
@@ -39,33 +39,243 @@ jobs:
       # 3. LER PEDIDO
       # ==========================================
 
-      - name: Ler pedido
+      - name: Ler e interpretar pedido
         env:
           ISSUE_TITLE: ${{ github.event.issue.title }}
           ISSUE_BODY: ${{ github.event.issue.body }}
         run: |
-          echo "================================"
-          echo "NOVO PEDIDO DE SHORT"
-          echo "================================"
+          python - <<'PY'
+          import os
+          import re
 
-          echo "Título:"
-          echo "$ISSUE_TITLE"
+          body = os.environ.get("ISSUE_BODY", "")
 
-          echo ""
-          echo "Pedido:"
-          echo "$ISSUE_BODY"
+          if not body.strip():
+              raise Exception("O pedido do Issue está vazio.")
 
-          echo "================================"
+          def campo(nome, padrao=""):
+              padrao_regex = (
+                  r"###\s*"
+                  + re.escape(nome)
+                  + r"\s*\n(.*?)(?=\n###|\Z)"
+              )
+
+              m = re.search(
+                  padrao_regex,
+                  body,
+                  re.IGNORECASE | re.DOTALL
+              )
+
+              if not m:
+                  return padrao
+
+              return m.group(1).strip()
+
+          tipo = campo(
+              "TIPO DE CONTEÚDO",
+              "Short"
+          )
+
+          tema = campo(
+              "TEMA"
+          )
+
+          duracao = campo(
+              "DURAÇÃO",
+              "45 segundos"
+          )
+
+          estilo = campo(
+              "ESTILO",
+              "Curiosidades"
+          )
+
+          voz = campo(
+              "VOZ",
+              "Automática"
+          )
+
+          idioma = campo(
+              "IDIOMA",
+              "Português brasileiro"
+          )
+
+          visual = campo(
+              "VISUAL",
+              "Realista"
+          )
+
+          referencias = campo(
+              "REFERÊNCIAS",
+              "Nenhuma selecionada"
+          )
+
+          if not tema:
+              raise Exception("O tema não foi informado.")
+
+          # ------------------------------------------
+          # Converter duração para segundos
+          # ------------------------------------------
+
+          texto_duracao = duracao.lower().strip()
+
+          numeros = re.findall(
+              r"\d+(?:[.,]\d+)?",
+              texto_duracao
+          )
+
+          if not numeros:
+              raise Exception(
+                  f"Duração inválida: {duracao}"
+              )
+
+          numero = float(
+              numeros[0].replace(",", ".")
+          )
+
+          if "hora" in texto_duracao:
+              segundos = int(numero * 3600)
+
+          elif "minuto" in texto_duracao:
+              segundos = int(numero * 60)
+
+          else:
+              segundos = int(numero)
+
+          segundos = max(
+              10,
+              min(segundos, 3600)
+          )
+
+          tipo_normalizado = tipo.lower()
+
+          if "longo" in tipo_normalizado:
+              tipo_final = "Vídeo Longo"
+              quantidade_cenas = 12
+          else:
+              tipo_final = "Short"
+              quantidade_cenas = 6
+
+          # ------------------------------------------
+          # Exportar variáveis para os próximos passos
+          # ------------------------------------------
+
+          with open(
+              os.environ["GITHUB_ENV"],
+              "a",
+              encoding="utf-8"
+          ) as env:
+
+              env.write(
+                  f"TIPO_CONTEUDO={tipo_final}\n"
+              )
+
+              env.write(
+                  f"DURACAO_SEGUNDOS={segundos}\n"
+              )
+
+              env.write(
+                  f"QUANTIDADE_CENAS={quantidade_cenas}\n"
+              )
+
+              env.write(
+                  "TEMA<<FIM_TEMA\n"
+              )
+              env.write(
+                  tema.replace("\r", "")
+                  + "\n"
+              )
+              env.write(
+                  "FIM_TEMA\n"
+              )
+
+              env.write(
+                  "ESTILO<<FIM_ESTILO\n"
+              )
+              env.write(
+                  estilo.replace("\r", "")
+                  + "\n"
+              )
+              env.write(
+                  "FIM_ESTILO\n"
+              )
+
+              env.write(
+                  "VOZ<<FIM_VOZ\n"
+              )
+              env.write(
+                  voz.replace("\r", "")
+                  + "\n"
+              )
+              env.write(
+                  "FIM_VOZ\n"
+              )
+
+              env.write(
+                  "IDIOMA<<FIM_IDIOMA\n"
+              )
+              env.write(
+                  idioma.replace("\r", "")
+                  + "\n"
+              )
+              env.write(
+                  "FIM_IDIOMA\n"
+              )
+
+              env.write(
+                  "VISUAL<<FIM_VISUAL\n"
+              )
+              env.write(
+                  visual.replace("\r", "")
+                  + "\n"
+              )
+              env.write(
+                  "FIM_VISUAL\n"
+              )
+
+              env.write(
+                  "REFERENCIAS<<FIM_REFERENCIAS\n"
+              )
+              env.write(
+                  referencias.replace("\r", "")
+                  + "\n"
+              )
+              env.write(
+                  "FIM_REFERENCIAS\n"
+              )
+
+          print("================================")
+          print("PEDIDO INTERPRETADO")
+          print("================================")
+          print("Tipo:", tipo_final)
+          print("Tema:", tema)
+          print("Duração:", segundos, "segundos")
+          print("Cenas:", quantidade_cenas)
+          print("Estilo:", estilo)
+          print("Voz:", voz)
+          print("Idioma:", idioma)
+          print("Visual:", visual)
+          print("Referências:", referencias)
+          print("================================")
+          PY
 
 
       # ==========================================
       # 4. GEMINI
       # ==========================================
 
-      - name: Gerar roteiro e cenas com Gemini
+      - name: Gerar roteiro com Gemini
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          ISSUE_BODY: ${{ github.event.issue.body }}
+          TIPO_CONTEUDO: ${{ env.TIPO_CONTEUDO }}
+          DURACAO_SEGUNDOS: ${{ env.DURACAO_SEGUNDOS }}
+          QUANTIDADE_CENAS: ${{ env.QUANTIDADE_CENAS }}
+          TEMA: ${{ env.TEMA }}
+          ESTILO: ${{ env.ESTILO }}
+          VOZ: ${{ env.VOZ }}
+          IDIOMA: ${{ env.IDIOMA }}
+          VISUAL: ${{ env.VISUAL }}
+          REFERENCIAS: ${{ env.REFERENCIAS }}
         run: |
           python - <<'PY'
           import os
@@ -74,95 +284,183 @@ jobs:
           import urllib.error
 
           api_key = os.environ["GEMINI_API_KEY"].strip()
-          pedido = os.environ.get("ISSUE_BODY", "").strip()
+
+          tipo = os.environ["TIPO_CONTEUDO"]
+          duracao = int(
+              os.environ["DURACAO_SEGUNDOS"]
+          )
+          quantidade = int(
+              os.environ["QUANTIDADE_CENAS"]
+          )
+
+          tema = os.environ["TEMA"].strip()
+          estilo = os.environ["ESTILO"].strip()
+          voz = os.environ["VOZ"].strip()
+          idioma = os.environ["IDIOMA"].strip()
+          visual = os.environ["VISUAL"].strip()
+          referencias = os.environ["REFERENCIAS"].strip()
 
           if not api_key:
               raise Exception(
                   "GEMINI_API_KEY não foi encontrada."
               )
 
-          if not pedido:
-              raise Exception(
-                  "O pedido do Issue está vazio."
+          # ------------------------------------------
+          # Meta aproximada de palavras
+          # ------------------------------------------
+
+          palavras_por_minuto = 145
+
+          palavras_alvo = max(
+              60,
+              int(
+                  (duracao / 60)
+                  * palavras_por_minuto
+              )
+          )
+
+          if tipo == "Short":
+              faixa_palavras = (
+                  f"aproximadamente {palavras_alvo} palavras"
+              )
+          else:
+              faixa_palavras = (
+                  f"aproximadamente {palavras_alvo} palavras, "
+                  "mantendo narrativa natural e sem enrolação"
               )
 
+          if tipo == "Short":
+
+              regras_tipo = """
+              - O vídeo é um YouTube Short vertical.
+              - Comece com um gancho muito forte.
+              - Ritmo rápido.
+              - Frases curtas.
+              - Informação nova em praticamente todas as cenas.
+              - Termine com uma frase de impacto.
+              """
+
+          else:
+
+              regras_tipo = """
+              - O vídeo é um vídeo longo do YouTube.
+              - Crie uma narrativa completa.
+              - Comece com um gancho forte.
+              - Desenvolva o assunto progressivamente.
+              - Crie pequenas mudanças de ritmo ao longo do vídeo.
+              - Não repita informações apenas para aumentar a duração.
+              - Inclua contexto, explicações e exemplos quando fizer sentido.
+              - Mantenha curiosidade até o final.
+              - Termine com uma conclusão forte.
+              """
+
           prompt = f"""
-          Você é um roteirista profissional de YouTube Shorts.
+          Você é um roteirista profissional de YouTube.
 
-          Crie um Short em português brasileiro baseado no pedido abaixo.
+          Crie um conteúdo ORIGINAL baseado no pedido abaixo.
 
-          O vídeo deve ter aproximadamente 30 a 60 segundos.
+          TIPO:
+          {tipo}
 
-          DIVIDA o roteiro em EXATAMENTE 6 CENAS.
+          TEMA:
+          {tema}
 
-          Cada cena precisa conter TEXTO e BUSCA.
+          DURAÇÃO ALVO:
+          {duracao} segundos
 
-          TEXTO é o texto narrado naquela cena.
+          QUANTIDADE EXATA DE CENAS:
+          {quantidade}
 
-          BUSCA é uma busca curta em inglês para encontrar
-          um vídeo vertical visualmente relacionado no Pexels.
+          ESTILO:
+          {estilo}
 
-          REGRAS:
+          VOZ:
+          {voz}
 
-          - Comece com um gancho forte.
-          - Use frases curtas.
-          - Tenha ritmo rápido.
-          - Use informações interessantes.
-          - Não use introdução desnecessária.
-          - Termine com uma frase de impacto.
-          - Cada cena deve representar uma parte diferente.
-          - As buscas devem ser visuais e concretas.
-          - Use de 1 a 4 palavras em cada busca.
-          - Evite buscas abstratas.
-          - Não repita a mesma busca.
-          - Não coloque título dentro dos textos.
-          - Não coloque explicações.
-          - Não use listas.
+          IDIOMA:
+          {idioma}
+
+          ESTILO VISUAL:
+          {visual}
+
+          REFERÊNCIAS DE CANAIS:
+          {referencias}
+
+          IMPORTANTE SOBRE AS REFERÊNCIAS:
+
+          As referências servem somente para entender:
+          - ritmo
+          - estrutura
+          - abordagem
+          - nível de linguagem
+          - forma de apresentar informações
+
+          NÃO copie roteiros.
+          NÃO copie frases.
+          NÃO reproduza títulos.
+          NÃO imite literalmente nenhum canal.
+
+          O conteúdo deve ser original.
+
+          META DE TEXTO:
+          {faixa_palavras}
+
+          {regras_tipo}
+
+          REGRAS GERAIS:
+
+          - O texto precisa ser natural para narração.
           - Não use emojis.
+          - Não use listas numeradas.
+          - Não escreva instruções para o editor.
+          - Não escreva observações entre parênteses.
+          - Não invente fatos.
+          - Quando apresentar fatos científicos ou históricos,
+            seja cuidadoso com afirmações.
+          - Cada cena deve ter texto suficiente para manter
+            a narrativa.
+          - As buscas visuais devem ser concretas.
+          - As buscas devem ser em inglês.
+          - Cada busca deve ter entre 1 e 5 palavras.
+          - Não repita buscas.
+          - Prefira animais, natureza, lugares, objetos,
+            fenômenos, pessoas em ação ou situações concretas.
+          - Evite buscas abstratas.
+          - Não coloque texto escrito dentro das buscas.
 
-          METADADOS PARA O YOUTUBE:
+          METADADOS DO YOUTUBE:
 
-          TITULO: um título curto, curioso e forte, com até 70 caracteres.
+          TITULO:
+          título curioso e forte, máximo 70 caracteres.
 
-          DESCRICAO: uma descrição natural e envolvente,
-          relacionada ao tema, com palavras-chave relevantes.
-          Não faça spam de palavras-chave.
+          DESCRICAO:
+          descrição natural e envolvente.
 
-          HASHTAGS: exatamente 5 hashtags relevantes para o tema.
+          HASHTAGS:
+          exatamente 5 hashtags relevantes.
 
           FORMATO OBRIGATÓRIO:
 
           TITULO: título aqui
-          DESCRICAO: descrição aqui, sem quebrar linha
-          HASHTAGS: #hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5
+          DESCRICAO: descrição aqui
+          HASHTAGS: #tag1 #tag2 #tag3 #tag4 #tag5
 
           CENA 1
-          TEXTO: texto da cena 1
+          TEXTO: texto da cena
           BUSCA: english visual search
 
           CENA 2
-          TEXTO: texto da cena 2
+          TEXTO: texto da cena
           BUSCA: english visual search
 
-          CENA 3
-          TEXTO: texto da cena 3
+          ...
+
+          CENA {quantidade}
+          TEXTO: texto da cena
           BUSCA: english visual search
 
-          CENA 4
-          TEXTO: texto da cena 4
-          BUSCA: english visual search
-
-          CENA 5
-          TEXTO: texto da cena 5
-          BUSCA: english visual search
-
-          CENA 6
-          TEXTO: texto da cena 6
-          BUSCA: english visual search
-
-          PEDIDO:
-
-          {pedido}
+          Não escreva nada antes de TITULO.
+          Não escreva nada depois da última BUSCA.
           """
 
           data = {
@@ -192,20 +490,26 @@ jobs:
               headers={
                   "Content-Type": "application/json",
                   "x-goog-api-key": api_key,
-                  "User-Agent": "youtube-shorts-automatico/1.0"
+                  "User-Agent":
+                      "youtube-shorts-automatico/1.0"
               },
               method="POST"
           )
 
           try:
-              print("Enviando pedido para Gemini...")
+
+              print(
+                  "Enviando roteiro para Gemini..."
+              )
 
               with urllib.request.urlopen(
                   request,
                   timeout=180
               ) as response:
 
-                  resultado = json.load(response)
+                  resultado = json.load(
+                      response
+                  )
 
           except urllib.error.HTTPError as e:
 
@@ -248,7 +552,7 @@ jobs:
               ) from e
 
           print("================================")
-          print("RESPOSTA DO GEMINI")
+          print("ROTEIRO GERADO")
           print("================================")
           print(texto)
           print("================================")
@@ -258,15 +562,15 @@ jobs:
               for linha in texto.splitlines()
           ]
 
-          cenas = []
-
           titulo = ""
           descricao = ""
           hashtags = ""
 
+          cenas = []
+
           cena_atual = None
           texto_atual = []
-          busca_atual = None
+          busca_atual = ""
 
           for linha in linhas:
 
@@ -302,19 +606,19 @@ jobs:
 
                       cenas.append(
                           {
-                              "texto": " ".join(
-                                  texto_atual
-                              ).strip(),
+                              "texto":
+                                  " ".join(
+                                      texto_atual
+                                  ).strip(),
 
-                              "busca": (
-                                  busca_atual or ""
-                              ).strip()
+                              "busca":
+                                  busca_atual.strip()
                           }
                       )
 
                   cena_atual = linha
                   texto_atual = []
-                  busca_atual = None
+                  busca_atual = ""
 
               elif u.startswith("TEXTO:"):
 
@@ -324,7 +628,9 @@ jobs:
                   )
 
                   if valor:
-                      texto_atual.append(valor)
+                      texto_atual.append(
+                          valor
+                      )
 
               elif u.startswith("BUSCA:"):
 
@@ -337,15 +643,19 @@ jobs:
 
               cenas.append(
                   {
-                      "texto": " ".join(
-                          texto_atual
-                      ).strip(),
+                      "texto":
+                          " ".join(
+                              texto_atual
+                          ).strip(),
 
-                      "busca": (
-                          busca_atual or ""
-                      ).strip()
+                      "busca":
+                          busca_atual.strip()
                   }
               )
+
+          # ------------------------------------------
+          # Validações
+          # ------------------------------------------
 
           if not titulo:
               raise Exception(
@@ -370,19 +680,15 @@ jobs:
               raise Exception(
                   f"Gemini retornou "
                   f"{len(lista_hashtags)} hashtags. "
-                  f"Esperadas exatamente 5."
+                  "Esperadas exatamente 5."
               )
 
-          hashtags = " ".join(
-              lista_hashtags
-          )
-
-          if len(cenas) != 6:
+          if len(cenas) != quantidade:
 
               raise Exception(
                   f"Gemini retornou "
                   f"{len(cenas)} cenas. "
-                  f"Esperadas exatamente 6."
+                  f"Esperadas exatamente {quantidade}."
               )
 
           for i, cena in enumerate(
@@ -401,6 +707,10 @@ jobs:
                   raise Exception(
                       f"Cena {i} sem busca."
                   )
+
+          # ------------------------------------------
+          # Salvar cenas
+          # ------------------------------------------
 
           with open(
               "cenas.json",
@@ -438,7 +748,14 @@ jobs:
                   {
                       "titulo": titulo,
                       "descricao": descricao,
-                      "hashtags": hashtags
+                      "hashtags":
+                          " ".join(
+                              lista_hashtags
+                          ),
+                      "tipo":
+                          tipo,
+                      "duracao_segundos":
+                          duracao
                   },
                   f,
                   ensure_ascii=False,
@@ -447,13 +764,17 @@ jobs:
 
           print("")
           print("================================")
-          print("ROTEIRO E METADADOS OK")
+          print("ROTEIRO VALIDADO")
           print("================================")
-
-          print("Título:", titulo)
-          print("Descrição:", descricao)
-          print("Hashtags:", hashtags)
+          print("Tipo:", tipo)
+          print("Duração:", duracao)
           print("Cenas:", len(cenas))
+          print("Título:", titulo)
+          print(
+              "Hashtags:",
+              " ".join(lista_hashtags)
+          )
+          print("================================")
           PY
 
 
@@ -483,7 +804,7 @@ jobs:
       # 6. GERAR NARRAÇÃO
       # ==========================================
 
-      - name: Gerar narrações das cenas
+      - name: Gerar narrações
         run: |
           python - <<'PY'
           import json
@@ -539,7 +860,9 @@ jobs:
                   f"Áudio da cena {i} pronto."
               )
 
-          print("6 narrações prontas.")
+          print(
+              f"{len(cenas)} narrações prontas."
+          )
           PY
 
 
@@ -685,7 +1008,6 @@ jobs:
 
               escolhido = None
 
-              # Primeiro tenta vertical
               for somente_vertical in (
                   True,
                   False
@@ -842,7 +1164,7 @@ jobs:
           ) as f:
 
               f.write(
-                  "Vídeos utilizados neste Short:\n\n"
+                  "Vídeos utilizados:\n\n"
               )
 
               for i, cena in enumerate(
@@ -855,12 +1177,14 @@ jobs:
                       f"{cena.get('pexels_page', '')}\n"
                   )
 
-          print("6 vídeos baixados.")
+          print(
+              f"{len(cenas)} vídeos baixados."
+          )
           PY
 
 
       # ==========================================
-      # 8. LEGENDAS + CLIPES
+      # 8. LEGENDAS E CLIPES
       # ==========================================
 
       - name: Criar legendas e clipes
@@ -1127,12 +1451,14 @@ jobs:
                   f"Clip da cena {i} pronto."
               )
 
-          print("6 clipes prontos.")
+          print(
+              f"{len(cenas)} clipes prontos."
+          )
           PY
 
 
       # ==========================================
-      # 9. MONTAR VÍDEO COMPLETO
+      # 9. MONTAR VÍDEO COM TRANSIÇÕES
       # ==========================================
 
       - name: Montar vídeo completo
@@ -1140,10 +1466,23 @@ jobs:
           python - <<'PY'
           import subprocess
           import os
+          import json
+
+          with open(
+              "cenas.json",
+              encoding="utf-8"
+          ) as f:
+
+              cenas = json.load(f)
+
+          quantidade = len(cenas)
 
           clips = [
               f"clips/cena-{i:02d}.mp4"
-              for i in range(1, 7)
+              for i in range(
+                  1,
+                  quantidade + 1
+              )
           ]
 
           duracoes = []
@@ -1177,9 +1516,10 @@ jobs:
                       f"Duração inválida: {clip}"
                   )
 
-              duracoes.append(duracao)
+              duracoes.append(
+                  duracao
+              )
 
-          # Transição curta e segura
           transicao = min(
               0.30,
               min(duracoes) / 3.0
@@ -1194,10 +1534,9 @@ jobs:
 
           filtros = []
 
-          # Normaliza TODOS os vídeos antes do xfade.
-          # Isso evita erros de FPS, timebase e formato.
-
-          for i in range(6):
+          for i in range(
+              quantidade
+          ):
 
               filtros.append(
                   f"[{i}:v]"
@@ -1228,15 +1567,25 @@ jobs:
               "circleopen"
           ]
 
-          for i in range(1, 6):
+          for i in range(
+              1,
+              quantidade
+          ):
 
               saida = f"x{i}"
+
+              transicao_nome = (
+                  transicoes[
+                      (i - 1)
+                      % len(transicoes)
+                  ]
+              )
 
               filtros.append(
                   f"[{atual}]"
                   f"[v{i}]"
                   f"xfade="
-                  f"transition={transicoes[i - 1]}:"
+                  f"transition={transicao_nome}:"
                   f"duration={transicao:.3f}:"
                   f"offset={offset:.3f}"
                   f"[{saida}]"
@@ -1314,15 +1663,7 @@ jobs:
               )
 
           print(
-              "================================"
-          )
-
-          print(
               "VÍDEO COMPLETO PRONTO"
-          )
-
-          print(
-              "================================"
           )
           PY
 
@@ -1335,16 +1676,25 @@ jobs:
         run: |
           python - <<'PY'
           import subprocess
-
-          lista = "audios.txt"
+          import json
 
           with open(
-              lista,
+              "cenas.json",
+              encoding="utf-8"
+          ) as f:
+
+              cenas = json.load(f)
+
+          with open(
+              "audios.txt",
               "w",
               encoding="utf-8"
           ) as f:
 
-              for i in range(1, 7):
+              for i in range(
+                  1,
+                  len(cenas) + 1
+              ):
 
                   f.write(
                       f"file 'audios/cena-{i:02d}.wav'\n"
@@ -1359,7 +1709,7 @@ jobs:
                   "-safe",
                   "0",
                   "-i",
-                  lista,
+                  "audios.txt",
                   "-c:a",
                   "pcm_s16le",
                   "-ar",
@@ -1378,12 +1728,46 @@ jobs:
 
 
       # ==========================================
-      # 11. MÚSICA DE FUNDO
+      # 11. CALCULAR DURAÇÃO REAL
+      # ==========================================
+
+      - name: Calcular duração final
+        run: |
+          DURACAO_REAL=$(
+            ffprobe \
+              -v error \
+              -show_entries format=duration \
+              -of default=noprint_wrappers=1:nokey=1 \
+              narracao-completa.wav
+          )
+
+          echo "Duração real da narração: $DURACAO_REAL"
+
+          python - <<PY
+          import os
+
+          valor = float(
+              "$DURACAO_REAL"
+          )
+
+          with open(
+              os.environ["GITHUB_ENV"],
+              "a"
+          ) as f:
+
+              f.write(
+                  f"DURACAO_REAL={valor:.3f}\n"
+              )
+          PY
+
+
+      # ==========================================
+      # 12. MÚSICA DE FUNDO
       # ==========================================
 
       - name: Criar música de fundo
         run: |
-          mkdir -p musica
+          DURACAO_MUSICA="${DURACAO_REAL}"
 
           ffmpeg -y \
             -f lavfi \
@@ -1393,26 +1777,28 @@ jobs:
             -f lavfi \
             -i "sine=frequency=329.63:sample_rate=44100" \
             -filter_complex \
-            "[0:a]volume=0.18[a0];[1:a]volume=0.12[a1];[2:a]volume=0.10[a2];[a0][a1][a2]amix=inputs=3:duration=longest,afade=t=in:st=0:d=2,afade=t=out:st=55:d=5" \
-            -t 60 \
+            "[0:a]volume=0.18[a0];[1:a]volume=0.12[a1];[2:a]volume=0.10[a2];[a0][a1][a2]amix=inputs=3:duration=longest,afade=t=in:st=0:d=2[m]" \
+            -t "$DURACAO_MUSICA" \
+            -map "[m]" \
             -c:a libmp3lame \
             -b:a 128k \
-            musica/background.mp3
+            musica-background.mp3
+
+          test -s musica-background.mp3
 
           echo "Música de fundo pronta."
 
 
       # ==========================================
-      # 12. CRIAR SHORT FINAL
+      # 13. CRIAR VÍDEO FINAL
       # ==========================================
 
-      - name: Criar Short final
+      - name: Criar vídeo final
         run: |
           ffmpeg -y \
             -i video-completo.mp4 \
             -i narracao-completa.wav \
-            -stream_loop -1 \
-            -i musica/background.mp3 \
+            -i musica-background.mp3 \
             -filter_complex \
             "[2:a]volume=0.12[musica];[1:a][musica]amix=inputs=2:duration=first:dropout_transition=2[audio]" \
             -map 0:v:0 \
@@ -1430,7 +1816,7 @@ jobs:
 
           echo ""
           echo "================================"
-          echo "SHORT FINALIZADO"
+          echo "VÍDEO FINALIZADO"
           echo "================================"
 
           ffprobe \
@@ -1442,10 +1828,10 @@ jobs:
 
 
       # ==========================================
-      # 13. SALVAR ARTEFATO
+      # 14. SALVAR ARTEFATO
       # ==========================================
 
-      - name: Salvar Short gerado
+      - name: Salvar conteúdo gerado
         uses: actions/upload-artifact@v4
         with:
           name: short-gerado
@@ -1460,4 +1846,5 @@ jobs:
             videos/
             clips/
             audios/
-            musica/
+            musica-background.mp3
+          if-no-files-found: error
