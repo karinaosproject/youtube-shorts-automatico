@@ -28,7 +28,7 @@ jobs:
           pip install piper-tts
 
       # ============================================================
-      # 2. LER PEDIDO
+      # 2. LER PEDIDO DO PAINEL
       # ============================================================
 
       - name: Ler pedido
@@ -95,7 +95,7 @@ jobs:
           PY
 
       # ============================================================
-      # 3. DEFINIR FORMATO E DURAÇÃO
+      # 3. DEFINIR DURAÇÃO E FORMATO
       # ============================================================
 
       - name: Calcular duração e formato
@@ -123,28 +123,21 @@ jobs:
 
               if "hora" in duracao_texto:
                   duracao = numero * 3600
-
               elif "min" in duracao_texto:
                   duracao = numero * 60
-
               else:
                   duracao = numero
 
           duracao = max(10, min(duracao, 3600))
 
           if tipo.lower().startswith("short"):
-
               formato = "short"
               numero_cenas = 6
-
               largura = 1080
               altura = 1920
-
           else:
-
               formato = "long"
               numero_cenas = 12
-
               largura = 1920
               altura = 1080
 
@@ -204,27 +197,19 @@ jobs:
               "Nenhuma selecionada"
           )
 
-          duracao = int(
-              config.get("DURACAO", "60")
-          )
-
-          numero_cenas = int(
-              config.get("CENAS", "6")
-          )
+          duracao = int(config.get("DURACAO", "60"))
+          numero_cenas = int(config.get("CENAS", "6"))
 
           if not tema:
               tema = "uma curiosidade surpreendente sobre animais"
 
           if tipo.lower().startswith("short"):
-
               tipo_instrucao = """
               Crie um roteiro para YouTube Shorts.
               O conteúdo deve ser extremamente dinâmico,
               direto e prender a atenção imediatamente.
               """
-
           else:
-
               tipo_instrucao = """
               Crie um roteiro para um vídeo longo do YouTube.
               O conteúdo deve ter desenvolvimento progressivo,
@@ -270,8 +255,8 @@ jobs:
           As referências servem SOMENTE como inspiração
           de estilo, estrutura, ritmo e abordagem.
 
-          NÃO copie textos, frases, títulos, roteiros ou
-          estruturas específicas desses canais.
+          NÃO copie textos, frases, títulos ou roteiros
+          desses canais.
 
           O conteúdo precisa ser original.
 
@@ -328,7 +313,7 @@ jobs:
           - Não invente fontes.
           - Priorize fatos corretos.
           - Use linguagem natural.
-          - Não escreva explicações fora do formato solicitado.
+          - Não escreva explicações fora do formato.
           """
 
           payload = {
@@ -350,8 +335,7 @@ jobs:
           url = (
               "https://generativelanguage.googleapis.com/"
               "v1beta/models/gemini-3.1-flash-lite:generateContent"
-              "?key=" +
-              os.environ["GEMINI_API_KEY"]
+              "?key=" + os.environ["GEMINI_API_KEY"]
           )
 
           req = urllib.request.Request(
@@ -364,30 +348,21 @@ jobs:
           )
 
           try:
-
               with urllib.request.urlopen(
                   req,
                   timeout=180
               ) as response:
-
                   resultado = json.loads(
                       response.read().decode("utf-8")
                   )
-
           except urllib.error.HTTPError as e:
-
-              print(
-                  "Erro HTTP do Gemini:",
-                  e.code
-              )
-
+              print("Erro HTTP do Gemini:", e.code)
               print(
                   e.read().decode(
                       "utf-8",
                       errors="ignore"
                   )
               )
-
               raise
 
           texto = (
@@ -408,14 +383,13 @@ jobs:
               "w",
               encoding="utf-8"
           ) as f:
-
               f.write(texto)
 
           print(texto)
           PY
 
       # ============================================================
-      # 5. PROCESSAR ROTEIRO + METADATA
+      # 5. PROCESSAR ROTEIRO E METADATA
       # ============================================================
 
       - name: Processar roteiro e metadata
@@ -428,7 +402,6 @@ jobs:
               "roteiro-gerado.txt",
               encoding="utf-8"
           ) as f:
-
               texto = f.read().strip()
 
           titulo_match = re.search(
@@ -465,18 +438,8 @@ jobs:
               )
 
           titulo = titulo_match.group(1).strip()
-
-          descricao = (
-              descricao_match
-              .group(1)
-              .strip()
-          )
-
-          hashtags_texto = (
-              hashtags_match
-              .group(1)
-              .strip()
-          )
+          descricao = descricao_match.group(1).strip()
+          hashtags_texto = hashtags_match.group(1).strip()
 
           if len(titulo) > 70:
               titulo = titulo[:70].rstrip()
@@ -490,9 +453,8 @@ jobs:
 
           if len(lista_hashtags) != 5:
               raise RuntimeError(
-                  "Era necessário exatamente "
-                  "5 hashtags. Foram encontradas "
-                  f"{len(lista_hashtags)}."
+                  "Era necessário exatamente 5 hashtags. "
+                  f"Foram encontradas {len(lista_hashtags)}."
               )
 
           cenas = []
@@ -506,18 +468,14 @@ jobs:
 
           for m in padrao_cena.finditer(texto):
 
-              numero = int(
-                  m.group(1)
-              )
+              numero = int(m.group(1))
 
               texto_cena = (
-                  m.group(2)
-                  .strip()
+                  m.group(2).strip()
               )
 
               busca = (
-                  m.group(3)
-                  .strip()
+                  m.group(3).strip()
               )
 
               texto_cena = re.sub(
@@ -533,7 +491,6 @@ jobs:
               )
 
               if texto_cena and busca:
-
                   cenas.append(
                       {
                           "numero": numero,
@@ -566,11 +523,9 @@ jobs:
           )
 
           if len(cenas) != numero_cenas:
-
               raise RuntimeError(
                   f"Esperadas {numero_cenas} cenas, "
-                  f"mas foram encontradas "
-                  f"{len(cenas)}."
+                  f"mas foram encontradas {len(cenas)}."
               )
 
           cenas.sort(
@@ -591,8 +546,7 @@ jobs:
               )
 
           # ========================================================
-          # IMPORTANTE:
-          # HASHTAGS É UMA LISTA.
+          # HASHTAGS PERMANECEM COMO LISTA
           # ========================================================
 
           with open(
@@ -628,14 +582,8 @@ jobs:
               encoding="utf-8"
           ) as f:
 
-              f.write(
-                  titulo + "\n\n"
-              )
-
-              f.write(
-                  descricao + "\n\n"
-              )
-
+              f.write(titulo + "\n\n")
+              f.write(descricao + "\n\n")
               f.write(
                   " ".join(lista_hashtags)
                   + "\n\n"
@@ -655,25 +603,11 @@ jobs:
                       f"BUSCA: {cena['busca']}\n\n"
                   )
 
-          print(
-              "Título:",
-              titulo
-          )
-
-          print(
-              "Descrição:",
-              descricao
-          )
-
-          print(
-              "Hashtags:",
-              lista_hashtags
-          )
-
-          print(
-              "Cenas:",
-              len(cenas)
-          )
+          print("Título:", titulo)
+          print("Descrição:", descricao)
+          print("Hashtags:", lista_hashtags)
+          print("Quantidade de hashtags:", len(lista_hashtags))
+          print("Quantidade de cenas:", len(cenas))
           PY
 
       # ============================================================
@@ -782,12 +716,12 @@ jobs:
 
               cenas = json.load(f)
 
+          config = {}
+
           with open(
               "config.txt",
               encoding="utf-8"
           ) as f:
-
-              config = {}
 
               for linha in f:
 
@@ -818,14 +752,16 @@ jobs:
               numero = cena["numero"]
               busca = cena["busca"]
 
+              orientacao = (
+                  "portrait"
+                  if formato == "short"
+                  else "landscape"
+              )
+
               params = urllib.parse.urlencode(
                   {
                       "query": busca,
-                      "orientation": (
-                          "portrait"
-                          if formato == "short"
-                          else "landscape"
-                      ),
+                      "orientation": orientacao,
                       "size": "medium",
                       "per_page": 20
                   }
@@ -868,9 +804,7 @@ jobs:
 
               for video in videos:
 
-                  video_id = video.get(
-                      "id"
-                  )
+                  video_id = video.get("id")
 
                   if video_id in usados:
                       continue
@@ -909,32 +843,34 @@ jobs:
               )
 
               if formato == "short":
-
                   proporcao_alvo = 9 / 16
-
               else:
-
                   proporcao_alvo = 16 / 9
 
-              arquivos.sort(
-                  key=lambda x:
-                  abs(
-                      (
-                          x.get(
-                              "width",
-                              1080
-                          )
-                          /
-                          max(
-                              x.get(
-                                  "height",
-                                  1920
-                              ),
-                              1
-                          )
-                      )
+              def diferenca_proporcao(arquivo):
+
+                  largura = arquivo.get(
+                      "width",
+                      1080
+                  )
+
+                  altura = max(
+                      arquivo.get(
+                          "height",
+                          1920
+                      ),
+                      1
+                  )
+
+                  proporcao = largura / altura
+
+                  return abs(
+                      proporcao
                       - proporcao_alvo
                   )
+
+              arquivos.sort(
+                  key=diferenca_proporcao
               )
 
               link = arquivos[0]["link"]
@@ -1017,12 +953,12 @@ jobs:
 
               cenas = json.load(f)
 
+          config = {}
+
           with open(
               "config.txt",
               encoding="utf-8"
           ) as f:
-
-              config = {}
 
               for linha in f:
 
@@ -1053,9 +989,7 @@ jobs:
               altura = 1080
               margem_vertical = 100
 
-          def duracao_audio(
-              arquivo
-          ):
+          def duracao_audio(arquivo):
 
               with wave.open(
                   arquivo,
@@ -1068,9 +1002,7 @@ jobs:
                       w.getframerate()
                   )
 
-          def ass_time(
-              segundos
-          ):
+          def ass_time(segundos):
 
               segundos = max(
                   0,
@@ -1082,9 +1014,7 @@ jobs:
               )
 
               m = int(
-                  (
-                      segundos % 3600
-                  ) // 60
+                  (segundos % 3600) // 60
               )
 
               s = int(
@@ -1092,10 +1022,7 @@ jobs:
               )
 
               cs = int(
-                  (
-                      segundos
-                      - int(segundos)
-                  )
+                  (segundos - int(segundos))
                   * 100
               )
 
@@ -1126,9 +1053,9 @@ jobs:
                   f"legendas/cena_{numero}.ass"
               )
 
-              texto = cena["texto"].replace(
-                  "\n",
-                  " "
+              texto = (
+                  cena["texto"]
+                  .replace("\n", " ")
               )
 
               conteudo = f"""[Script Info]
@@ -1155,13 +1082,11 @@ jobs:
 
               inicio = fim
 
-          print(
-              "Legendas criadas."
-          )
+          print("Legendas criadas.")
           PY
 
       # ============================================================
-      # 10. CRIAR CLIPES
+      # 10. CRIAR CLIPES INDIVIDUAIS
       # ============================================================
 
       - name: Criar clipes individuais
@@ -1180,12 +1105,12 @@ jobs:
 
               cenas = json.load(f)
 
+          config = {}
+
           with open(
               "config.txt",
               encoding="utf-8"
           ) as f:
-
-              config = {}
 
               for linha in f:
 
@@ -1208,15 +1133,15 @@ jobs:
 
               largura = 1080
               altura = 1920
+              margem_v = 260
 
           else:
 
               largura = 1920
               altura = 1080
+              margem_v = 100
 
-          def duracao_audio(
-              path
-          ):
+          def duracao_audio(path):
 
               with wave.open(
                   path,
@@ -1253,25 +1178,27 @@ jobs:
                   audio
               )
 
+              # ----------------------------------------------------
+              # IMPORTANTE:
+              # Construção simples do filtro.
+              # Não usamos string seguida de parênteses,
+              # evitando o erro "'str' object is not callable".
+              # ----------------------------------------------------
+
               filtro = (
                   f"scale={largura}:{altura}:"
                   "force_original_aspect_ratio=increase,"
                   f"crop={largura}:{altura},"
                   f"subtitles={legenda}:"
-                  "force_style='"
-                  "FontName=DejaVu Sans,"
-                  "FontSize=52,"
-                  "PrimaryColour=&H00FFFFFF,"
-                  "OutlineColour=&H00000000,"
-                  "Outline=3,"
-                  "Shadow=2,"
-                  "Alignment=2,"
-                  (
-                    "MarginV=260'"
-                    if formato =="short"
-                    else "MarginV=100'"
-                  )
-                  )
+                  f"force_style='FontName=DejaVu Sans,"
+                  f"FontSize=52,"
+                  f"PrimaryColour=&H00FFFFFF,"
+                  f"OutlineColour=&H00000000,"
+                  f"Outline=3,"
+                  f"Shadow=2,"
+                  f"Alignment=2,"
+                  f"MarginV={margem_v}'"
+              )
 
               comando = [
                   "ffmpeg",
@@ -1295,6 +1222,21 @@ jobs:
                   saida
               ]
 
+              print(
+                  "Criando clip:",
+                  numero
+              )
+
+              print(
+                  "Formato:",
+                  f"{largura}x{altura}"
+              )
+
+              print(
+                  "Duração:",
+                  duracao
+              )
+
               subprocess.run(
                   comando,
                   check=True
@@ -1305,8 +1247,10 @@ jobs:
               )
           PY
 
+          ls -lh clips/
+
       # ============================================================
-      # 11. TRANSIÇÕES
+      # 11. CRIAR VÍDEO COM TRANSIÇÕES
       # ============================================================
 
       - name: Criar vídeo com transições
@@ -1404,9 +1348,7 @@ jobs:
                   else f"[v{i-1}]"
               )
 
-              entrada_b = (
-                  f"[{i}:v]"
-              )
+              entrada_b = f"[{i}:v]"
 
               saida = (
                   f"[v{i}]"
@@ -1424,7 +1366,8 @@ jobs:
               ]
 
               filtros.append(
-                  f"{entrada_a}{entrada_b}"
+                  f"{entrada_a}"
+                  f"{entrada_b}"
                   f"xfade="
                   f"transition={tipo}:"
                   f"duration={transicao}:"
