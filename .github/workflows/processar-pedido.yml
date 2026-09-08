@@ -1271,6 +1271,7 @@ jobs:
                     if formato =="short"
                     else "MarginV=100'"
                   )
+                  )
 
               comando = [
                   "ffmpeg",
