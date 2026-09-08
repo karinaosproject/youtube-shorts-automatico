@@ -1267,11 +1267,10 @@ jobs:
                   "Shadow=2,"
                   "Alignment=2,"
                   (
-                      "MarginV=260'"
-                      if formato == "short"
-                      else "MarginV=100'"
+                    "MarginV=260'"
+                    if formato =="short"
+                    else "MarginV=100'"
                   )
-              )
 
               comando = [
                   "ffmpeg",
