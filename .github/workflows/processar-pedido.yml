@@ -5,43 +5,34 @@ on:
     types: [opened]
 
 jobs:
-  criar-conteudo:
+  processar:
     runs-on: ubuntu-latest
 
     steps:
 
-      # ==========================================
-      # 1. INSTALAR FFMPEG
-      # ==========================================
+      # ============================================================
+      # 1. PREPARAR AMBIENTE
+      # ============================================================
+
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Instalar FFmpeg
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
 
-          ffmpeg -version
-          ffprobe -version
-
-
-      # ==========================================
-      # 2. INSTALAR PIPER
-      # ==========================================
-
       - name: Instalar Piper TTS
         run: |
           python -m pip install --upgrade pip
-          python -m pip install piper-tts
+          pip install piper-tts
 
-          python -m piper --help
+      # ============================================================
+      # 2. LER PEDIDO DO GITHUB ISSUE
+      # ============================================================
 
-
-      # ==========================================
-      # 3. LER PEDIDO
-      # ==========================================
-
-      - name: Ler e interpretar pedido
+      - name: Ler pedido
         env:
-          ISSUE_TITLE: ${{ github.event.issue.title }}
           ISSUE_BODY: ${{ github.event.issue.body }}
         run: |
           python - <<'PY'
@@ -50,326 +41,173 @@ jobs:
 
           body = os.environ.get("ISSUE_BODY", "")
 
-          if not body.strip():
-              raise Exception("O pedido do Issue está vazio.")
-
-          def campo(nome, padrao=""):
-              padrao_regex = (
-                  r"###\s*"
-                  + re.escape(nome)
-                  + r"\s*\n(.*?)(?=\n###|\Z)"
-              )
-
-              m = re.search(
-                  padrao_regex,
-                  body,
-                  re.IGNORECASE | re.DOTALL
-              )
-
+          def pegar(campo):
+              padrao = rf"### {re.escape(campo)}\s*(.*?)(?=\n### |\Z)"
+              m = re.search(padrao, body, re.S | re.I)
               if not m:
-                  return padrao
-
+                  return ""
               return m.group(1).strip()
 
-          tipo = campo(
-              "TIPO DE CONTEÚDO",
-              "Short"
-          )
+          tipo = pegar("TIPO DE CONTEÚDO")
+          tema = pegar("TEMA")
+          duracao = pegar("DURAÇÃO")
+          estilo = pegar("ESTILO")
+          voz = pegar("VOZ")
+          idioma = pegar("IDIOMA")
+          visual = pegar("VISUAL")
+          referencias = pegar("REFERÊNCIAS")
 
-          tema = campo(
-              "TEMA"
-          )
+          if not tipo:
+              tipo = "Short"
 
-          duracao = campo(
-              "DURAÇÃO",
-              "45 segundos"
-          )
+          if not duracao:
+              duracao = "60 segundos"
 
-          estilo = campo(
-              "ESTILO",
-              "Curiosidades"
-          )
+          if not estilo:
+              estilo = "Curiosidades"
 
-          voz = campo(
-              "VOZ",
-              "Automática"
-          )
+          if not voz:
+              voz = "Automática"
 
-          idioma = campo(
-              "IDIOMA",
-              "Português brasileiro"
-          )
+          if not idioma:
+              idioma = "Português brasileiro"
 
-          visual = campo(
-              "VISUAL",
-              "Realista"
-          )
+          if not visual:
+              visual = "Viral"
 
-          referencias = campo(
-              "REFERÊNCIAS",
-              "Nenhuma selecionada"
-          )
+          if not referencias:
+              referencias = "Nenhuma selecionada"
 
-          if not tema:
-              raise Exception("O tema não foi informado.")
+          with open("pedido.txt", "w", encoding="utf-8") as f:
+              f.write(f"TIPO={tipo}\n")
+              f.write(f"TEMA={tema}\n")
+              f.write(f"DURACAO={duracao}\n")
+              f.write(f"ESTILO={estilo}\n")
+              f.write(f"VOZ={voz}\n")
+              f.write(f"IDIOMA={idioma}\n")
+              f.write(f"VISUAL={visual}\n")
+              f.write(f"REFERENCIAS={referencias}\n")
 
-          # ------------------------------------------
-          # Converter duração para segundos
-          # ------------------------------------------
-
-          texto_duracao = duracao.lower().strip()
-
-          numeros = re.findall(
-              r"\d+(?:[.,]\d+)?",
-              texto_duracao
-          )
-
-          if not numeros:
-              raise Exception(
-                  f"Duração inválida: {duracao}"
-              )
-
-          numero = float(
-              numeros[0].replace(",", ".")
-          )
-
-          if "hora" in texto_duracao:
-              segundos = int(numero * 3600)
-
-          elif "minuto" in texto_duracao:
-              segundos = int(numero * 60)
-
-          else:
-              segundos = int(numero)
-
-          segundos = max(
-              10,
-              min(segundos, 3600)
-          )
-
-          tipo_normalizado = tipo.lower()
-
-          if "longo" in tipo_normalizado:
-              tipo_final = "Vídeo Longo"
-              quantidade_cenas = 12
-          else:
-              tipo_final = "Short"
-              quantidade_cenas = 6
-
-          # ------------------------------------------
-          # Exportar variáveis para os próximos passos
-          # ------------------------------------------
-
-          with open(
-              os.environ["GITHUB_ENV"],
-              "a",
-              encoding="utf-8"
-          ) as env:
-
-              env.write(
-                  f"TIPO_CONTEUDO={tipo_final}\n"
-              )
-
-              env.write(
-                  f"DURACAO_SEGUNDOS={segundos}\n"
-              )
-
-              env.write(
-                  f"QUANTIDADE_CENAS={quantidade_cenas}\n"
-              )
-
-              env.write(
-                  "TEMA<<FIM_TEMA\n"
-              )
-              env.write(
-                  tema.replace("\r", "")
-                  + "\n"
-              )
-              env.write(
-                  "FIM_TEMA\n"
-              )
-
-              env.write(
-                  "ESTILO<<FIM_ESTILO\n"
-              )
-              env.write(
-                  estilo.replace("\r", "")
-                  + "\n"
-              )
-              env.write(
-                  "FIM_ESTILO\n"
-              )
-
-              env.write(
-                  "VOZ<<FIM_VOZ\n"
-              )
-              env.write(
-                  voz.replace("\r", "")
-                  + "\n"
-              )
-              env.write(
-                  "FIM_VOZ\n"
-              )
-
-              env.write(
-                  "IDIOMA<<FIM_IDIOMA\n"
-              )
-              env.write(
-                  idioma.replace("\r", "")
-                  + "\n"
-              )
-              env.write(
-                  "FIM_IDIOMA\n"
-              )
-
-              env.write(
-                  "VISUAL<<FIM_VISUAL\n"
-              )
-              env.write(
-                  visual.replace("\r", "")
-                  + "\n"
-              )
-              env.write(
-                  "FIM_VISUAL\n"
-              )
-
-              env.write(
-                  "REFERENCIAS<<FIM_REFERENCIAS\n"
-              )
-              env.write(
-                  referencias.replace("\r", "")
-                  + "\n"
-              )
-              env.write(
-                  "FIM_REFERENCIAS\n"
-              )
-
-          print("================================")
-          print("PEDIDO INTERPRETADO")
-          print("================================")
-          print("Tipo:", tipo_final)
-          print("Tema:", tema)
-          print("Duração:", segundos, "segundos")
-          print("Cenas:", quantidade_cenas)
-          print("Estilo:", estilo)
-          print("Voz:", voz)
-          print("Idioma:", idioma)
-          print("Visual:", visual)
-          print("Referências:", referencias)
-          print("================================")
+          print("Pedido recebido:")
+          print(body)
           PY
 
+      # ============================================================
+      # 3. DEFINIR DURAÇÃO
+      # ============================================================
 
-      # ==========================================
-      # 4. GEMINI
-      # ==========================================
+      - name: Calcular duração
+        run: |
+          python - <<'PY'
+          import re
+
+          dados = {}
+
+          with open("pedido.txt", encoding="utf-8") as f:
+              for linha in f:
+                  if "=" in linha:
+                      k, v = linha.rstrip("\n").split("=", 1)
+                      dados[k] = v
+
+          tipo = dados.get("TIPO", "Short")
+          duracao_texto = dados.get("DURACAO", "60 segundos").lower()
+
+          numeros = re.findall(r"\d+", duracao_texto)
+
+          if not numeros:
+              duracao = 60
+          else:
+              numero = int(numeros[0])
+
+              if "hora" in duracao_texto:
+                  duracao = numero * 3600
+              elif "min" in duracao_texto:
+                  duracao = numero * 60
+              else:
+                  duracao = numero
+
+          duracao = max(10, min(duracao, 3600))
+
+          if tipo.lower().startswith("short"):
+              numero_cenas = 6
+          else:
+              numero_cenas = 12
+
+          with open("config.txt", "w", encoding="utf-8") as f:
+              f.write(f"TIPO={tipo}\n")
+              f.write(f"DURACAO={duracao}\n")
+              f.write(f"CENAS={numero_cenas}\n")
+
+          print(f"Tipo: {tipo}")
+          print(f"Duração alvo: {duracao} segundos")
+          print(f"Número de cenas: {numero_cenas}")
+          PY
+
+      # ============================================================
+      # 4. GERAR ROTEIRO COM GEMINI
+      # ============================================================
 
       - name: Gerar roteiro com Gemini
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          TIPO_CONTEUDO: ${{ env.TIPO_CONTEUDO }}
-          DURACAO_SEGUNDOS: ${{ env.DURACAO_SEGUNDOS }}
-          QUANTIDADE_CENAS: ${{ env.QUANTIDADE_CENAS }}
-          TEMA: ${{ env.TEMA }}
-          ESTILO: ${{ env.ESTILO }}
-          VOZ: ${{ env.VOZ }}
-          IDIOMA: ${{ env.IDIOMA }}
-          VISUAL: ${{ env.VISUAL }}
-          REFERENCIAS: ${{ env.REFERENCIAS }}
         run: |
           python - <<'PY'
-          import os
           import json
+          import os
+          import re
           import urllib.request
           import urllib.error
 
-          api_key = os.environ["GEMINI_API_KEY"].strip()
+          dados = {}
 
-          tipo = os.environ["TIPO_CONTEUDO"]
-          duracao = int(
-              os.environ["DURACAO_SEGUNDOS"]
-          )
-          quantidade = int(
-              os.environ["QUANTIDADE_CENAS"]
-          )
+          with open("pedido.txt", encoding="utf-8") as f:
+              for linha in f:
+                  if "=" in linha:
+                      k, v = linha.rstrip("\n").split("=", 1)
+                      dados[k] = v
 
-          tema = os.environ["TEMA"].strip()
-          estilo = os.environ["ESTILO"].strip()
-          voz = os.environ["VOZ"].strip()
-          idioma = os.environ["IDIOMA"].strip()
-          visual = os.environ["VISUAL"].strip()
-          referencias = os.environ["REFERENCIAS"].strip()
+          config = {}
 
-          if not api_key:
-              raise Exception(
-                  "GEMINI_API_KEY não foi encontrada."
-              )
+          with open("config.txt", encoding="utf-8") as f:
+              for linha in f:
+                  if "=" in linha:
+                      k, v = linha.rstrip("\n").split("=", 1)
+                      config[k] = v
 
-          # ------------------------------------------
-          # Meta aproximada de palavras
-          # ------------------------------------------
+          tipo = dados.get("TIPO", "Short")
+          tema = dados.get("TEMA", "")
+          estilo = dados.get("ESTILO", "Curiosidades")
+          voz = dados.get("VOZ", "Automática")
+          idioma = dados.get("IDIOMA", "Português brasileiro")
+          visual = dados.get("VISUAL", "Viral")
+          referencias = dados.get("REFERENCIAS", "Nenhuma selecionada")
 
-          palavras_por_minuto = 145
+          duracao = int(config.get("DURACAO", "60"))
+          numero_cenas = int(config.get("CENAS", "6"))
 
-          palavras_alvo = max(
-              60,
-              int(
-                  (duracao / 60)
-                  * palavras_por_minuto
-              )
-          )
+          if not tema:
+              tema = "uma curiosidade surpreendente sobre animais"
 
-          if tipo == "Short":
-              faixa_palavras = (
-                  f"aproximadamente {palavras_alvo} palavras"
-              )
+          if tipo.lower().startswith("short"):
+              tipo_instrucao = "Crie um roteiro curto, dinâmico e altamente envolvente para YouTube Shorts."
           else:
-              faixa_palavras = (
-                  f"aproximadamente {palavras_alvo} palavras, "
-                  "mantendo narrativa natural e sem enrolação"
-              )
+              tipo_instrucao = "Crie um roteiro longo, didático, envolvente e dividido em cenas para YouTube."
 
-          if tipo == "Short":
-
-              regras_tipo = """
-              - O vídeo é um YouTube Short vertical.
-              - Comece com um gancho muito forte.
-              - Ritmo rápido.
-              - Frases curtas.
-              - Informação nova em praticamente todas as cenas.
-              - Termine com uma frase de impacto.
-              """
-
-          else:
-
-              regras_tipo = """
-              - O vídeo é um vídeo longo do YouTube.
-              - Crie uma narrativa completa.
-              - Comece com um gancho forte.
-              - Desenvolva o assunto progressivamente.
-              - Crie pequenas mudanças de ritmo ao longo do vídeo.
-              - Não repita informações apenas para aumentar a duração.
-              - Inclua contexto, explicações e exemplos quando fizer sentido.
-              - Mantenha curiosidade até o final.
-              - Termine com uma conclusão forte.
-              """
+          palavras_aprox = max(40, int(duracao * 145 / 60))
 
           prompt = f"""
-          Você é um roteirista profissional de YouTube.
+          Você é roteirista profissional de conteúdo para YouTube.
 
-          Crie um conteúdo ORIGINAL baseado no pedido abaixo.
-
-          TIPO:
-          {tipo}
+          {tipo_instrucao}
 
           TEMA:
           {tema}
 
+          TIPO:
+          {tipo}
+
           DURAÇÃO ALVO:
           {duracao} segundos
-
-          QUANTIDADE EXATA DE CENAS:
-          {quantidade}
 
           ESTILO:
           {estilo}
@@ -383,87 +221,72 @@ jobs:
           ESTILO VISUAL:
           {visual}
 
-          REFERÊNCIAS DE CANAIS:
+          REFERÊNCIAS DE ESTILO:
           {referencias}
 
-          IMPORTANTE SOBRE AS REFERÊNCIAS:
+          As referências servem SOMENTE como inspiração de estilo,
+          estrutura, ritmo e abordagem.
 
-          As referências servem somente para entender:
-          - ritmo
-          - estrutura
-          - abordagem
-          - nível de linguagem
-          - forma de apresentar informações
+          NÃO copie textos, frases, títulos, roteiros ou informações
+          específicas apresentadas por esses canais.
 
-          NÃO copie roteiros.
-          NÃO copie frases.
-          NÃO reproduza títulos.
-          NÃO imite literalmente nenhum canal.
+          O conteúdo precisa ser original.
 
-          O conteúdo deve ser original.
+          Velocidade aproximada da narração:
+          145 palavras por minuto.
 
-          META DE TEXTO:
-          {faixa_palavras}
+          Quantidade EXATA de cenas:
+          {numero_cenas}
 
-          {regras_tipo}
+          Gere aproximadamente {palavras_aprox} palavras de narração,
+          ajustando naturalmente para o assunto.
 
-          REGRAS GERAIS:
+          O roteiro deve prender a atenção desde a primeira frase.
 
-          - O texto precisa ser natural para narração.
-          - Não use emojis.
-          - Não use listas numeradas.
-          - Não escreva instruções para o editor.
-          - Não escreva observações entre parênteses.
-          - Não invente fatos.
-          - Quando apresentar fatos científicos ou históricos,
-            seja cuidadoso com afirmações.
-          - Cada cena deve ter texto suficiente para manter
-            a narrativa.
-          - As buscas visuais devem ser concretas.
-          - As buscas devem ser em inglês.
-          - Cada busca deve ter entre 1 e 5 palavras.
-          - Não repita buscas.
-          - Prefira animais, natureza, lugares, objetos,
-            fenômenos, pessoas em ação ou situações concretas.
-          - Evite buscas abstratas.
-          - Não coloque texto escrito dentro das buscas.
+          Use linguagem natural para narração.
 
-          METADADOS DO YOUTUBE:
+          Cada cena deve ter texto suficiente para aproximadamente
+          alguns segundos de vídeo.
 
-          TITULO:
-          título curioso e forte, máximo 70 caracteres.
-
-          DESCRICAO:
-          descrição natural e envolvente.
-
-          HASHTAGS:
-          exatamente 5 hashtags relevantes.
+          Para cada cena informe também uma BUSCA visual curta,
+          em inglês, para encontrar vídeos no Pexels.
 
           FORMATO OBRIGATÓRIO:
 
-          TITULO: título aqui
-          DESCRICAO: descrição aqui
-          HASHTAGS: #hashtag1, #hashtag2, #hashtag3, #hashtag4, #hashtag5 
+          TITULO: título do vídeo
+
+          DESCRICAO: descrição do vídeo
+
+          HASHTAGS: #hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5
 
           CENA 1
           TEXTO: texto da cena
-          BUSCA: english visual search
+          BUSCA: visual search in English
 
           CENA 2
           TEXTO: texto da cena
-          BUSCA: english visual search
+          BUSCA: visual search in English
 
           ...
 
-          CENA {quantidade}
+          CENA {numero_cenas}
           TEXTO: texto da cena
-          BUSCA: english visual search
+          BUSCA: visual search in English
 
-          Não escreva nada antes de TITULO.
-          Não escreva nada depois da última BUSCA.
+          REGRAS:
+
+          - Título com no máximo 70 caracteres.
+          - Exatamente 5 hashtags.
+          - Exatamente {numero_cenas} cenas.
+          - Cada cena precisa ter TEXTO e BUSCA.
+          - Não use markdown.
+          - Não coloque listas numeradas dentro do TEXTO.
+          - Não copie conteúdo de outros canais.
+          - Não invente fontes ou citações.
+          - Priorize fatos corretos e interessantes.
           """
 
-          data = {
+          payload = {
               "contents": [
                   {
                       "parts": [
@@ -474,250 +297,163 @@ jobs:
                   }
               ],
               "generationConfig": {
-                  "temperature": 0.8
+                  "temperature": 0.8,
+                  "maxOutputTokens": 12000
               }
           }
 
           url = (
               "https://generativelanguage.googleapis.com/"
-              "v1beta/models/"
-              "gemini-3.1-flash-lite:generateContent"
+              "v1beta/models/gemini-3.1-flash-lite:generateContent"
+              "?key=" + os.environ["GEMINI_API_KEY"]
           )
 
-          request = urllib.request.Request(
+          req = urllib.request.Request(
               url,
-              data=json.dumps(data).encode("utf-8"),
+              data=json.dumps(payload).encode("utf-8"),
               headers={
-                  "Content-Type": "application/json",
-                  "x-goog-api-key": api_key,
-                  "User-Agent":
-                      "youtube-shorts-automatico/1.0"
+                  "Content-Type": "application/json"
               },
               method="POST"
           )
 
           try:
-
-              print(
-                  "Enviando roteiro para Gemini..."
-              )
-
-              with urllib.request.urlopen(
-                  request,
-                  timeout=180
-              ) as response:
-
-                  resultado = json.load(
-                      response
-                  )
-
+              with urllib.request.urlopen(req, timeout=180) as response:
+                  resultado = json.loads(response.read().decode("utf-8"))
           except urllib.error.HTTPError as e:
-
-              print("ERRO DA API GEMINI")
-              print("Código:", e.code)
-
-              print(
-                  e.read().decode(
-                      "utf-8",
-                      errors="replace"
-                  )
-              )
-
+              print("Erro HTTP do Gemini:", e.code)
+              print(e.read().decode("utf-8", errors="ignore"))
               raise
 
-          try:
+          texto = (
+              resultado
+              .get("candidates", [{}])[0]
+              .get("content", {})
+              .get("parts", [{}])[0]
+              .get("text", "")
+          )
 
-              texto = (
-                  resultado
-                  ["candidates"]
-                  [0]
-                  ["content"]
-                  ["parts"]
-                  [0]
-                  ["text"]
-              )
+          if not texto:
+              raise RuntimeError("Gemini não retornou texto.")
 
-          except (KeyError, IndexError) as e:
+          with open("roteiro-gerado.txt", "w", encoding="utf-8") as f:
+              f.write(texto)
 
-              print(
-                  json.dumps(
-                      resultado,
-                      ensure_ascii=False,
-                      indent=2
-                  )
-              )
-
-              raise Exception(
-                  "Gemini não retornou texto utilizável."
-              ) from e
-
-          print("================================")
-          print("ROTEIRO GERADO")
-          print("================================")
           print(texto)
-          print("================================")
+          PY
 
-          linhas = [
-              linha.strip()
-              for linha in texto.splitlines()
-          ]
+      # ============================================================
+      # 5. INTERPRETAR ROTEIRO
+      # ============================================================
 
-          titulo = ""
-          descricao = ""
-          hashtags = ""
+      - name: Processar roteiro e metadata
+        run: |
+          python - <<'PY'
+          import json
+          import re
+
+          with open("roteiro-gerado.txt", encoding="utf-8") as f:
+              texto = f.read().strip()
+
+          titulo_match = re.search(
+              r"TITULO:\s*(.+)",
+              texto,
+              re.I
+          )
+
+          descricao_match = re.search(
+              r"DESCRICAO:\s*(.*?)(?=\nHASHTAGS:|\Z)",
+              texto,
+              re.I | re.S
+          )
+
+          hashtags_match = re.search(
+              r"HASHTAGS:\s*(.+)",
+              texto,
+              re.I
+          )
+
+          if not titulo_match:
+              raise RuntimeError("Título não encontrado.")
+
+          if not descricao_match:
+              raise RuntimeError("Descrição não encontrada.")
+
+          if not hashtags_match:
+              raise RuntimeError("Hashtags não encontradas.")
+
+          titulo = titulo_match.group(1).strip()
+          descricao = descricao_match.group(1).strip()
+          hashtags_texto = hashtags_match.group(1).strip()
+
+          if len(titulo) > 70:
+              titulo = titulo[:70].rstrip()
+
+          lista_hashtags = re.findall(
+              r"#[A-Za-zÀ-ÿ0-9_]+",
+              hashtags_texto
+          )
+
+          lista_hashtags = lista_hashtags[:5]
+
+          if len(lista_hashtags) != 5:
+              raise RuntimeError(
+                  f"Era necessário exatamente 5 hashtags. "
+                  f"Foram encontradas {len(lista_hashtags)}."
+              )
 
           cenas = []
 
-          cena_atual = None
-          texto_atual = []
-          busca_atual = ""
+          padrao_cena = re.compile(
+              r"CENA\s+(\d+)\s*"
+              r"TEXTO:\s*(.*?)\s*"
+              r"BUSCA:\s*(.*?)(?=\nCENA\s+\d+|\Z)",
+              re.I | re.S
+          )
 
-          for linha in linhas:
+          for m in padrao_cena.finditer(texto):
+              numero = int(m.group(1))
+              texto_cena = m.group(2).strip()
+              busca = m.group(3).strip()
 
-              if not linha:
-                  continue
-
-              u = linha.upper()
-
-              if u.startswith("TITULO:"):
-
-                  titulo = (
-                      linha[len("TITULO:"):]
-                      .strip()
-                  )
-
-              elif u.startswith("DESCRICAO:"):
-
-                  descricao = (
-                      linha[len("DESCRICAO:"):]
-                      .strip()
-                  )
-
-              elif u.startswith("HASHTAGS:"):
-
-                  hashtags = (
-                      linha[len("HASHTAGS:"):]
-                      .strip()
-                  )
-
-              elif u.startswith("CENA "):
-
-                  if cena_atual is not None:
-
-                      cenas.append(
-                          {
-                              "texto":
-                                  " ".join(
-                                      texto_atual
-                                  ).strip(),
-
-                              "busca":
-                                  busca_atual.strip()
-                          }
-                      )
-
-                  cena_atual = linha
-                  texto_atual = []
-                  busca_atual = ""
-
-              elif u.startswith("TEXTO:"):
-
-                  valor = (
-                      linha[len("TEXTO:"):]
-                      .strip()
-                  )
-
-                  if valor:
-                      texto_atual.append(
-                          valor
-                      )
-
-              elif u.startswith("BUSCA:"):
-
-                  busca_atual = (
-                      linha[len("BUSCA:"):]
-                      .strip()
-                  )
-
-          if cena_atual is not None:
-
-              cenas.append(
-                  {
-                      "texto":
-                          " ".join(
-                              texto_atual
-                          ).strip(),
-
-                      "busca":
-                          busca_atual.strip()
-                  }
+              texto_cena = re.sub(
+                  r"\s+",
+                  " ",
+                  texto_cena
               )
 
-          # ------------------------------------------
-          # Validações
-          # ------------------------------------------
-
-          if not titulo:
-              raise Exception(
-                  "Gemini não gerou TITULO."
+              busca = re.sub(
+                  r"\s+",
+                  " ",
+                  busca
               )
 
-          titulo = titulo[:70].rstrip()
+              if texto_cena and busca:
+                  cenas.append({
+                      "numero": numero,
+                      "texto": texto_cena,
+                      "busca": busca
+                  })
 
-          if not descricao:
-              raise Exception(
-                  "Gemini não gerou DESCRICAO."
+          config = {}
+
+          with open("config.txt", encoding="utf-8") as f:
+              for linha in f:
+                  if "=" in linha:
+                      k, v = linha.rstrip("\n").split("=", 1)
+                      config[k] = v
+
+          numero_cenas = int(config.get("CENAS", "6"))
+
+          if len(cenas) != numero_cenas:
+              raise RuntimeError(
+                  f"Esperadas {numero_cenas} cenas, "
+                  f"mas foram encontradas {len(cenas)}."
               )
 
-          lista_hashtags = [
-              h
-              for h in hashtags.split()
-              if h.startswith("#")
-          ]
+          cenas.sort(key=lambda x: x["numero"])
 
-          if len(lista_hashtags) != 5:
-
-              raise Exception(
-                  f"Gemini retornou "
-                  f"{len(lista_hashtags)} hashtags. "
-                  "Esperadas exatamente 5."
-              )
-
-          if len(cenas) != quantidade:
-
-              raise Exception(
-                  f"Gemini retornou "
-                  f"{len(cenas)} cenas. "
-                  f"Esperadas exatamente {quantidade}."
-              )
-
-          for i, cena in enumerate(
-              cenas,
-              1
-          ):
-
-              if not cena["texto"]:
-
-                  raise Exception(
-                      f"Cena {i} sem texto."
-                  )
-
-              if not cena["busca"]:
-
-                  raise Exception(
-                      f"Cena {i} sem busca."
-                  )
-
-          # ------------------------------------------
-          # Salvar cenas
-          # ------------------------------------------
-
-          with open(
-              "cenas.json",
-              "w",
-              encoding="utf-8"
-          ) as f:
-
+          with open("cenas.json", "w", encoding="utf-8") as f:
               json.dump(
                   cenas,
                   f,
@@ -725,18 +461,11 @@ jobs:
                   indent=2
               )
 
-          with open(
-              "roteiro.txt",
-              "w",
-              encoding="utf-8"
-          ) as f:
-
-              for cena in cenas:
-
-                  f.write(
-                      cena["texto"].strip()
-                      + "\n\n"
-                  )
+          # ========================================================
+          # CORREÇÃO IMPORTANTE:
+          # hashtags permanece como LISTA.
+          # NÃO usar " ".join(lista_hashtags) aqui.
+          # ========================================================
 
           with open(
               "youtube-metadata.json",
@@ -748,776 +477,529 @@ jobs:
                   {
                       "titulo": titulo,
                       "descricao": descricao,
-                      "hashtags":
-                          " ".join(
-                              lista_hashtags
-                          ),
-                      "tipo":
-                          tipo,
-                      "duracao_segundos":
-                          duracao
+                      "hashtags": lista_hashtags,
+                      "tipo": config.get("TIPO", "Short"),
+                      "duracao_segundos": int(
+                          config.get("DURACAO", "60")
+                      )
                   },
                   f,
                   ensure_ascii=False,
                   indent=2
               )
 
-          print("")
-          print("================================")
-          print("ROTEIRO VALIDADO")
-          print("================================")
-          print("Tipo:", tipo)
-          print("Duração:", duracao)
-          print("Cenas:", len(cenas))
+          with open("roteiro.txt", "w", encoding="utf-8") as f:
+              f.write(titulo + "\n\n")
+              f.write(descricao + "\n\n")
+              f.write(" ".join(lista_hashtags) + "\n\n")
+
+              for cena in cenas:
+                  f.write(
+                      f"CENA {cena['numero']}\n"
+                  )
+                  f.write(
+                      f"TEXTO: {cena['texto']}\n"
+                  )
+                  f.write(
+                      f"BUSCA: {cena['busca']}\n\n"
+                  )
+
           print("Título:", titulo)
+          print("Descrição:", descricao)
+          print("Hashtags:", lista_hashtags)
+          print("Quantidade de hashtags:", len(lista_hashtags))
+          print("Quantidade de cenas:", len(cenas))
+
+          print("\nMetadata gerado:")
           print(
-              "Hashtags:",
-              " ".join(lista_hashtags)
+              json.dumps(
+                  {
+                      "titulo": titulo,
+                      "descricao": descricao,
+                      "hashtags": lista_hashtags,
+                      "tipo": config.get("TIPO", "Short"),
+                      "duracao_segundos": int(
+                          config.get("DURACAO", "60")
+                      )
+                  },
+                  ensure_ascii=False,
+                  indent=2
+              )
           )
-          print("================================")
           PY
 
+      # ============================================================
+      # 6. BAIXAR VOZ PIPER
+      # ============================================================
 
-      # ==========================================
-      # 5. BAIXAR VOZ PIPER
-      # ==========================================
-
-      - name: Baixar voz Piper PT-BR
+      - name: Baixar voz Piper
         run: |
-          mkdir -p models
+          mkdir -p voz
 
-          wget -q --show-progress \
-            -O models/pt_BR-faber-medium.onnx \
-            "https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx"
+          wget -q \
+            -O voz/pt_BR-faber-medium.onnx \
+            https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx
 
-          wget -q --show-progress \
-            -O models/pt_BR-faber-medium.onnx.json \
-            "https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx.json"
+          wget -q \
+            -O voz/pt_BR-faber-medium.onnx.json \
+            https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx.json
 
-          test -s models/pt_BR-faber-medium.onnx
-          test -s models/pt_BR-faber-medium.onnx.json
+          ls -lh voz/
 
-          echo "Modelo Piper pronto."
-
-
-      # ==========================================
-      # 6. GERAR NARRAÇÃO
-      # ==========================================
+      # ============================================================
+      # 7. GERAR NARRAÇÕES
+      # ============================================================
 
       - name: Gerar narrações
         run: |
+          mkdir -p audios
+
           python - <<'PY'
           import json
           import subprocess
           import os
 
-          with open(
-              "cenas.json",
-              encoding="utf-8"
-          ) as f:
-
+          with open("cenas.json", encoding="utf-8") as f:
               cenas = json.load(f)
 
-          os.makedirs(
-              "audios",
-              exist_ok=True
-          )
+          for cena in cenas:
+              numero = cena["numero"]
+              texto = cena["texto"]
 
-          for i, cena in enumerate(
-              cenas,
-              1
-          ):
+              arquivo_txt = f"cena_{numero}.txt"
+              arquivo_audio = f"audios/cena_{numero}.wav"
 
-              arquivo = (
-                  f"audios/cena-{i:02d}.wav"
+              with open(
+                  arquivo_txt,
+                  "w",
+                  encoding="utf-8"
+              ) as f:
+                  f.write(texto)
+
+              comando = [
+                  "piper",
+                  "--model",
+                  "voz/pt_BR-faber-medium.onnx",
+                  "--config",
+                  "voz/pt_BR-faber-medium.onnx.json",
+                  "--input_file",
+                  arquivo_txt,
+                  "--output_file",
+                  arquivo_audio
+              ]
+
+              subprocess.run(
+                  comando,
+                  check=True
               )
-
-              processo = subprocess.run(
-                  [
-                      "python",
-                      "-m",
-                      "piper",
-                      "--model",
-                      "models/pt_BR-faber-medium.onnx",
-                      "--output_file",
-                      arquivo
-                  ],
-                  input=cena["texto"].strip(),
-                  text=True
-              )
-
-              if (
-                  processo.returncode != 0
-                  or not os.path.isfile(arquivo)
-                  or os.path.getsize(arquivo) == 0
-              ):
-
-                  raise Exception(
-                      f"Piper falhou na cena {i}."
-                  )
 
               print(
-                  f"Áudio da cena {i} pronto."
+                  f"Áudio da cena {numero} criado."
               )
-
-          print(
-              f"{len(cenas)} narrações prontas."
-          )
           PY
 
+          ls -lh audios/
 
-      # ==========================================
-      # 7. PEXELS
-      # ==========================================
+      # ============================================================
+      # 8. BUSCAR VÍDEOS NO PEXELS
+      # ============================================================
 
       - name: Buscar vídeos no Pexels
         env:
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
         run: |
+          mkdir -p videos
+
           python - <<'PY'
-          import os
           import json
-          import urllib.request
-          import urllib.error
+          import os
           import urllib.parse
+          import urllib.request
           import time
 
-          api_key = os.environ.get(
-              "PEXELS_API_KEY",
-              ""
-          ).strip()
-
-          if not api_key:
-              raise Exception(
-                  "PEXELS_API_KEY não foi encontrada."
-              )
-
-          with open(
-              "cenas.json",
-              encoding="utf-8"
-          ) as f:
-
+          with open("cenas.json", encoding="utf-8") as f:
               cenas = json.load(f)
 
-          os.makedirs(
-              "videos",
-              exist_ok=True
-          )
-
-          user_agent = (
-              "Mozilla/5.0 "
-              "(Windows NT 10.0; Win64; x64) "
-              "AppleWebKit/537.36 "
-              "(KHTML, like Gecko) "
-              "Chrome/120.0 Safari/537.36"
-          )
+          api_key = os.environ["PEXELS_API_KEY"]
 
           usados = set()
+          creditos = []
 
-          for indice, cena in enumerate(
-              cenas,
-              1
-          ):
+          for cena in cenas:
 
-              busca = cena["busca"].strip()
+              numero = cena["numero"]
+              busca = cena["busca"]
 
-              params = urllib.parse.urlencode(
-                  {
-                      "query": busca,
-                      "orientation": "portrait",
-                      "size": "medium",
-                      "per_page": 20
-                  }
-              )
+              params = urllib.parse.urlencode({
+                  "query": busca,
+                  "orientation": "portrait",
+                  "size": "medium",
+                  "per_page": 20
+              })
 
               url = (
-                  "https://api.pexels.com/v1/"
-                  "videos/search?"
+                  "https://api.pexels.com/videos/search?"
                   + params
               )
 
-              request = urllib.request.Request(
+              req = urllib.request.Request(
                   url,
                   headers={
                       "Authorization": api_key,
-                      "User-Agent": user_agent,
-                      "Accept": "application/json"
+                      "User-Agent": "Mozilla/5.0"
                   }
               )
 
-              resultado = None
-
-              for tentativa in range(1, 4):
-
-                  try:
-
-                      with urllib.request.urlopen(
-                          request,
-                          timeout=60
-                      ) as response:
-
-                          resultado = json.load(
-                              response
-                          )
-
-                      break
-
-                  except urllib.error.HTTPError as e:
-
-                      corpo = (
-                          e.read()
-                          .decode(
-                              "utf-8",
-                              errors="replace"
-                          )
-                      )
-
-                      print(
-                          f"Pexels HTTP {e.code}: "
-                          f"{corpo}"
-                      )
-
-                      if (
-                          e.code == 429
-                          and tentativa < 3
-                      ):
-
-                          time.sleep(10)
-                          continue
-
-                      raise
-
-              if not resultado:
-
-                  raise Exception(
-                      f"Pexels não respondeu "
-                      f"para cena {indice}."
-                  )
-
-              videos = resultado.get(
-                  "videos",
-                  []
-              )
-
-              if not videos:
-
-                  raise Exception(
-                      f"Nenhum vídeo encontrado "
-                      f"para: {busca}"
-                  )
-
-              escolhido = None
-
-              for somente_vertical in (
-                  True,
-                  False
-              ):
-
-                  for video in videos:
-
-                      video_id = video.get(
-                          "id"
-                      )
-
-                      if video_id in usados:
-                          continue
-
-                      for arquivo in video.get(
-                          "video_files",
-                          []
-                      ):
-
-                          largura = (
-                              arquivo.get(
-                                  "width"
-                              ) or 0
-                          )
-
-                          altura = (
-                              arquivo.get(
-                                  "height"
-                              ) or 0
-                          )
-
-                          link = arquivo.get(
-                              "link"
-                          )
-
-                          vertical = bool(
-                              altura
-                              and largura
-                              and altura > largura
-                          )
-
-                          if link and (
-                              (
-                                  somente_vertical
-                                  and vertical
-                              )
-                              or
-                              (
-                                  not somente_vertical
-                              )
-                          ):
-
-                              escolhido = {
-                                  "id": video_id,
-                                  "page": video.get(
-                                      "url",
-                                      ""
-                                  ),
-                                  "link": link
-                              }
-
-                              break
-
-                      if escolhido:
-                          break
-
-                  if escolhido:
-                      break
-
-              if not escolhido:
-
-                  raise Exception(
-                      f"Não foi possível escolher "
-                      f"vídeo para cena {indice}."
-                  )
-
-              usados.add(
-                  escolhido["id"]
-              )
-
-              arquivo_saida = (
-                  f"videos/cena-{indice:02d}.mp4"
-              )
-
-              download_request = (
-                  urllib.request.Request(
-                      escolhido["link"],
-                      headers={
-                          "User-Agent": user_agent,
-                          "Accept": "*/*"
-                      }
-                  )
+              print(
+                  f"Buscando vídeo para cena {numero}: {busca}"
               )
 
               with urllib.request.urlopen(
-                  download_request,
-                  timeout=180
+                  req,
+                  timeout=60
               ) as response:
-
-                  with open(
-                      arquivo_saida,
-                      "wb"
-                  ) as f:
-
-                      while True:
-
-                          bloco = response.read(
-                              1024 * 1024
-                          )
-
-                          if not bloco:
-                              break
-
-                          f.write(bloco)
-
-              if not os.path.getsize(
-                  arquivo_saida
-              ):
-
-                  raise Exception(
-                      f"Vídeo vazio na cena {indice}."
+                  dados = json.loads(
+                      response.read().decode("utf-8")
                   )
 
-              cena["pexels_id"] = (
-                  escolhido["id"]
+              videos = dados.get("videos", [])
+
+              escolhido = None
+
+              for video in videos:
+
+                  video_id = video.get("id")
+
+                  if video_id in usados:
+                      continue
+
+                  arquivos = video.get("video_files", [])
+
+                  arquivos_validos = [
+                      x for x in arquivos
+                      if x.get("link")
+                  ]
+
+                  if not arquivos_validos:
+                      continue
+
+                  escolhido = (
+                      video,
+                      arquivos_validos
+                  )
+
+                  break
+
+              if not escolhido:
+                  raise RuntimeError(
+                      f"Nenhum vídeo único encontrado "
+                      f"para a cena {numero}."
+                  )
+
+              video, arquivos = escolhido
+
+              usados.add(video["id"])
+
+              arquivos.sort(
+                  key=lambda x: (
+                      abs(
+                          (x.get("width", 1080) / max(
+                              x.get("height", 1920),
+                              1
+                          )) - (9 / 16)
+                      )
+                  )
               )
 
-              cena["pexels_page"] = (
-                  escolhido["page"]
+              link = arquivos[0]["link"]
+
+              arquivo_saida = (
+                  f"videos/cena_{numero}.mp4"
               )
 
-              print(
-                  f"Cena {indice}: vídeo "
-                  f"{escolhido['id']} baixado."
+              req_video = urllib.request.Request(
+                  link,
+                  headers={
+                      "User-Agent": "Mozilla/5.0"
+                  }
               )
 
-          with open(
-              "cenas.json",
-              "w",
-              encoding="utf-8"
-          ) as f:
+              with urllib.request.urlopen(
+                  req_video,
+                  timeout=120
+              ) as response, open(
+                  arquivo_saida,
+                  "wb"
+              ) as out:
+                  while True:
+                      bloco = response.read(1024 * 1024)
 
-              json.dump(
-                  cenas,
-                  f,
-                  ensure_ascii=False,
-                  indent=2
+                      if not bloco:
+                          break
+
+                      out.write(bloco)
+
+              creditos.append(
+                  f"Cena {numero}: "
+                  f"https://www.pexels.com/video/{video['id']}/"
               )
+
+              time.sleep(0.5)
 
           with open(
               "pexels-credit.txt",
               "w",
               encoding="utf-8"
           ) as f:
-
               f.write(
-                  "Vídeos utilizados:\n\n"
+                  "Vídeos utilizados via Pexels:\n\n"
+              )
+              f.write(
+                  "\n".join(creditos)
               )
 
-              for i, cena in enumerate(
-                  cenas,
-                  1
-              ):
-
-                  f.write(
-                      f"Cena {i}: "
-                      f"{cena.get('pexels_page', '')}\n"
-                  )
-
-          print(
-              f"{len(cenas)} vídeos baixados."
-          )
+          print("Vídeos baixados com sucesso.")
           PY
 
+          ls -lh videos/
 
-      # ==========================================
-      # 8. LEGENDAS E CLIPES
-      # ==========================================
+      # ============================================================
+      # 9. CRIAR LEGENDAS ASS
+      # ============================================================
 
-      - name: Criar legendas e clipes
+      - name: Criar legendas
         run: |
-          mkdir -p clips
-          mkdir -p subtitles
+          mkdir -p legendas
 
           python - <<'PY'
           import json
           import subprocess
-          import re
-          import textwrap
+          import wave
 
-          with open(
-              "cenas.json",
-              encoding="utf-8"
-          ) as f:
-
+          with open("cenas.json", encoding="utf-8") as f:
               cenas = json.load(f)
 
+          def duracao_audio(arquivo):
+              with wave.open(arquivo, "rb") as w:
+                  return w.getnframes() / w.getframerate()
+
           def ass_time(segundos):
+              segundos = max(0, segundos)
 
-              segundos = max(
-                  0.0,
-                  float(segundos)
-              )
-
-              horas = int(
-                  segundos // 3600
-              )
-
-              minutos = int(
-                  (segundos % 3600) // 60
-              )
-
-              seg = int(
-                  segundos % 60
-              )
-
-              cent = min(
-                  99,
-                  int(
-                      round(
-                          (
-                              segundos
-                              - int(segundos)
-                          ) * 100
-                      )
-                  )
-              )
+              h = int(segundos // 3600)
+              m = int((segundos % 3600) // 60)
+              s = int(segundos % 60)
+              cs = int((segundos - int(segundos)) * 100)
 
               return (
-                  f"{horas}:"
-                  f"{minutos:02d}:"
-                  f"{seg:02d}."
-                  f"{cent:02d}"
+                  f"{h}:{m:02d}:{s:02d}.{cs:02d}"
               )
 
-          def limpar_ass(texto):
+          inicio = 0.0
 
-              return (
-                  texto
-                  .replace("\\", "")
-                  .replace("{", "(")
-                  .replace("}", ")")
-                  .replace("\n", " ")
-                  .strip()
+          for cena in cenas:
+
+              numero = cena["numero"]
+
+              arquivo_audio = (
+                  f"audios/cena_{numero}.wav"
               )
 
-          for i, cena in enumerate(
-              cenas,
-              1
-          ):
-
-              texto = cena["texto"].strip()
-
-              audio = (
-                  f"audios/cena-{i:02d}.wav"
+              duracao = duracao_audio(
+                  arquivo_audio
               )
 
-              video = (
-                  f"videos/cena-{i:02d}.mp4"
+              fim = inicio + duracao
+
+              arquivo_ass = (
+                  f"legendas/cena_{numero}.ass"
               )
 
-              ass = (
-                  f"subtitles/cena-{i:02d}.ass"
+              texto = cena["texto"]
+
+              texto = texto.replace(
+                  "\n",
+                  " "
               )
 
-              clip = (
-                  f"clips/cena-{i:02d}.mp4"
-              )
+              conteudo = f"""[Script Info]
+          ScriptType: v4.00+
+          PlayResX: 1080
+          PlayResY: 1920
 
-              duracao = float(
-                  subprocess.check_output(
-                      [
-                          "ffprobe",
-                          "-v",
-                          "error",
-                          "-show_entries",
-                          "format=duration",
-                          "-of",
-                          "default=noprint_wrappers=1:nokey=1",
-                          audio
-                      ]
-                  ).decode().strip()
-              )
+          [V4+ Styles]
+          Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+          Style: Default,DejaVu Sans,52,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,3,2,2,60,60,260,1
 
-              frases = [
-                  x.strip()
-                  for x in re.split(
-                      r'(?<=[.!?])\s+',
-                      texto
-                  )
-                  if x.strip()
-              ]
-
-              if not frases:
-                  frases = [texto]
-
-              total_palavras = max(
-                  1,
-                  sum(
-                      len(x.split())
-                      for x in frases
-                  )
-              )
+          [Events]
+          Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+          Dialogue: 0,{ass_time(inicio)},{ass_time(fim)},Default,,0,0,0,,{texto}
+          """
 
               with open(
-                  ass,
+                  arquivo_ass,
                   "w",
                   encoding="utf-8"
               ) as f:
+                  f.write(conteudo)
 
-                  f.write(
-                      "[Script Info]\n"
-                      "ScriptType: v4.00+\n"
-                      "PlayResX: 1080\n"
-                      "PlayResY: 1920\n"
-                      "WrapStyle: 2\n"
-                      "ScaledBorderAndShadow: yes\n\n"
-                  )
+              inicio = fim
 
-                  f.write(
-                      "[V4+ Styles]\n"
-                  )
+          print("Legendas criadas.")
+          PY
 
-                  f.write(
-                      "Format: Name, Fontname, Fontsize, "
-                      "PrimaryColour, SecondaryColour, "
-                      "OutlineColour, BackColour, Bold, Italic, "
-                      "Underline, StrikeOut, ScaleX, ScaleY, "
-                      "Spacing, Angle, BorderStyle, Outline, "
-                      "Shadow, Alignment, MarginL, MarginR, "
-                      "MarginV, Encoding\n"
-                  )
+      # ============================================================
+      # 10. PREPARAR CLIPES
+      # ============================================================
 
-                  f.write(
-                      "Style: Default,DejaVu Sans,52,"
-                      "&H00FFFFFF,&H00FFFFFF,&H00000000,"
-                      "&H80000000,1,0,0,0,100,100,0,0,"
-                      "1,3,2,2,70,70,180,1\n\n"
-                  )
+      - name: Criar clipes individuais
+        run: |
+          mkdir -p clips
 
-                  f.write(
-                      "[Events]\n"
-                  )
+          python - <<'PY'
+          import json
+          import subprocess
+          import wave
+          import os
 
-                  f.write(
-                      "Format: Layer, Start, End, Style, "
-                      "Name, MarginL, MarginR, MarginV, "
-                      "Effect, Text\n"
-                  )
+          with open("cenas.json", encoding="utf-8") as f:
+              cenas = json.load(f)
 
-                  tempo = 0.0
+          def duracao_audio(path):
+              with wave.open(path, "rb") as w:
+                  return w.getnframes() / w.getframerate()
 
-                  for frase in frases:
+          for cena in cenas:
 
-                      palavras = max(
-                          1,
-                          len(frase.split())
-                      )
+              numero = cena["numero"]
 
-                      duracao_frase = (
-                          duracao
-                          * palavras
-                          / total_palavras
-                      )
+              audio = (
+                  f"audios/cena_{numero}.wav"
+              )
 
-                      inicio = tempo
+              video = (
+                  f"videos/cena_{numero}.mp4"
+              )
 
-                      fim = min(
-                          duracao,
-                          tempo + duracao_frase
-                      )
+              legenda = (
+                  f"legendas/cena_{numero}.ass"
+              )
 
-                      linhas = textwrap.wrap(
-                          limpar_ass(frase),
-                          width=28
-                      )
+              saida = (
+                  f"clips/cena_{numero}.mp4"
+              )
 
-                      texto_ass = (
-                          "\\N".join(linhas)
-                      )
+              duracao = duracao_audio(audio)
 
-                      f.write(
-                          f"Dialogue: 0,"
-                          f"{ass_time(inicio)},"
-                          f"{ass_time(fim)},"
-                          "Default,,0,0,0,0,,"
-                          f"{texto_ass}\n"
-                      )
+              filtro = (
+                  "scale=1080:1920:"
+                  "force_original_aspect_ratio=increase,"
+                  "crop=1080:1920,"
+                  f"subtitles={legenda}:"
+                  "force_style='FontName=DejaVu Sans,"
+                  "FontSize=52,"
+                  "PrimaryColour=&H00FFFFFF,"
+                  "OutlineColour=&H00000000,"
+                  "Outline=3,"
+                  "Shadow=2,"
+                  "Alignment=2,"
+                  "MarginV=260'"
+              )
 
-                      tempo = fim
+              comando = [
+                  "ffmpeg",
+                  "-y",
+                  "-stream_loop",
+                  "-1",
+                  "-i",
+                  video,
+                  "-t",
+                  str(duracao),
+                  "-vf",
+                  filtro,
+                  "-r",
+                  "30",
+                  "-c:v",
+                  "libx264",
+                  "-preset",
+                  "veryfast",
+                  "-pix_fmt",
+                  "yuv420p",
+                  saida
+              ]
 
               subprocess.run(
-                  [
-                      "ffmpeg",
-                      "-y",
-                      "-stream_loop",
-                      "-1",
-                      "-i",
-                      video,
-                      "-i",
-                      audio,
-                      "-vf",
-                      (
-                          "scale=1080:1920:"
-                          "force_original_aspect_ratio=increase,"
-                          "crop=1080:1920,"
-                          f"subtitles={ass}"
-                      ),
-                      "-map",
-                      "0:v:0",
-                      "-map",
-                      "1:a:0",
-                      "-t",
-                      f"{duracao:.3f}",
-                      "-c:v",
-                      "libx264",
-                      "-preset",
-                      "veryfast",
-                      "-crf",
-                      "23",
-                      "-pix_fmt",
-                      "yuv420p",
-                      "-r",
-                      "30",
-                      "-c:a",
-                      "aac",
-                      "-ar",
-                      "44100",
-                      "-ac",
-                      "2",
-                      "-b:a",
-                      "192k",
-                      "-movflags",
-                      "+faststart",
-                      clip
-                  ],
+                  comando,
                   check=True
               )
 
               print(
-                  f"Clip da cena {i} pronto."
+                  f"Clip {numero} criado."
               )
-
-          print(
-              f"{len(cenas)} clipes prontos."
-          )
           PY
 
+      # ============================================================
+      # 11. CRIAR TRANSIÇÕES ENTRE AS CENAS
+      # ============================================================
 
-      # ==========================================
-      # 9. MONTAR VÍDEO COM TRANSIÇÕES
-      # ==========================================
-
-      - name: Montar vídeo completo
+      - name: Criar vídeo com transições
         run: |
           python - <<'PY'
-          import subprocess
-          import os
           import json
+          import subprocess
 
-          with open(
-              "cenas.json",
-              encoding="utf-8"
-          ) as f:
-
+          with open("cenas.json", encoding="utf-8") as f:
               cenas = json.load(f)
 
-          quantidade = len(cenas)
-
-          clips = [
-              f"clips/cena-{i:02d}.mp4"
-              for i in range(
-                  1,
-                  quantidade + 1
-              )
+          arquivos = [
+              f"clips/cena_{c['numero']}.mp4"
+              for c in cenas
           ]
+
+          if len(arquivos) == 1:
+              subprocess.run(
+                  [
+                      "ffmpeg",
+                      "-y",
+                      "-i",
+                      arquivos[0],
+                      "-c",
+                      "copy",
+                      "video-sem-audio.mp4"
+                  ],
+                  check=True
+              )
+              raise SystemExit
+
+          inputs = []
+
+          for arquivo in arquivos:
+              inputs.extend([
+                  "-i",
+                  arquivo
+              ])
 
           duracoes = []
 
-          for clip in clips:
+          for arquivo in arquivos:
 
-              if not os.path.isfile(clip):
+              comando = [
+                  "ffprobe",
+                  "-v",
+                  "error",
+                  "-show_entries",
+                  "format=duration",
+                  "-of",
+                  "default=noprint_wrappers=1:nokey=1",
+                  arquivo
+              ]
 
-                  raise Exception(
-                      f"Clip não encontrado: {clip}"
-                  )
-
-              duracao = float(
-                  subprocess.check_output(
-                      [
-                          "ffprobe",
-                          "-v",
-                          "error",
-                          "-show_entries",
-                          "format=duration",
-                          "-of",
-                          "default=noprint_wrappers=1:nokey=1",
-                          clip
-                      ]
-                  ).decode().strip()
-              )
-
-              if duracao <= 0:
-
-                  raise Exception(
-                      f"Duração inválida: {clip}"
-                  )
+              resultado = subprocess.check_output(
+                  comando
+              ).decode().strip()
 
               duracoes.append(
-                  duracao
+                  float(resultado)
               )
 
           transicao = min(
@@ -1525,41 +1007,7 @@ jobs:
               min(duracoes) / 3.0
           )
 
-          if transicao < 0.05:
-
-              raise Exception(
-                  "Uma das cenas é curta demais "
-                  "para aplicar transição."
-              )
-
-          filtros = []
-
-          for i in range(
-              quantidade
-          ):
-
-              filtros.append(
-                  f"[{i}:v]"
-                  f"fps=30,"
-                  f"scale=1080:1920:"
-                  f"force_original_aspect_ratio=decrease,"
-                  f"pad=1080:1920:"
-                  f"(ow-iw)/2:(oh-ih)/2:"
-                  f"color=black,"
-                  f"format=yuv420p,"
-                  f"settb=AVTB,"
-                  f"setpts=PTS-STARTPTS"
-                  f"[v{i}]"
-              )
-
-          atual = "v0"
-
-          offset = (
-              duracoes[0]
-              - transicao
-          )
-
-          transicoes = [
+          tipos = [
               "fade",
               "smoothleft",
               "wiperight",
@@ -1567,38 +1015,46 @@ jobs:
               "circleopen"
           ]
 
-          for i in range(
-              1,
-              quantidade
-          ):
+          filtros = []
 
-              saida = f"x{i}"
+          acumulado = duracoes[0]
 
-              transicao_nome = (
-                  transicoes[
-                      (i - 1)
-                      % len(transicoes)
-                  ]
+          for i in range(1, len(arquivos)):
+
+              entrada_a = (
+                  "[0:v]" if i == 1
+                  else f"[v{i-1}]"
               )
+
+              entrada_b = (
+                  f"[{i}:v]"
+              )
+
+              saida = (
+                  f"[v{i}]"
+                  if i < len(arquivos) - 1
+                  else "[vfinal]"
+              )
+
+              offset = acumulado - transicao
+
+              tipo = tipos[
+                  (i - 1) % len(tipos)
+              ]
 
               filtros.append(
-                  f"[{atual}]"
-                  f"[v{i}]"
-                  f"xfade="
-                  f"transition={transicao_nome}:"
-                  f"duration={transicao:.3f}:"
-                  f"offset={offset:.3f}"
-                  f"[{saida}]"
+                  f"{entrada_a}{entrada_b}"
+                  f"xfade=transition={tipo}:"
+                  f"duration={transicao}:"
+                  f"offset={offset}"
+                  f"{saida}"
               )
 
-              atual = saida
-
-              offset += (
-                  duracoes[i]
-                  - transicao
+              acumulado += (
+                  duracoes[i] - transicao
               )
 
-          filtro_final = ";".join(
+          filtro_complexo = ";".join(
               filtros
           )
 
@@ -1607,82 +1063,47 @@ jobs:
               "-y"
           ]
 
-          for clip in clips:
+          comando.extend(inputs)
 
-              comando.extend(
-                  [
-                      "-i",
-                      clip
-                  ]
-              )
-
-          comando.extend(
-              [
-                  "-filter_complex",
-                  filtro_final,
-                  "-map",
-                  f"[{atual}]",
-                  "-an",
-                  "-c:v",
-                  "libx264",
-                  "-preset",
-                  "veryfast",
-                  "-crf",
-                  "23",
-                  "-pix_fmt",
-                  "yuv420p",
-                  "-r",
-                  "30",
-                  "-movflags",
-                  "+faststart",
-                  "video-completo.mp4"
-              ]
-          )
-
-          print(
-              "Montando vídeo com transições..."
-          )
+          comando.extend([
+              "-filter_complex",
+              filtro_complexo,
+              "-map",
+              "[vfinal]",
+              "-an",
+              "-c:v",
+              "libx264",
+              "-preset",
+              "veryfast",
+              "-pix_fmt",
+              "yuv420p",
+              "-r",
+              "30",
+              "video-sem-audio.mp4"
+          ])
 
           subprocess.run(
               comando,
               check=True
           )
 
-          if (
-              not os.path.isfile(
-                  "video-completo.mp4"
-              )
-              or
-              os.path.getsize(
-                  "video-completo.mp4"
-              ) == 0
-          ):
-
-              raise Exception(
-                  "video-completo.mp4 não foi criado."
-              )
-
           print(
-              "VÍDEO COMPLETO PRONTO"
+              "Vídeo com transições criado."
           )
           PY
 
-
-      # ==========================================
-      # 10. JUNTAR NARRAÇÕES
-      # ==========================================
+      # ============================================================
+      # 12. JUNTAR NARRAÇÕES
+      # ============================================================
 
       - name: Juntar narrações
         run: |
+          rm -f audios.txt
+
           python - <<'PY'
-          import subprocess
           import json
 
-          with open(
-              "cenas.json",
-              encoding="utf-8"
-          ) as f:
-
+          with open("cenas.json", encoding="utf-8") as f:
               cenas = json.load(f)
 
           with open(
@@ -1691,160 +1112,154 @@ jobs:
               encoding="utf-8"
           ) as f:
 
-              for i in range(
-                  1,
-                  len(cenas) + 1
-              ):
+              for cena in cenas:
+                  numero = cena["numero"]
 
                   f.write(
-                      f"file 'audios/cena-{i:02d}.wav'\n"
+                      f"file 'audios/cena_{numero}.wav'\n"
                   )
-
-          subprocess.run(
-              [
-                  "ffmpeg",
-                  "-y",
-                  "-f",
-                  "concat",
-                  "-safe",
-                  "0",
-                  "-i",
-                  "audios.txt",
-                  "-c:a",
-                  "pcm_s16le",
-                  "-ar",
-                  "44100",
-                  "-ac",
-                  "2",
-                  "narracao-completa.wav"
-              ],
-              check=True
-          )
-
-          print(
-              "Narração completa pronta."
-          )
           PY
 
+          ffmpeg \
+            -y \
+            -f concat \
+            -safe 0 \
+            -i audios.txt \
+            -c:a pcm_s16le \
+            narracao-final.wav
 
-      # ==========================================
-      # 11. CALCULAR DURAÇÃO REAL
-      # ==========================================
-
-      - name: Calcular duração final
-        run: |
-          DURACAO_REAL=$(
-            ffprobe \
-              -v error \
-              -show_entries format=duration \
-              -of default=noprint_wrappers=1:nokey=1 \
-              narracao-completa.wav
-          )
-
-          echo "Duração real da narração: $DURACAO_REAL"
-
-          python - <<PY
-          import os
-
-          valor = float(
-              "$DURACAO_REAL"
-          )
-
-          with open(
-              os.environ["GITHUB_ENV"],
-              "a"
-          ) as f:
-
-              f.write(
-                  f"DURACAO_REAL={valor:.3f}\n"
-              )
-          PY
-
-
-      # ==========================================
-      # 12. MÚSICA DE FUNDO
-      # ==========================================
+      # ============================================================
+      # 13. CRIAR MÚSICA DE FUNDO
+      # ============================================================
 
       - name: Criar música de fundo
         run: |
-          DURACAO_MUSICA="${DURACAO_REAL}"
+          DURACAO=$(ffprobe \
+            -v error \
+            -show_entries format=duration \
+            -of default=noprint_wrappers=1:nokey=1 \
+            narracao-final.wav)
 
-          ffmpeg -y \
+          ffmpeg \
+            -y \
             -f lavfi \
             -i "sine=frequency=220:sample_rate=44100" \
-            -f lavfi \
-            -i "sine=frequency=277.18:sample_rate=44100" \
-            -f lavfi \
-            -i "sine=frequency=329.63:sample_rate=44100" \
+            -t "$DURACAO" \
+            -c:a pcm_s16le \
+            musica-fundo.wav
+
+      # ============================================================
+      # 14. MIXAR NARRAÇÃO + MÚSICA
+      # ============================================================
+
+      - name: Mixar áudio final
+        run: |
+          ffmpeg \
+            -y \
+            -i narracao-final.wav \
+            -i musica-fundo.wav \
             -filter_complex \
-            "[0:a]volume=0.18[a0];[1:a]volume=0.12[a1];[2:a]volume=0.10[a2];[a0][a1][a2]amix=inputs=3:duration=longest,afade=t=in:st=0:d=2[m]" \
-            -t "$DURACAO_MUSICA" \
-            -map "[m]" \
-            -c:a libmp3lame \
-            -b:a 128k \
-            musica-background.mp3
+            "[1:a]volume=0.12[musica];[0:a][musica]amix=inputs=2:duration=first:dropout_transition=2[a]" \
+            -map "[a]" \
+            -c:a aac \
+            -b:a 192k \
+            audio-final.m4a
 
-          test -s musica-background.mp3
-
-          echo "Música de fundo pronta."
-
-
-      # ==========================================
-      # 13. CRIAR VÍDEO FINAL
-      # ==========================================
+      # ============================================================
+      # 15. JUNTAR VÍDEO + ÁUDIO
+      # ============================================================
 
       - name: Criar vídeo final
         run: |
-          ffmpeg -y \
-            -i video-completo.mp4 \
-            -i narracao-completa.wav \
-            -i musica-background.mp3 \
-            -filter_complex \
-            "[2:a]volume=0.12[musica];[1:a][musica]amix=inputs=2:duration=first:dropout_transition=2[audio]" \
+          ffmpeg \
+            -y \
+            -i video-sem-audio.mp4 \
+            -i audio-final.m4a \
             -map 0:v:0 \
-            -map "[audio]" \
+            -map 1:a:0 \
             -c:v copy \
             -c:a aac \
-            -ar 44100 \
-            -ac 2 \
             -b:a 192k \
             -shortest \
-            -movflags +faststart \
             short-final.mp4
 
-          test -s short-final.mp4
+      # ============================================================
+      # 16. VALIDAR ARQUIVOS
+      # ============================================================
+
+      - name: Validar resultado
+        run: |
+          test -f short-final.mp4
+          test -f youtube-metadata.json
+          test -f cenas.json
+          test -f roteiro.txt
+          test -f narracao-final.wav
+          test -f audio-final.m4a
+
+          echo "Vídeo:"
+          ls -lh short-final.mp4
 
           echo ""
-          echo "================================"
-          echo "VÍDEO FINALIZADO"
-          echo "================================"
+          echo "Metadata:"
+          cat youtube-metadata.json
 
-          ffprobe \
-            -v error \
-            -show_entries format=duration \
-            -show_entries stream=width,height,r_frame_rate \
-            -of default=noprint_wrappers=1 \
-            short-final.mp4
+          echo ""
+          echo "Cenas:"
+          cat cenas.json
 
+          echo ""
+          echo "Validação concluída."
 
-      # ==========================================
-      # 14. SALVAR ARTEFATO
-      # ==========================================
+      # ============================================================
+      # 17. CRIAR MINIATURA LOCAL
+      # ============================================================
 
-      - name: Salvar conteúdo gerado
+      - name: Criar thumbnail
+        run: |
+          ffmpeg \
+            -y \
+            -ss 1 \
+            -i short-final.mp4 \
+            -frames:v 1 \
+            -q:v 2 \
+            thumbnail.jpg
+
+          ls -lh thumbnail.jpg
+
+      # ============================================================
+      # 18. ORGANIZAR ARQUIVOS
+      # ============================================================
+
+      - name: Organizar resultado
+        run: |
+          mkdir -p resultado
+
+          cp short-final.mp4 resultado/
+          cp thumbnail.jpg resultado/
+          cp youtube-metadata.json resultado/
+          cp cenas.json resultado/
+          cp roteiro.txt resultado/
+          cp roteiro-gerado.txt resultado/
+          cp narracao-final.wav resultado/
+          cp audio-final.m4a resultado/
+          cp musica-fundo.wav resultado/
+          cp pexels-credit.txt resultado/
+
+          cp -r audios resultado/
+          cp -r videos resultado/
+          cp -r clips resultado/
+          cp -r legendas resultado/
+
+          echo "Arquivos finais:"
+          find resultado -maxdepth 2 -type f
+
+      # ============================================================
+      # 19. SALVAR ARTIFACT
+      # ============================================================
+
+      - name: Enviar resultado para próxima etapa
         uses: actions/upload-artifact@v4
         with:
           name: short-gerado
-          path: |
-            short-final.mp4
-            roteiro.txt
-            cenas.json
-            youtube-metadata.json
-            narracao-completa.wav
-            pexels-credit.txt
-            subtitles/
-            videos/
-            clips/
-            audios/
-            musica-background.mp3
-          if-no-files-found: error
+          path: resultado/
+          retention-days: 7
