@@ -1,0 +1,396 @@
+name: Gerar Thumbnail
+
+on:
+  workflow_run:
+    workflows: ["Publicar vídeo no YouTube"]
+    types:
+      - completed
+
+jobs:
+  thumbnail:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+      contents: read
+
+    steps:
+      - name: Baixar artefato da publicação
+        uses: actions/download-artifact@v4
+        with:
+          name: resultado-publicacao-youtube
+          path: resultado
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Verificar arquivos recebidos
+        run: |
+          echo "Arquivos recebidos:"
+          find resultado -maxdepth 3 -type f -print
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install pillow
+
+      - name: Gerar thumbnail
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python <<'PY'
+          import json
+          import os
+          import sys
+          import textwrap
+
+          from PIL import Image, ImageDraw, ImageFont, ImageFilter
+
+          METADATA_FILE = "resultado/youtube-metadata.json"
+          OUTPUT_FILE = "resultado/thumbnail.jpg"
+
+          if not os.path.exists(METADATA_FILE):
+              print("ERRO: youtube-metadata.json não encontrado.")
+              sys.exit(1)
+
+          with open(METADATA_FILE, "r", encoding="utf-8") as f:
+              metadata = json.load(f)
+
+          titulo = str(metadata.get("titulo", "")).strip()
+
+          if not titulo:
+              print("ERRO: título do vídeo não encontrado.")
+              sys.exit(1)
+
+          print(f"Título encontrado: {titulo}")
+
+          # ---------------------------------------------------------
+          # THUMBNAIL BASE
+          # ---------------------------------------------------------
+
+          largura = 1280
+          altura = 720
+
+          imagem = Image.new(
+              "RGB",
+              (largura, altura),
+              (18, 18, 22)
+          )
+
+          draw = ImageDraw.Draw(imagem)
+
+          # ---------------------------------------------------------
+          # FONTES
+          # ---------------------------------------------------------
+
+          fontes_possiveis = [
+              "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+              "/usr/share/fonts/truetype/liberation2/LiberationSans-Bold.ttf"
+          ]
+
+          fonte_path = None
+
+          for caminho in fontes_possiveis:
+              if os.path.exists(caminho):
+                  fonte_path = caminho
+                  break
+
+          if fonte_path is None:
+              print("ERRO: fonte não encontrada.")
+              sys.exit(1)
+
+          # ---------------------------------------------------------
+          # FUNÇÕES
+          # ---------------------------------------------------------
+
+          def fonte_tamanho(tamanho):
+              return ImageFont.truetype(fonte_path, tamanho)
+
+          def texto_com_contorno(
+              desenho,
+              posicao,
+              texto,
+              fonte,
+              fill="white",
+              stroke=8
+          ):
+              desenho.text(
+                  posicao,
+                  texto,
+                  font=fonte,
+                  fill=fill,
+                  stroke_width=stroke,
+                  stroke_fill="black"
+              )
+
+          # ---------------------------------------------------------
+          # FUNDO COM GRADIENTE
+          # ---------------------------------------------------------
+
+          pixels = imagem.load()
+
+          for y in range(altura):
+              progresso = y / altura
+
+              r = int(18 + 35 * progresso)
+              g = int(18 + 12 * progresso)
+              b = int(28 + 45 * progresso)
+
+              for x in range(largura):
+                  brilho = int(20 * (x / largura))
+
+                  pixels[x, y] = (
+                      min(255, r + brilho),
+                      min(255, g + brilho),
+                      min(255, b + brilho)
+                  )
+
+          draw = ImageDraw.Draw(imagem)
+
+          # ---------------------------------------------------------
+          # FAIXAS DECORATIVAS
+          # ---------------------------------------------------------
+
+          draw.rectangle(
+              (0, 0, largura, 18),
+              fill=(255, 255, 255)
+          )
+
+          draw.rectangle(
+              (0, altura - 18, largura, altura),
+              fill=(255, 255, 255)
+          )
+
+          # ---------------------------------------------------------
+          # TÍTULO
+          # ---------------------------------------------------------
+
+          # Remove excesso de espaços
+          titulo = " ".join(titulo.split())
+
+          # Evita thumbnails com texto exageradamente comprido
+          palavras = titulo.split()
+
+          linhas = []
+          linha_atual = ""
+
+          for palavra in palavras:
+              teste = (
+                  palavra
+                  if not linha_atual
+                  else linha_atual + " " + palavra
+              )
+
+              fonte_teste = fonte_tamanho(72)
+
+              largura_texto = draw.textbbox(
+                  (0, 0),
+                  teste,
+                  font=fonte_teste,
+                  stroke_width=4
+              )[2]
+
+              if largura_texto <= 1080:
+                  linha_atual = teste
+              else:
+                  if linha_atual:
+                      linhas.append(linha_atual)
+
+                  linha_atual = palavra
+
+          if linha_atual:
+              linhas.append(linha_atual)
+
+          # Limita a quantidade de linhas
+          if len(linhas) > 4:
+              linhas = linhas[:4]
+
+          # ---------------------------------------------------------
+          # TEXTO CENTRAL
+          # ---------------------------------------------------------
+
+          fonte = fonte_tamanho(72)
+
+          espacamento = 18
+
+          caixas = []
+
+          altura_total = 0
+
+          for linha in linhas:
+              caixa = draw.textbbox(
+                  (0, 0),
+                  linha,
+                  font=fonte,
+                  stroke_width=8
+              )
+
+              altura_linha = caixa[3] - caixa[1]
+
+              caixas.append((linha, caixa, altura_linha))
+
+              altura_total += altura_linha + espacamento
+
+          altura_total -= espacamento
+
+          y_inicial = (altura - altura_total) / 2
+
+          for linha, caixa, altura_linha in caixas:
+
+              largura_linha = caixa[2] - caixa[0]
+
+              x = (largura - largura_linha) / 2
+
+              texto_com_contorno(
+                  draw,
+                  (x, y_inicial),
+                  linha,
+                  fonte,
+                  fill="white",
+                  stroke=9
+              )
+
+              y_inicial += altura_linha + espacamento
+
+          # ---------------------------------------------------------
+          # IDENTIDADE
+          # ---------------------------------------------------------
+
+          fonte_menor = fonte_tamanho(30)
+
+          assinatura = "KARINA OS"
+
+          caixa = draw.textbbox(
+              (0, 0),
+              assinatura,
+              font=fonte_menor
+          )
+
+          largura_assinatura = caixa[2] - caixa[0]
+
+          draw.text(
+              (
+                  largura - largura_assinatura - 45,
+                  altura - 65
+              ),
+              assinatura,
+              font=fonte_menor,
+              fill="white"
+          )
+
+          # ---------------------------------------------------------
+          # ELEMENTOS VISUAIS
+          # ---------------------------------------------------------
+
+          # Círculos decorativos para dar profundidade
+          circulos = [
+              (100, 130, 260),
+              (1120, 160, 300),
+              (160, 610, 220),
+              (1100, 600, 250)
+          ]
+
+          camada = Image.new(
+              "RGBA",
+              (largura, altura),
+              (0, 0, 0, 0)
+          )
+
+          camada_draw = ImageDraw.Draw(camada)
+
+          for cx, cy, raio in circulos:
+              camada_draw.ellipse(
+                  (
+                      cx - raio,
+                      cy - raio,
+                      cx + raio,
+                      cy + raio
+                  ),
+                  fill=(255, 255, 255, 18)
+              )
+
+          camada = camada.filter(
+              ImageFilter.GaussianBlur(25)
+          )
+
+          imagem = Image.alpha_composite(
+              imagem.convert("RGBA"),
+              camada
+          ).convert("RGB")
+
+          # ---------------------------------------------------------
+          # REFORÇA O TEXTO POR CIMA
+          # ---------------------------------------------------------
+
+          draw = ImageDraw.Draw(imagem)
+
+          y_inicial = (altura - altura_total) / 2
+
+          for linha, caixa, altura_linha in caixas:
+
+              largura_linha = caixa[2] - caixa[0]
+
+              x = (largura - largura_linha) / 2
+
+              texto_com_contorno(
+                  draw,
+                  (x, y_inicial),
+                  linha,
+                  fonte,
+                  fill="white",
+                  stroke=9
+              )
+
+              y_inicial += altura_linha + espacamento
+
+          # ---------------------------------------------------------
+          # SALVAR
+          # ---------------------------------------------------------
+
+          imagem.save(
+              OUTPUT_FILE,
+              "JPEG",
+              quality=95,
+              optimize=True
+          )
+
+          print("Thumbnail criada com sucesso.")
+          print(f"Arquivo: {OUTPUT_FILE}")
+
+          # ---------------------------------------------------------
+          # VALIDAÇÃO
+          # ---------------------------------------------------------
+
+          teste = Image.open(OUTPUT_FILE)
+
+          if teste.size != (1280, 720):
+              print(
+                  f"ERRO: tamanho incorreto: {teste.size}"
+              )
+              sys.exit(1)
+
+          print(
+              f"Thumbnail validada: {teste.size[0]}x{teste.size[1]}"
+          )
+          PY
+
+      - name: Salvar thumbnail para download
+        uses: actions/upload-artifact@v4
+        with:
+          name: thumbnail-youtube
+          path: resultado/thumbnail.jpg
+          if-no-files-found: error
+
+      - name: Finalizar
+        run: |
+          echo "======================================"
+          echo "THUMBNAIL GERADA COM SUCESSO"
+          echo "======================================"
+          echo "Arquivo: thumbnail.jpg"
+          echo "Tamanho: 1280x720"
+          echo "A thumbnail está disponível como artefato."
