@@ -4,551 +4,1253 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Karina OS — Criador de Conteúdo</title>
+  <title>Karina OS</title>
 
   <style>
     * {
       box-sizing: border-box;
     }
 
+    :root {
+      --bg: #09090b;
+      --card: #141417;
+      --card2: #1b1b20;
+      --border: #29292f;
+      --text: #f7f7f8;
+      --muted: #9999a3;
+      --accent: #ffffff;
+      --accentText: #09090b;
+    }
+
+    html {
+      background: var(--bg);
+    }
+
     body {
       margin: 0;
-      padding: 20px;
-      background: #f4f4f4;
-      font-family: Arial, sans-serif;
-      color: #222;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top right, rgba(255,255,255,0.07), transparent 35%),
+        radial-gradient(circle at top left, rgba(255,255,255,0.04), transparent 30%),
+        var(--bg);
+      color: var(--text);
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+      padding-bottom: 90px;
     }
 
-    .container {
-      max-width: 650px;
-      margin: 0 auto;
-      background: white;
-      padding: 25px;
-      border-radius: 18px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    }
-
-    h1 {
-      text-align: center;
-      margin-top: 0;
-      margin-bottom: 8px;
-    }
-
-    .subtitulo {
-      text-align: center;
-      color: #666;
-      margin-bottom: 25px;
-    }
-
-    label {
-      display: block;
-      font-weight: bold;
-      margin-top: 18px;
-      margin-bottom: 8px;
-    }
-
+    button,
     input,
     select {
+      font: inherit;
+    }
+
+    button {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .app {
       width: 100%;
-      padding: 13px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      font-size: 16px;
-      background: white;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 18px 16px 30px;
     }
 
-    .tipo-container {
+    /* HEADER */
+
+    .topbar {
       display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
     }
 
-    .tipo-btn {
-      flex: 1;
-      padding: 14px 10px;
-      border: 2px solid #ddd;
-      border-radius: 12px;
-      background: white;
-      cursor: pointer;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: #fff;
+      color: #09090b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+      box-shadow: 0 8px 30px rgba(255,255,255,0.10);
+    }
+
+    .brand-name {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+    }
+
+    .brand-sub {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #72e6a0;
+      box-shadow: 0 0 12px rgba(114,230,160,0.6);
+    }
+
+    /* HERO */
+
+    .hero {
+      margin-bottom: 22px;
+    }
+
+    .hero h1 {
+      font-size: clamp(30px, 8vw, 46px);
+      line-height: 1.02;
+      letter-spacing: -1.8px;
+      margin: 0 0 10px;
+      font-weight: 850;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
       font-size: 15px;
-      font-weight: bold;
+      line-height: 1.5;
+      max-width: 540px;
     }
 
-    .tipo-btn.ativo {
-      border-color: #111;
-      background: #111;
-      color: white;
-    }
+    /* NAV CARDS */
 
-    .duracao-container {
+    .quick-nav {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 10px;
+      margin-bottom: 24px;
     }
 
-    .duracao-btn {
-      padding: 12px;
-      border: 2px solid #ddd;
-      border-radius: 10px;
-      background: white;
+    .nav-card {
+      border: 1px solid var(--border);
+      background: linear-gradient(145deg, #17171b, #111114);
+      border-radius: 18px;
+      padding: 16px;
+      color: var(--text);
+      text-align: left;
       cursor: pointer;
-      font-size: 15px;
+      transition: transform .15s ease, border-color .15s ease;
     }
 
-    .duracao-btn.ativo {
-      border-color: #111;
-      background: #111;
-      color: white;
+    .nav-card:active {
+      transform: scale(.98);
     }
 
-    .referencias {
-      margin-top: 10px;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      padding: 12px;
-      background: #fafafa;
+    .nav-card.principal {
+      border-color: #45454d;
+      background: linear-gradient(145deg, #242429, #141417);
     }
 
-    .referencia-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      margin: 12px 0;
+    .nav-icon {
+      font-size: 22px;
+      margin-bottom: 11px;
+    }
+
+    .nav-title {
       font-size: 14px;
+      font-weight: 800;
+    }
+
+    .nav-description {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 4px;
       line-height: 1.35;
-      font-weight: normal;
     }
 
-    .referencia-item input {
-      width: auto;
-      margin-top: 2px;
-      flex-shrink: 0;
+    /* SECTION */
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 26px 2px 12px;
     }
 
-    .referencia-descricao {
+    .section-title h2 {
+      margin: 0;
+      font-size: 17px;
+      letter-spacing: -.3px;
+    }
+
+    .section-title span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    /* FORM CARD */
+
+    .panel {
+      background: rgba(20,20,23,0.92);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.22);
+    }
+
+    .field {
+      margin-bottom: 19px;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    .field-label {
       display: block;
-      color: #777;
+      margin-bottom: 9px;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .field-help {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      min-height: 50px;
+      padding: 13px 14px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      outline: none;
+      color: var(--text);
+      background: #0e0e11;
+      font-size: 15px;
+      appearance: none;
+    }
+
+    input::placeholder {
+      color: #686871;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #686871;
+    }
+
+    /* TYPE */
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .choice {
+      min-height: 58px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: #0e0e11;
+      color: var(--text);
+      cursor: pointer;
+      text-align: left;
+      font-weight: 750;
+      transition: .15s ease;
+    }
+
+    .choice small {
+      display: block;
+      color: var(--muted);
+      font-weight: 400;
+      font-size: 10px;
+      margin-top: 4px;
+    }
+
+    .choice.ativo {
+      background: #fff;
+      color: #09090b;
+      border-color: #fff;
+    }
+
+    .choice.ativo small {
+      color: #55555d;
+    }
+
+    /* DURATION */
+
+    .duration-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .duration-btn {
+      min-height: 48px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: #0e0e11;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .duration-btn.ativo {
+      background: #fff;
+      color: #09090b;
+      border-color: #fff;
+    }
+
+    .custom-duration {
+      width: 100%;
+      margin-top: 8px;
+      min-height: 46px;
+      border: 1px dashed #44444b;
+      border-radius: 13px;
+      background: transparent;
+      color: #d7d7dc;
+      cursor: pointer;
       font-size: 12px;
-      margin-top: 3px;
-      font-weight: normal;
-    }
-
-    .intensidade {
-      margin-top: 15px;
-      padding: 14px;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      background: #fafafa;
-    }
-
-    .intensidade label {
-      margin-top: 0;
-    }
-
-    .aviso {
-      margin-top: 10px;
-      padding: 12px;
-      background: #fff7df;
-      border-radius: 10px;
-      font-size: 13px;
-      color: #665300;
-      line-height: 1.45;
-    }
-
-    .aviso-originalidade {
-      margin-top: 10px;
-      padding: 12px;
-      background: #eef7ff;
-      border-radius: 10px;
-      font-size: 13px;
-      color: #174a70;
-      line-height: 1.45;
     }
 
     #duracaoPersonalizada {
       display: none;
-      margin-top: 10px;
+      margin-top: 9px;
     }
 
-    button.criar {
-      width: 100%;
-      margin-top: 25px;
-      padding: 16px;
-      border: none;
-      border-radius: 12px;
-      background: #111;
-      color: white;
-      font-size: 17px;
-      font-weight: bold;
+    /* REFERENCES */
+
+    .references-box {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #0e0e11;
+      overflow: hidden;
+    }
+
+    .reference-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      padding: 13px;
+      border-bottom: 1px solid #24242a;
       cursor: pointer;
     }
 
-    button.criar:hover {
-      opacity: 0.9;
+    .reference-item:last-child {
+      border-bottom: none;
     }
 
-    .info {
-      margin-top: 18px;
-      padding: 14px;
-      background: #f2f2f2;
-      border-radius: 10px;
+    .reference-item input {
+      width: 18px;
+      height: 18px;
+      margin: 1px 0 0;
+      accent-color: white;
+      flex-shrink: 0;
+    }
+
+    .reference-name {
+      display: block;
       font-size: 13px;
+      font-weight: 750;
+    }
+
+    .reference-description {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.4;
+    }
+
+    /* NOTICE */
+
+    .notice {
+      padding: 13px;
+      margin-top: 12px;
+      border: 1px solid #303039;
+      border-radius: 14px;
+      background: #111116;
+      color: #bdbdc5;
+      font-size: 11px;
       line-height: 1.5;
+    }
+
+    .notice strong {
+      color: #fff;
+    }
+
+    .notice.blue {
+      border-color: #24394a;
+      background: #10171d;
+      color: #a9c3d5;
+    }
+
+    /* CREATE */
+
+    .create-button {
+      width: 100%;
+      min-height: 58px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 17px;
+      background: #fff;
+      color: #09090b;
+      font-size: 15px;
+      font-weight: 850;
+      cursor: pointer;
+      box-shadow: 0 12px 35px rgba(255,255,255,0.10);
+      transition: transform .15s ease;
+    }
+
+    .create-button:active {
+      transform: scale(.985);
+    }
+
+    /* INFO */
+
+    .how-card {
+      margin-top: 14px;
+      padding: 17px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: #111114;
+    }
+
+    .how-title {
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .step {
+      display: flex;
+      gap: 10px;
+      margin: 9px 0;
+      color: #b0b0b8;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .step-number {
+      width: 22px;
+      height: 22px;
+      border-radius: 8px;
+      background: #222228;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    /* BOTTOM NAV */
+
+    .bottom-nav {
+      position: fixed;
+      z-index: 100;
+      left: 50%;
+      bottom: 12px;
+      transform: translateX(-50%);
+      width: calc(100% - 24px);
+      max-width: 700px;
+      min-height: 66px;
+      padding: 7px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      background: rgba(22,22,26,0.94);
+      border: 1px solid #303038;
+      border-radius: 20px;
+      backdrop-filter: blur(18px);
+      box-shadow: 0 15px 50px rgba(0,0,0,0.45);
+    }
+
+    .bottom-item {
+      border: none;
+      border-radius: 14px;
+      background: transparent;
+      color: #85858e;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 650;
+    }
+
+    .bottom-item span {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 3px;
+    }
+
+    .bottom-item.ativo {
+      background: #fff;
+      color: #09090b;
+    }
+
+    /* PLACEHOLDER SECTIONS */
+
+    .future {
+      display: none;
+    }
+
+    .future-card {
+      padding: 25px 18px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: #111114;
+      text-align: center;
+    }
+
+    .future-card .big {
+      font-size: 35px;
+      margin-bottom: 10px;
+    }
+
+    .future-card h2 {
+      margin: 0 0 8px;
+      font-size: 19px;
+    }
+
+    .future-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (min-width: 700px) {
+      .quick-nav {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .nav-card {
+        min-height: 135px;
+      }
+
+      .duration-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <div class="container">
+<div class="app">
 
-    <h1>🎬 Karina OS</h1>
+  <!-- HEADER -->
 
-    <div class="subtitulo">
-      Criador automático de conteúdo
-    </div>
+  <header class="topbar">
 
+    <div class="brand">
 
-    <label>Tipo de conteúdo</label>
+      <div class="brand-icon">✦</div>
 
-    <div class="tipo-container">
-
-      <button
-        type="button"
-        id="btnShort"
-        class="tipo-btn ativo"
-        onclick="selecionarTipo('Short')">
-        📱 Short
-      </button>
-
-      <button
-        type="button"
-        id="btnLongo"
-        class="tipo-btn"
-        onclick="selecionarTipo('Vídeo Longo')">
-        🎥 Vídeo longo
-      </button>
+      <div>
+        <div class="brand-name">Karina OS</div>
+        <div class="brand-sub">Criador de Conteúdo</div>
+      </div>
 
     </div>
 
+    <div class="status-dot" title="Sistema ativo"></div>
 
-    <label>Tema do vídeo</label>
-
-    <input
-      type="text"
-      id="tema"
-      placeholder="Ex.: 7 animais que parecem inventados">
+  </header>
 
 
-    <label>Duração</label>
+  <!-- HOME -->
 
-    <div id="duracoesShort" class="duracao-container">
+  <main id="homeSection">
 
-      <button
-        type="button"
-        class="duracao-btn"
-        onclick="selecionarDuracao('30 segundos', this)">
-        30 segundos
+    <section class="hero">
+
+      <h1>Crie.<br>Publique.<br>Repita.</h1>
+
+      <p>
+        Seu estúdio automático para transformar uma ideia
+        em conteúdo pronto para o YouTube.
+      </p>
+
+    </section>
+
+
+    <section class="quick-nav">
+
+      <button class="nav-card principal" onclick="irParaCriacao('Short')">
+
+        <div class="nav-icon">🎬</div>
+
+        <div class="nav-title">
+          Criar Short
+        </div>
+
+        <div class="nav-description">
+          Vídeos verticais rápidos
+        </div>
+
       </button>
 
-      <button
-        type="button"
-        class="duracao-btn ativo"
-        onclick="selecionarDuracao('45 segundos', this)">
-        45 segundos
+
+      <button class="nav-card" onclick="irParaCriacao('Vídeo Longo')">
+
+        <div class="nav-icon">📺</div>
+
+        <div class="nav-title">
+          Vídeo longo
+        </div>
+
+        <div class="nav-description">
+          Conteúdo completo
+        </div>
+
       </button>
 
-      <button
-        type="button"
-        class="duracao-btn"
-        onclick="selecionarDuracao('60 segundos', this)">
-        60 segundos
+
+      <button class="nav-card" onclick="mostrarFuturo('thumbnail')">
+
+        <div class="nav-icon">🖼️</div>
+
+        <div class="nav-title">
+          Thumbnail
+        </div>
+
+        <div class="nav-description">
+          Criador visual
+        </div>
+
       </button>
 
-      <button
-        type="button"
-        class="duracao-btn"
-        onclick="selecionarDuracao('90 segundos', this)">
-        90 segundos
+
+      <button class="nav-card" onclick="mostrarFuturo('videos')">
+
+        <div class="nav-icon">📚</div>
+
+        <div class="nav-title">
+          Meus vídeos
+        </div>
+
+        <div class="nav-description">
+          Histórico e resultados
+        </div>
+
       </button>
+
+    </section>
+
+
+    <div class="section-title">
+
+      <h2>🎬 Novo conteúdo</h2>
+
+      <span>CONFIGURAÇÃO</span>
 
     </div>
 
 
-    <div
-      id="duracoesLongo"
-      class="duracao-container"
-      style="display:none;">
+    <!-- FORM -->
 
-      <button
-        type="button"
-        class="duracao-btn"
-        onclick="selecionarDuracao('5 minutos', this)">
-        5 minutos
-      </button>
+    <section class="panel">
 
-      <button
-        type="button"
-        class="duracao-btn"
-        onclick="selecionarDuracao('8 minutos', this)">
-        8 minutos
-      </button>
+      <!-- TYPE -->
 
-      <button
-        type="button"
-        class="duracao-btn ativo"
-        onclick="selecionarDuracao('10 minutos', this)">
-        10 minutos
-      </button>
+      <div class="field">
 
-      <button
-        type="button"
-        class="duracao-btn"
-        onclick="selecionarDuracao('15 minutos', this)">
-        15 minutos
-      </button>
+        <label class="field-label">
+          Tipo de conteúdo
+        </label>
 
-    </div>
+        <div class="choice-grid">
+
+          <button
+            type="button"
+            id="btnShort"
+            class="choice ativo"
+            onclick="selecionarTipo('Short')">
+
+            📱 Short
+
+            <small>
+              Vertical • 30–90s
+            </small>
+
+          </button>
 
 
-    <button
-      type="button"
-      class="duracao-btn"
-      style="width:100%; margin-top:10px;"
-      onclick="mostrarPersonalizada()">
-      ⏱️ Duração personalizada
-    </button>
+          <button
+            type="button"
+            id="btnLongo"
+            class="choice"
+            onclick="selecionarTipo('Vídeo Longo')">
+
+            📺 Vídeo longo
+
+            <small>
+              Horizontal • 5–15min
+            </small>
+
+          </button>
+
+        </div>
+
+      </div>
 
 
-    <input
-      type="number"
-      id="duracaoPersonalizada"
-      min="10"
-      max="3600"
-      placeholder="Digite a duração em segundos">
+      <!-- THEME -->
 
+      <div class="field">
 
-    <label>Estilo</label>
-
-    <select id="estilo">
-
-      <option>Curiosidades</option>
-      <option>Mistério</option>
-      <option>História</option>
-      <option>Motivacional</option>
-      <option>Notícias</option>
-      <option>Fatos surpreendentes</option>
-
-    </select>
-
-
-    <label>Voz</label>
-
-    <select id="voz">
-
-      <option>Feminina</option>
-      <option>Masculina</option>
-      <option>Automática</option>
-
-    </select>
-
-
-    <label>Idioma</label>
-
-    <select id="idioma">
-
-      <option>Português brasileiro</option>
-      <option>English</option>
-      <option>Español</option>
-
-    </select>
-
-
-    <label>Estilo visual</label>
-
-    <select id="visual">
-
-      <option>Realista</option>
-      <option>Cinematográfico</option>
-      <option>Documentário</option>
-      <option>Notícias</option>
-      <option>Rápido</option>
-      <option>Viral</option>
-
-    </select>
-
-
-    <label>📚 Canais de referência</label>
-
-    <div class="referencias">
-
-      <label class="referencia-item">
+        <label class="field-label">
+          Tema do vídeo
+        </label>
 
         <input
-          type="checkbox"
-          value="Animais pelo Mundo">
+          type="text"
+          id="tema"
+          placeholder="Ex.: 7 animais que parecem inventados">
 
-        <span>
-          <strong>Animais pelo Mundo</strong>
-          <span class="referencia-descricao">
-            Curiosidades sobre animais, comportamento e narrativa visual.
-          </span>
+        <span class="field-help">
+          Escreva apenas a ideia. O sistema cuida do restante.
         </span>
 
-      </label>
+      </div>
 
 
-      <label class="referencia-item">
+      <!-- DURATION -->
+
+      <div class="field">
+
+        <label class="field-label">
+          Duração
+        </label>
+
+
+        <div
+          id="duracoesShort"
+          class="duration-grid">
+
+          <button
+            type="button"
+            class="duration-btn"
+            onclick="selecionarDuracao('30 segundos', this)">
+            30s
+          </button>
+
+          <button
+            type="button"
+            class="duration-btn ativo"
+            onclick="selecionarDuracao('45 segundos', this)">
+            45s
+          </button>
+
+          <button
+            type="button"
+            class="duration-btn"
+            onclick="selecionarDuracao('60 segundos', this)">
+            60s
+          </button>
+
+          <button
+            type="button"
+            class="duration-btn"
+            onclick="selecionarDuracao('90 segundos', this)">
+            90s
+          </button>
+
+        </div>
+
+
+        <div
+          id="duracoesLongo"
+          class="duration-grid"
+          style="display:none;">
+
+          <button
+            type="button"
+            class="duration-btn"
+            onclick="selecionarDuracao('5 minutos', this)">
+            5 min
+          </button>
+
+          <button
+            type="button"
+            class="duration-btn"
+            onclick="selecionarDuracao('8 minutos', this)">
+            8 min
+          </button>
+
+          <button
+            type="button"
+            class="duration-btn ativo"
+            onclick="selecionarDuracao('10 minutos', this)">
+            10 min
+          </button>
+
+          <button
+            type="button"
+            class="duration-btn"
+            onclick="selecionarDuracao('15 minutos', this)">
+            15 min
+          </button>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="custom-duration"
+          onclick="mostrarPersonalizada()">
+
+          ⏱️ Usar duração personalizada
+
+        </button>
+
 
         <input
-          type="checkbox"
-          value="Papo de Biólogo">
+          type="number"
+          id="duracaoPersonalizada"
+          min="10"
+          max="3600"
+          placeholder="Duração em segundos — 10 a 3600">
 
-        <span>
-          <strong>Papo de Biólogo</strong>
-          <span class="referencia-descricao">
-            Explicação científica, contexto e informações biológicas.
-          </span>
-        </span>
-
-      </label>
+      </div>
 
 
-      <label class="referencia-item">
+      <!-- STYLE -->
 
-        <input
-          type="checkbox"
-          value="Ciência Todo Dia">
+      <div class="field">
 
-        <span>
-          <strong>Ciência Todo Dia</strong>
-          <span class="referencia-descricao">
-            Raciocínio científico, explicações claras e construção de ideias.
-          </span>
-        </span>
+        <label class="field-label">
+          Estilo editorial
+        </label>
 
-      </label>
+        <select id="estilo">
 
+          <option>Curiosidades</option>
+          <option>Mistério</option>
+          <option>História</option>
+          <option>Motivacional</option>
+          <option>Notícias</option>
+          <option>Fatos surpreendentes</option>
 
-      <label class="referencia-item">
+        </select>
 
-        <input
-          type="checkbox"
-          value="Manual do Mundo">
-
-        <span>
-          <strong>Manual do Mundo</strong>
-          <span class="referencia-descricao">
-            Demonstrações, exemplos, explicações acessíveis e didáticas.
-          </span>
-        </span>
-
-      </label>
+      </div>
 
 
-      <label class="referencia-item">
+      <!-- VOICE -->
 
-        <input
-          type="checkbox"
-          value="Tá Curioso?">
+      <div class="field">
 
-        <span>
-          <strong>Tá Curioso?</strong>
-          <span class="referencia-descricao">
-            Perguntas, curiosidades, ritmo e descoberta.
-          </span>
-        </span>
+        <label class="field-label">
+          Voz
+        </label>
 
-      </label>
+        <select id="voz">
+
+          <option>Feminina</option>
+          <option>Masculina</option>
+          <option>Automática</option>
+
+        </select>
+
+      </div>
 
 
-      <label class="referencia-item">
+      <!-- LANGUAGE -->
 
-        <input
-          type="checkbox"
-          value="Minutos Psíquicos">
+      <div class="field">
 
-        <span>
-          <strong>Minutos Psíquicos</strong>
-          <span class="referencia-descricao">
-            Comportamento, psicologia, narrativa e explicações envolventes.
-          </span>
-        </span>
+        <label class="field-label">
+          Idioma
+        </label>
 
-      </label>
+        <select id="idioma">
+
+          <option>Português brasileiro</option>
+          <option>English</option>
+          <option>Español</option>
+
+        </select>
+
+      </div>
+
+
+      <!-- VISUAL -->
+
+      <div class="field">
+
+        <label class="field-label">
+          Estilo visual
+        </label>
+
+        <select id="visual">
+
+          <option>Realista</option>
+          <option>Cinematográfico</option>
+          <option>Documentário</option>
+          <option>Notícias</option>
+          <option>Rápido</option>
+          <option>Viral</option>
+
+        </select>
+
+      </div>
+
+
+      <!-- REFERENCES -->
+
+      <div class="field">
+
+        <label class="field-label">
+          📚 Canais de referência
+        </label>
+
+        <div class="references-box">
+
+
+          <label class="reference-item">
+
+            <input
+              type="checkbox"
+              value="Animais pelo Mundo">
+
+            <span>
+
+              <span class="reference-name">
+                Animais pelo Mundo
+              </span>
+
+              <span class="reference-description">
+                Curiosidades sobre animais, comportamento e narrativa visual.
+              </span>
+
+            </span>
+
+          </label>
+
+
+          <label class="reference-item">
+
+            <input
+              type="checkbox"
+              value="Papo de Biólogo">
+
+            <span>
+
+              <span class="reference-name">
+                Papo de Biólogo
+              </span>
+
+              <span class="reference-description">
+                Explicação científica, contexto e informações biológicas.
+              </span>
+
+            </span>
+
+          </label>
+
+
+          <label class="reference-item">
+
+            <input
+              type="checkbox"
+              value="Ciência Todo Dia">
+
+            <span>
+
+              <span class="reference-name">
+                Ciência Todo Dia
+              </span>
+
+              <span class="reference-description">
+                Raciocínio científico, explicações claras e construção de ideias.
+              </span>
+
+            </span>
+
+          </label>
+
+
+          <label class="reference-item">
+
+            <input
+              type="checkbox"
+              value="Manual do Mundo">
+
+            <span>
+
+              <span class="reference-name">
+                Manual do Mundo
+              </span>
+
+              <span class="reference-description">
+                Demonstrações, exemplos, explicações acessíveis e didáticas.
+              </span>
+
+            </span>
+
+          </label>
+
+
+          <label class="reference-item">
+
+            <input
+              type="checkbox"
+              value="Tá Curioso?">
+
+            <span>
+
+              <span class="reference-name">
+                Tá Curioso?
+              </span>
+
+              <span class="reference-description">
+                Perguntas, curiosidades, ritmo e descoberta.
+              </span>
+
+            </span>
+
+          </label>
+
+
+          <label class="reference-item">
+
+            <input
+              type="checkbox"
+              value="Minutos Psíquicos">
+
+            <span>
+
+              <span class="reference-name">
+                Minutos Psíquicos
+              </span>
+
+              <span class="reference-description">
+                Comportamento, psicologia, narrativa e explicações envolventes.
+              </span>
+
+            </span>
+
+          </label>
+
+        </div>
+
+      </div>
+
+
+      <!-- INTENSITY -->
+
+      <div class="field">
+
+        <label class="field-label">
+          🎯 Intensidade das referências
+        </label>
+
+        <select id="intensidade">
+
+          <option value="Leve">
+            Leve — apenas orientação geral
+          </option>
+
+          <option value="Equilibrada" selected>
+            Equilibrada — estrutura, ritmo e abordagem
+          </option>
+
+          <option value="Forte">
+            Forte — influência editorial mais presente
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="notice">
+
+        💡 As referências funcionam somente como
+        <strong>orientação editorial</strong> de estrutura,
+        ritmo, abordagem, linguagem e narrativa.
+
+      </div>
+
+
+      <div class="notice blue">
+
+        🛡️ <strong>Conteúdo original:</strong>
+        nenhuma frase, roteiro, título, exemplo específico
+        ou sequência identificável deve ser copiada.
+
+      </div>
+
+
+      <!-- CREATE -->
+
+      <button
+        type="button"
+        class="create-button"
+        onclick="enviar()">
+
+        🚀 CRIAR CONTEÚDO
+
+      </button>
+
+    </section>
+
+
+    <!-- HOW IT WORKS -->
+
+    <section class="how-card">
+
+      <div class="how-title">
+        ⚙️ O que acontece depois?
+      </div>
+
+
+      <div class="step">
+
+        <div class="step-number">1</div>
+
+        <div>
+          Seu pedido entra automaticamente no sistema.
+        </div>
+
+      </div>
+
+
+      <div class="step">
+
+        <div class="step-number">2</div>
+
+        <div>
+          A IA cria roteiro, título, descrição e estrutura.
+        </div>
+
+      </div>
+
+
+      <div class="step">
+
+        <div class="step-number">3</div>
+
+        <div>
+          A narração e os visuais são preparados.
+        </div>
+
+      </div>
+
+
+      <div class="step">
+
+        <div class="step-number">4</div>
+
+        <div>
+          O vídeo é editado automaticamente.
+        </div>
+
+      </div>
+
+
+      <div class="step">
+
+        <div class="step-number">5</div>
+
+        <div>
+          O resultado fica pronto para o YouTube.
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- FUTURE -->
+
+  <section id="futureSection" class="future">
+
+    <div class="future-card">
+
+      <div id="futureIcon" class="big">🖼️</div>
+
+      <h2 id="futureTitle">
+        Criador de Thumbnail
+      </h2>
+
+      <p id="futureText">
+        Esta área será nosso gerador automático de thumbnails.
+        Vamos construir uma solução visual forte e gratuita.
+      </p>
 
     </div>
 
+  </section>
 
-    <div class="intensidade">
-
-      <label>🎯 Intensidade das referências</label>
-
-      <select id="intensidade">
-
-        <option value="Leve">
-          Leve — apenas orientação geral
-        </option>
-
-        <option value="Equilibrada" selected>
-          Equilibrada — orientação de estrutura, ritmo e abordagem
-        </option>
-
-        <option value="Forte">
-          Forte — influência editorial mais presente
-        </option>
-
-      </select>
-
-    </div>
+</div>
 
 
-    <div class="aviso">
+<!-- BOTTOM NAV -->
 
-      💡 As referências funcionam como orientação editorial.
-      O sistema pode usar características gerais de estrutura,
-      ritmo, abordagem, linguagem e narrativa associadas às
-      referências selecionadas.
+<nav class="bottom-nav">
 
-    </div>
+  <button
+    class="bottom-item ativo"
+    onclick="voltarInicio()">
 
+    <span>⌂</span>
+    Início
 
-    <div class="aviso-originalidade">
-
-      🛡️ <strong>Conteúdo original:</strong>
-      as referências NÃO devem ser usadas para copiar frases,
-      roteiros, títulos, textos, exemplos específicos ou sequências
-      identificáveis. O conteúdo final deve ser novo e original,
-      apenas inspirado em características editoriais gerais.
-
-    </div>
+  </button>
 
 
-    <button
-      type="button"
-      class="criar"
-      onclick="enviar()">
-      🚀 CRIAR CONTEÚDO
-    </button>
+  <button
+    class="bottom-item"
+    onclick="irParaCriacao('Short')">
+
+    <span>🎬</span>
+    Criar
+
+  </button>
 
 
-    <div class="info">
+  <button
+    class="bottom-item"
+    onclick="mostrarFuturo('thumbnail')">
 
-      <strong>Como funciona:</strong><br><br>
+    <span>🖼️</span>
+    Thumbnail
 
-      Você escolhe o tema e as características do vídeo.
-      O pedido será enviado automaticamente para o sistema
-      de produção através de uma Issue do GitHub.
+  </button>
 
-      <br><br>
 
-      O sistema utiliza essas informações para criar o roteiro,
-      selecionar os visuais, gerar a narração e montar o vídeo
-      automaticamente.
+  <button
+    class="bottom-item"
+    onclick="mostrarFuturo('videos')">
 
-    </div>
+    <span>📚</span>
+    Vídeos
 
-  </div>
+  </button>
+
+</nav>
 
 
 <script>
@@ -584,6 +1286,8 @@ function selecionarTipo(novoTipo) {
       .getElementById("duracoesLongo")
       .style.display = "none";
 
+    duracao = "45 segundos";
+
   } else {
 
     document
@@ -598,6 +1302,8 @@ function selecionarTipo(novoTipo) {
       .getElementById("duracoesLongo")
       .style.display = "grid";
 
+    duracao = "10 minutos";
+
   }
 
 
@@ -606,15 +1312,44 @@ function selecionarTipo(novoTipo) {
     .style.display = "none";
 
 
-  if (novoTipo === "Short") {
+  atualizarDuracoes();
 
-    duracao = "45 segundos";
+}
 
-  } else {
 
-    duracao = "10 minutos";
+function atualizarDuracoes() {
 
-  }
+  document
+    .querySelectorAll(".duration-btn")
+    .forEach(function(btn) {
+
+      btn.classList.remove("ativo");
+
+    });
+
+
+  const botoes =
+    document.querySelectorAll(
+      tipo === "Short"
+        ? "#duracoesShort .duration-btn"
+        : "#duracoesLongo .duration-btn"
+    );
+
+
+  botoes.forEach(function(btn) {
+
+    const texto = btn.textContent.trim();
+
+    if (
+      (tipo === "Short" && texto === "45s") ||
+      (tipo === "Vídeo Longo" && texto === "10 min")
+    ) {
+
+      btn.classList.add("ativo");
+
+    }
+
+  });
 
 }
 
@@ -623,14 +1358,13 @@ function selecionarDuracao(novaDuracao, botao) {
 
   duracao = novaDuracao;
 
-  const botoes =
-    document.querySelectorAll(".duracao-btn");
+  document
+    .querySelectorAll(".duration-btn")
+    .forEach(function(btn) {
 
-  botoes.forEach(function(btn) {
+      btn.classList.remove("ativo");
 
-    btn.classList.remove("ativo");
-
-  });
+    });
 
   botao.classList.add("ativo");
 
@@ -644,13 +1378,102 @@ function selecionarDuracao(novaDuracao, botao) {
 
 function mostrarPersonalizada() {
 
-  document
-    .getElementById("duracaoPersonalizada")
-    .style.display = "block";
+  const campo =
+    document.getElementById("duracaoPersonalizada");
+
+  campo.style.display = "block";
+
+  campo.focus();
+
+}
+
+
+function irParaCriacao(novoTipo) {
 
   document
-    .getElementById("duracaoPersonalizada")
-    .focus();
+    .getElementById("futureSection")
+    .style.display = "none";
+
+  document
+    .getElementById("homeSection")
+    .style.display = "block";
+
+  selecionarTipo(novoTipo);
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
+
+
+function voltarInicio() {
+
+  document
+    .getElementById("futureSection")
+    .style.display = "none";
+
+  document
+    .getElementById("homeSection")
+    .style.display = "block";
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
+
+
+function mostrarFuturo(tipoTela) {
+
+  document
+    .getElementById("homeSection")
+    .style.display = "none";
+
+  document
+    .getElementById("futureSection")
+    .style.display = "block";
+
+
+  const icon =
+    document.getElementById("futureIcon");
+
+  const title =
+    document.getElementById("futureTitle");
+
+  const text =
+    document.getElementById("futureText");
+
+
+  if (tipoTela === "thumbnail") {
+
+    icon.textContent = "🖼️";
+
+    title.textContent =
+      "Criador de Thumbnail";
+
+    text.textContent =
+      "Aqui vamos construir nosso gerador automático de thumbnails, com foco em qualidade visual, impacto e soluções gratuitas.";
+
+  } else {
+
+    icon.textContent = "📚";
+
+    title.textContent =
+      "Meus vídeos";
+
+    text.textContent =
+      "Aqui ficará sua biblioteca de vídeos, status de processamento, resultados e links para o YouTube.";
+
+  }
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
 
 }
 
@@ -658,7 +1481,10 @@ function mostrarPersonalizada() {
 function enviar() {
 
   const tema =
-    document.getElementById("tema").value.trim();
+    document
+      .getElementById("tema")
+      .value
+      .trim();
 
 
   if (!tema) {
@@ -707,28 +1533,38 @@ function enviar() {
 
 
   const estilo =
-    document.getElementById("estilo").value;
+    document
+      .getElementById("estilo")
+      .value;
 
 
   const voz =
-    document.getElementById("voz").value;
+    document
+      .getElementById("voz")
+      .value;
 
 
   const idioma =
-    document.getElementById("idioma").value;
+    document
+      .getElementById("idioma")
+      .value;
 
 
   const visual =
-    document.getElementById("visual").value;
+    document
+      .getElementById("visual")
+      .value;
 
 
   const intensidade =
-    document.getElementById("intensidade").value;
+    document
+      .getElementById("intensidade")
+      .value;
 
 
   const referenciasSelecionadas =
     document.querySelectorAll(
-      '.referencia-item input:checked'
+      ".reference-item input:checked"
     );
 
 
