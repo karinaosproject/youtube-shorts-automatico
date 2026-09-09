@@ -9,11 +9,13 @@ on:
 jobs:
   publicar:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
     runs-on: ubuntu-latest
 
     permissions:
       actions: read
       contents: read
+      issues: write
 
     steps:
 
@@ -27,8 +29,23 @@ jobs:
 
       - name: Verificar arquivos
         run: |
-          echo "Arquivos recebidos:"
+          echo "========================================"
+          echo "ARQUIVOS RECEBIDOS"
+          echo "========================================"
+
           find resultado -maxdepth 3 -type f -print
+
+          echo "========================================"
+
+      - name: Verificar número do pedido
+        run: |
+          if [ ! -f "resultado/issue-number.txt" ]; then
+            echo "ERRO: issue-number.txt não encontrado."
+            exit 1
+          fi
+
+          echo "Pedido:"
+          cat resultado/issue-number.txt
 
       - name: Configurar Python
         uses: actions/setup-python@v5
@@ -38,7 +55,14 @@ jobs:
       - name: Instalar dependências
         run: |
           python -m pip install --upgrade pip
-          pip install google-api-python-client google-auth google-auth-oauthlib google-auth-httplib2 requests pillow
+
+          pip install \
+            google-api-python-client \
+            google-auth \
+            google-auth-oauthlib \
+            google-auth-httplib2 \
+            requests \
+            pillow
 
       - name: Publicar no YouTube
         env:
@@ -46,7 +70,9 @@ jobs:
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
         run: |
+
           python <<'PY'
+
           import json
           import os
           import sys
@@ -56,8 +82,14 @@ jobs:
           from googleapiclient.discovery import build
           from googleapiclient.http import MediaFileUpload
 
+
           METADATA_FILE = "resultado/youtube-metadata.json"
           VIDEO_FILE = "resultado/short-final.mp4"
+
+
+          # ========================================
+          # VALIDAR ARQUIVOS
+          # ========================================
 
           if not os.path.exists(METADATA_FILE):
               print("ERRO: youtube-metadata.json não encontrado.")
@@ -67,28 +99,63 @@ jobs:
               print("ERRO: short-final.mp4 não encontrado.")
               sys.exit(1)
 
-          with open(METADATA_FILE, "r", encoding="utf-8") as f:
+
+          # ========================================
+          # LER METADADOS
+          # ========================================
+
+          with open(
+              METADATA_FILE,
+              "r",
+              encoding="utf-8"
+          ) as f:
+
               metadata = json.load(f)
 
-          titulo = str(metadata.get("titulo", "")).strip()
-          descricao = str(metadata.get("descricao", "")).strip()
-          hashtags = metadata.get("hashtags", [])
+
+          titulo = str(
+              metadata.get("titulo", "")
+          ).strip()
+
+          descricao = str(
+              metadata.get("descricao", "")
+          ).strip()
+
+          hashtags = metadata.get(
+              "hashtags",
+              []
+          )
+
 
           if not titulo:
               print("ERRO: título vazio.")
               sys.exit(1)
 
+
           if len(titulo) > 100:
-              print("ERRO: título com mais de 100 caracteres.")
+              print(
+                  "ERRO: título com mais de 100 caracteres."
+              )
               sys.exit(1)
+
 
           if not descricao:
               print("ERRO: descrição vazia.")
               sys.exit(1)
 
-          if not isinstance(hashtags, list):
-              print("ERRO: hashtags não estão em formato de lista.")
+
+          if not isinstance(
+              hashtags,
+              list
+          ):
+
+              print(
+                  "ERRO: hashtags não estão "
+                  "em formato de lista."
+              )
+
               sys.exit(1)
+
 
           hashtags = [
               str(tag).strip()
@@ -96,26 +163,35 @@ jobs:
               if str(tag).strip()
           ]
 
+
           if len(hashtags) != 5:
+
               print(
-                  f"ERRO: eram esperadas exatamente 5 hashtags. "
+                  "ERRO: eram esperadas exatamente "
+                  "5 hashtags. "
                   f"Encontradas: {len(hashtags)}"
               )
+
               sys.exit(1)
 
+
           hashtags_texto = " ".join(
-              tag if tag.startswith("#") else "#" + tag
+              tag if tag.startswith("#")
+              else "#" + tag
               for tag in hashtags
           )
+
 
           descricao_final = (
               descricao
               + "\n\n"
               + hashtags_texto
               + "\n\n"
-              + "Vídeo produzido automaticamente com recursos "
-                "visuais licenciados do Pexels."
+              + "Vídeo produzido automaticamente "
+                "com recursos visuais licenciados "
+                "do Pexels."
           )
+
 
           print("")
           print("========================================")
@@ -127,25 +203,59 @@ jobs:
           print("========================================")
           print("")
 
-          client_id = os.environ.get("YOUTUBE_CLIENT_ID")
-          client_secret = os.environ.get("YOUTUBE_CLIENT_SECRET")
-          refresh_token = os.environ.get("YOUTUBE_REFRESH_TOKEN")
+
+          # ========================================
+          # CREDENCIAIS YOUTUBE
+          # ========================================
+
+          client_id = os.environ.get(
+              "YOUTUBE_CLIENT_ID"
+          )
+
+          client_secret = os.environ.get(
+              "YOUTUBE_CLIENT_SECRET"
+          )
+
+          refresh_token = os.environ.get(
+              "YOUTUBE_REFRESH_TOKEN"
+          )
+
 
           if not client_id:
-              print("ERRO: YOUTUBE_CLIENT_ID não configurado.")
+              print(
+                  "ERRO: YOUTUBE_CLIENT_ID "
+                  "não configurado."
+              )
+
               sys.exit(1)
+
 
           if not client_secret:
-              print("ERRO: YOUTUBE_CLIENT_SECRET não configurado.")
+              print(
+                  "ERRO: YOUTUBE_CLIENT_SECRET "
+                  "não configurado."
+              )
+
               sys.exit(1)
 
+
           if not refresh_token:
-              print("ERRO: YOUTUBE_REFRESH_TOKEN não configurado.")
+              print(
+                  "ERRO: YOUTUBE_REFRESH_TOKEN "
+                  "não configurado."
+              )
+
               sys.exit(1)
+
+
+          # ========================================
+          # AUTENTICAÇÃO
+          # ========================================
 
           scopes = [
               "https://www.googleapis.com/auth/youtube.upload"
           ]
+
 
           credentials = Credentials(
               token=None,
@@ -156,7 +266,11 @@ jobs:
               scopes=scopes
           )
 
-          credentials.refresh(Request())
+
+          credentials.refresh(
+              Request()
+          )
+
 
           youtube = build(
               "youtube",
@@ -164,17 +278,26 @@ jobs:
               credentials=credentials
           )
 
+
+          # ========================================
+          # CONFIGURAÇÃO DO VÍDEO
+          # ========================================
+
           body = {
+
               "snippet": {
                   "title": titulo,
                   "description": descricao_final,
                   "categoryId": "22"
               },
+
               "status": {
                   "privacyStatus": "private",
                   "selfDeclaredMadeForKids": False
               }
+
           }
+
 
           media = MediaFileUpload(
               VIDEO_FILE,
@@ -183,7 +306,11 @@ jobs:
               mimetype="video/mp4"
           )
 
-          print("Iniciando upload do vídeo...")
+
+          print(
+              "Iniciando upload do vídeo..."
+          )
+
 
           request = youtube.videos().insert(
               part="snippet,status",
@@ -191,46 +318,294 @@ jobs:
               media_body=media
           )
 
+
           response = None
 
+
           while response is None:
+
               status, response = request.next_chunk()
 
               if status:
-                  progresso = int(status.progress() * 100)
-                  print(f"Upload: {progresso}%")
 
-          video_id = response.get("id")
+                  progresso = int(
+                      status.progress() * 100
+                  )
+
+                  print(
+                      f"Upload: {progresso}%"
+                  )
+
+
+          # ========================================
+          # VALIDAR RESPOSTA
+          # ========================================
+
+          video_id = response.get(
+              "id"
+          )
+
 
           if not video_id:
-              print("ERRO: YouTube não retornou o ID do vídeo.")
+
+              print(
+                  "ERRO: YouTube não retornou "
+                  "o ID do vídeo."
+              )
+
               sys.exit(1)
+
+
+          video_url = (
+              "https://www.youtube.com/watch?v="
+              + video_id
+          )
+
 
           print("")
           print("========================================")
           print("VÍDEO PUBLICADO COM SUCESSO")
           print("========================================")
           print("Video ID:", video_id)
-          print(
-              "URL:",
-              f"https://www.youtube.com/watch?v={video_id}"
-          )
+          print("URL:", video_url)
           print("Privacidade: private")
           print("========================================")
           print("")
 
-          with open("resultado/youtube-video-id.txt", "w", encoding="utf-8") as f:
+
+          # ========================================
+          # SALVAR RESULTADOS
+          # ========================================
+
+          with open(
+              "resultado/youtube-video-id.txt",
+              "w",
+              encoding="utf-8"
+          ) as f:
+
               f.write(video_id)
 
-          with open("resultado/youtube-video-url.txt", "w", encoding="utf-8") as f:
-              f.write(
-                  f"https://www.youtube.com/watch?v={video_id}"
-              )
 
-          print("A etapa de miniatura personalizada foi ignorada.")
-          print("O vídeo foi enviado sem tentar chamar thumbnails.set.")
+          with open(
+              "resultado/youtube-video-url.txt",
+              "w",
+              encoding="utf-8"
+          ) as f:
+
+              f.write(video_url)
+
+
+          print(
+              "A etapa de miniatura personalizada "
+              "foi ignorada."
+          )
+
+          print(
+              "O vídeo foi enviado sem tentar "
+              "chamar thumbnails.set."
+          )
+
 
           PY
+
+
+      # ========================================
+      # REGISTRAR PUBLICAÇÃO NO PEDIDO
+      # ========================================
+
+      - name: Registrar vídeo no pedido
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+
+          python <<'PY'
+
+          import os
+          import requests
+
+
+          REPO = os.environ.get(
+              "GITHUB_REPOSITORY"
+          )
+
+          TOKEN = os.environ.get(
+              "GH_TOKEN"
+          )
+
+
+          # ========================================
+          # LER NÚMERO DO PEDIDO
+          # ========================================
+
+          with open(
+              "resultado/issue-number.txt",
+              "r",
+              encoding="utf-8"
+          ) as f:
+
+              issue_number = f.read().strip()
+
+
+          # ========================================
+          # LER ID E URL DO YOUTUBE
+          # ========================================
+
+          with open(
+              "resultado/youtube-video-id.txt",
+              "r",
+              encoding="utf-8"
+          ) as f:
+
+              video_id = f.read().strip()
+
+
+          with open(
+              "resultado/youtube-video-url.txt",
+              "r",
+              encoding="utf-8"
+          ) as f:
+
+              video_url = f.read().strip()
+
+
+          if not issue_number:
+              raise Exception(
+                  "Número do pedido vazio."
+              )
+
+
+          if not video_id:
+              raise Exception(
+                  "Video ID vazio."
+              )
+
+
+          if not video_url:
+              raise Exception(
+                  "URL do vídeo vazia."
+              )
+
+
+          # ========================================
+          # CONSULTAR PEDIDO
+          # ========================================
+
+          url = (
+              f"https://api.github.com/repos/"
+              f"{REPO}/issues/{issue_number}"
+          )
+
+
+          headers = {
+              "Authorization": f"Bearer {TOKEN}",
+              "Accept": "application/vnd.github+json",
+              "X-GitHub-Api-Version": "2022-11-28"
+          }
+
+
+          resposta = requests.get(
+              url,
+              headers=headers,
+              timeout=30
+          )
+
+
+          resposta.raise_for_status()
+
+
+          issue = resposta.json()
+
+
+          corpo_atual = issue.get(
+              "body"
+          ) or ""
+
+
+          # ========================================
+          # EVITAR DUPLICAÇÃO
+          # ========================================
+
+          marcador = "### YOUTUBE VIDEO ID"
+
+
+          if marcador in corpo_atual:
+
+              print(
+                  "Informações do YouTube "
+                  "já existem no pedido."
+              )
+
+          else:
+
+              bloco = f"""
+
+          ### PUBLICAÇÃO NO YOUTUBE
+
+          **STATUS:** PUBLICADO
+
+          ### YOUTUBE VIDEO ID
+          {video_id}
+
+          ### YOUTUBE URL
+          {video_url}
+
+          ### PRIVACIDADE
+          private
+
+          ### MINIATURA
+          Miniatura personalizada não enviada.
+          """
+
+
+              novo_corpo = (
+                  corpo_atual.rstrip()
+                  + "\n"
+                  + bloco
+              )
+
+
+              # ========================================
+              # ATUALIZAR ISSUE
+              # ========================================
+
+              resposta = requests.patch(
+                  url,
+                  headers={
+                      **headers,
+                      "Content-Type":
+                          "application/json"
+                  },
+                  json={
+                      "body": novo_corpo
+                  },
+                  timeout=30
+              )
+
+
+              resposta.raise_for_status()
+
+
+              print(
+                  "Pedido atualizado com sucesso."
+              )
+
+
+          print("")
+          print("========================================")
+          print("PUBLICAÇÃO REGISTRADA")
+          print("========================================")
+          print("Pedido:", issue_number)
+          print("Video ID:", video_id)
+          print("URL:", video_url)
+          print("========================================")
+
+
+          PY
+
+
+      # ========================================
+      # SALVAR INFORMAÇÕES DA PUBLICAÇÃO
+      # ========================================
 
       - name: Salvar informações da publicação
         uses: actions/upload-artifact@v4
@@ -241,13 +616,27 @@ jobs:
             resultado/youtube-video-url.txt
             resultado/youtube-metadata.json
             resultado/thumbnail.jpg
+            resultado/issue-number.txt
           if-no-files-found: ignore
+
+
+      # ========================================
+      # FINALIZAR
+      # ========================================
 
       - name: Finalizar
         run: |
+
           echo "========================================"
           echo "PUBLICAÇÃO FINALIZADA"
           echo "========================================"
+
           echo "O vídeo foi enviado ao YouTube."
-          echo "A miniatura personalizada não foi enviada."
+
+          echo "As informações foram registradas "
+          echo "no pedido original."
+
+          echo "A miniatura personalizada "
+          echo "não foi enviada."
+
           echo "========================================"
