@@ -7,400 +7,240 @@
   <title>Karina OS</title>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
 
-    :root {
-      --bg: #09090b;
-      --card: #141417;
-      --card2: #1b1b20;
-      --border: #29292f;
-      --text: #f7f7f8;
-      --muted: #9999a3;
-      --accent: #ffffff;
-      --accentText: #09090b;
-    }
-
-    html {
-      background: var(--bg);
-    }
-
     body {
       margin: 0;
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at top right, rgba(255,255,255,0.07), transparent 35%),
-        radial-gradient(circle at top left, rgba(255,255,255,0.04), transparent 30%),
-        var(--bg);
-      color: var(--text);
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        Arial,
-        sans-serif;
-      padding-bottom: 90px;
-    }
-
-    button,
-    input,
-    select {
-      font: inherit;
-    }
-
-    button {
-      -webkit-tap-highlight-color: transparent;
+      background: #050505;
+      color: #ffffff;
+      font-family: Arial, Helvetica, sans-serif;
     }
 
     .app {
-      width: 100%;
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 18px 16px 30px;
+      max-width: 520px;
+      margin: auto;
+      min-height: 100vh;
+      padding-bottom: 100px;
     }
 
-    .topbar {
+    header {
+      padding: 22px 20px 10px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      margin-bottom: 24px;
-    }
-
-    .brand {
-      display: flex;
       align-items: center;
-      gap: 12px;
     }
 
-    .brand-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      background: #fff;
-      color: #09090b;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 21px;
-      box-shadow: 0 8px 30px rgba(255,255,255,0.10);
-    }
-
-    .brand-name {
-      font-size: 18px;
+    .logo {
+      font-size: 22px;
       font-weight: 800;
-      letter-spacing: -0.4px;
     }
 
-    .brand-sub {
-      color: var(--muted);
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 7px;
       font-size: 12px;
-      margin-top: 2px;
+      color: #aaa;
     }
 
     .status-dot {
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
-      background: #72e6a0;
-      box-shadow: 0 0 12px rgba(114,230,160,0.6);
+      background: #00ff88;
+      box-shadow: 0 0 10px #00ff88;
     }
 
     .hero {
-      margin-bottom: 22px;
+      padding: 25px 20px 20px;
     }
 
     .hero h1 {
-      font-size: clamp(30px, 8vw, 46px);
-      line-height: 1.02;
-      letter-spacing: -1.8px;
-      margin: 0 0 10px;
-      font-weight: 850;
+      font-size: 34px;
+      line-height: 1.05;
+      margin: 0 0 12px;
     }
 
     .hero p {
       margin: 0;
-      color: var(--muted);
+      color: #999;
       font-size: 15px;
       line-height: 1.5;
-      max-width: 540px;
     }
 
-    .quick-nav {
+    .quick-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-bottom: 24px;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 10px 20px 20px;
     }
 
-    .nav-card {
-      border: 1px solid var(--border);
-      background: linear-gradient(145deg, #17171b, #111114);
+    .quick-card {
+      background: #111;
+      border: 1px solid #242424;
       border-radius: 18px;
-      padding: 16px;
-      color: var(--text);
-      text-align: left;
-      cursor: pointer;
-      transition: transform .15s ease, border-color .15s ease;
+      padding: 18px;
+      min-height: 105px;
     }
 
-    .nav-card:active {
-      transform: scale(.98);
+    .quick-card .icon {
+      font-size: 24px;
+      margin-bottom: 12px;
     }
 
-    .nav-card.principal {
-      border-color: #45454d;
-      background: linear-gradient(145deg, #242429, #141417);
-    }
-
-    .nav-icon {
-      font-size: 22px;
-      margin-bottom: 11px;
-    }
-
-    .nav-title {
+    .quick-card strong {
+      display: block;
       font-size: 14px;
-      font-weight: 800;
+      margin-bottom: 5px;
     }
 
-    .nav-description {
-      color: var(--muted);
-      font-size: 11px;
-      margin-top: 4px;
-      line-height: 1.35;
+    .quick-card span {
+      color: #777;
+      font-size: 12px;
+    }
+
+    .section {
+      padding: 12px 20px;
     }
 
     .section-title {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin: 26px 2px 12px;
-    }
-
-    .section-title h2 {
-      margin: 0;
-      font-size: 17px;
-      letter-spacing: -.3px;
-    }
-
-    .section-title span {
-      color: var(--muted);
-      font-size: 11px;
+      font-size: 13px;
+      color: #777;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
     }
 
     .panel {
-      background: rgba(20,20,23,0.92);
-      border: 1px solid var(--border);
-      border-radius: 22px;
+      background: #0e0e0e;
+      border: 1px solid #222;
+      border-radius: 20px;
       padding: 18px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.22);
     }
 
-    .field {
-      margin-bottom: 19px;
-    }
-
-    .field:last-child {
-      margin-bottom: 0;
-    }
-
-    .field-label {
+    label {
       display: block;
-      margin-bottom: 9px;
-      font-size: 13px;
-      font-weight: 750;
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 7px;
     }
 
-    .field-help {
-      display: block;
-      margin-top: 6px;
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.4;
-    }
-
-    input[type="text"],
-    input[type="number"],
+    input,
     select {
       width: 100%;
-      min-height: 50px;
-      padding: 13px 14px;
-      border: 1px solid var(--border);
-      border-radius: 14px;
+      border: 1px solid #292929;
+      background: #151515;
+      color: white;
+      border-radius: 12px;
+      padding: 13px;
       outline: none;
-      color: var(--text);
-      background: #0e0e11;
-      font-size: 15px;
-      appearance: none;
-    }
-
-    input::placeholder {
-      color: #686871;
+      margin-bottom: 15px;
+      font-size: 14px;
     }
 
     input:focus,
     select:focus {
-      border-color: #686871;
+      border-color: #555;
     }
 
-    .choice-grid {
+    .toggle {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      background: #111;
+      padding: 4px;
+      border-radius: 13px;
+      margin-bottom: 15px;
     }
 
-    .choice {
-      min-height: 58px;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      background: #0e0e11;
-      color: var(--text);
+    .toggle button {
+      border: 0;
+      background: transparent;
+      color: #777;
+      padding: 11px;
+      border-radius: 10px;
       cursor: pointer;
-      text-align: left;
-      font-weight: 750;
-      transition: .15s ease;
+      font-weight: 700;
     }
 
-    .choice small {
-      display: block;
-      color: var(--muted);
-      font-weight: 400;
-      font-size: 10px;
-      margin-top: 4px;
-    }
-
-    .choice.ativo {
+    .toggle button.active {
       background: #fff;
-      color: #09090b;
-      border-color: #fff;
-    }
-
-    .choice.ativo small {
-      color: #55555d;
+      color: #000;
     }
 
     .duration-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+      margin-bottom: 15px;
     }
 
-    .duration-btn {
-      min-height: 48px;
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      background: #0e0e11;
-      color: var(--text);
+    .duration-grid button {
+      border: 1px solid #292929;
+      background: #151515;
+      color: #aaa;
+      border-radius: 10px;
+      padding: 10px 4px;
       cursor: pointer;
-      font-size: 13px;
-      font-weight: 650;
     }
 
-    .duration-btn.ativo {
+    .duration-grid button.active {
       background: #fff;
-      color: #09090b;
+      color: #000;
       border-color: #fff;
     }
 
-    .custom-duration {
-      width: 100%;
-      margin-top: 8px;
-      min-height: 46px;
-      border: 1px dashed #44444b;
-      border-radius: 13px;
-      background: transparent;
-      color: #d7d7dc;
-      cursor: pointer;
-      font-size: 12px;
-    }
-
-    #duracaoPersonalizada {
-      display: none;
-      margin-top: 9px;
-    }
-
-    .references-box {
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: #0e0e11;
-      overflow: hidden;
+    .reference-list {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 15px;
     }
 
     .reference-item {
+      background: #151515;
+      border: 1px solid #292929;
+      border-radius: 12px;
+      padding: 11px;
       display: flex;
+      gap: 10px;
       align-items: flex-start;
-      gap: 11px;
-      padding: 13px;
-      border-bottom: 1px solid #24242a;
-      cursor: pointer;
-    }
-
-    .reference-item:last-child {
-      border-bottom: none;
     }
 
     .reference-item input {
-      width: 18px;
-      height: 18px;
-      margin: 1px 0 0;
-      accent-color: white;
-      flex-shrink: 0;
+      width: auto;
+      margin: 2px 0 0;
     }
 
-    .reference-name {
+    .reference-item div {
+      flex: 1;
+    }
+
+    .reference-item strong {
       display: block;
       font-size: 13px;
-      font-weight: 750;
+      margin-bottom: 4px;
     }
 
-    .reference-description {
+    .reference-item span {
       display: block;
-      margin-top: 3px;
-      color: var(--muted);
-      font-size: 10px;
-      line-height: 1.4;
-    }
-
-    .notice {
-      padding: 13px;
-      margin-top: 12px;
-      border: 1px solid #303039;
-      border-radius: 14px;
-      background: #111116;
-      color: #bdbdc5;
+      color: #777;
       font-size: 11px;
-      line-height: 1.5;
-    }
-
-    .notice strong {
-      color: #fff;
-    }
-
-    .notice.blue {
-      border-color: #24394a;
-      background: #10171d;
-      color: #a9c3d5;
+      line-height: 1.4;
     }
 
     .create-button {
       width: 100%;
-      min-height: 58px;
-      margin-top: 20px;
-      border: none;
-      border-radius: 17px;
-      background: #fff;
-      color: #09090b;
-      font-size: 15px;
-      font-weight: 850;
+      border: 0;
+      border-radius: 15px;
+      padding: 16px;
+      background: #ffffff;
+      color: #000;
+      font-weight: 900;
       cursor: pointer;
-      box-shadow: 0 12px 35px rgba(255,255,255,0.10);
-      transition: transform .15s ease;
-    }
-
-    .create-button:active {
-      transform: scale(.985);
+      font-size: 14px;
+      margin-top: 5px;
     }
 
     .create-button:disabled {
@@ -408,126 +248,132 @@
       cursor: wait;
     }
 
-    .how-card {
-      margin-top: 14px;
-      padding: 17px;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      background: #111114;
+    .status-panel {
+      display: none;
+      background: #0e0e0e;
+      border: 1px solid #222;
+      border-radius: 20px;
+      padding: 18px;
+      margin-top: 15px;
     }
 
-    .how-title {
-      font-size: 13px;
-      font-weight: 800;
-      margin-bottom: 10px;
+    .status-panel.show {
+      display: block;
     }
 
-    .step {
-      display: flex;
+    .status-panel h3 {
+      margin: 0 0 5px;
+      font-size: 16px;
+    }
+
+    .status-subtitle {
+      color: #777;
+      font-size: 12px;
+      margin-bottom: 18px;
+    }
+
+    .progress-list {
+      display: grid;
       gap: 10px;
-      margin: 9px 0;
-      color: #b0b0b8;
-      font-size: 11px;
-      line-height: 1.4;
     }
 
-    .step-number {
-      width: 22px;
-      height: 22px;
-      border-radius: 8px;
-      background: #222228;
-      color: white;
+    .progress-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px;
+      border-radius: 12px;
+      background: #151515;
+      color: #666;
+      font-size: 13px;
+    }
+
+    .progress-icon {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 10px;
-      font-weight: 800;
+      background: #242424;
       flex-shrink: 0;
+    }
+
+    .progress-item.active {
+      color: #fff;
+    }
+
+    .progress-item.active .progress-icon {
+      background: #fff;
+      color: #000;
+    }
+
+    .progress-item.done {
+      color: #00ff88;
+    }
+
+    .progress-item.done .progress-icon {
+      background: #00ff88;
+      color: #000;
+    }
+
+    .progress-item.error {
+      color: #ff5555;
+    }
+
+    .progress-item.error .progress-icon {
+      background: #ff5555;
+      color: #000;
+    }
+
+    .order-info {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #222;
+      color: #777;
+      font-size: 11px;
+    }
+
+    .order-info strong {
+      color: #aaa;
     }
 
     .bottom-nav {
       position: fixed;
-      z-index: 100;
+      bottom: 0;
       left: 50%;
-      bottom: 12px;
       transform: translateX(-50%);
-      width: calc(100% - 24px);
-      max-width: 700px;
-      min-height: 66px;
-      padding: 7px;
+      width: min(520px, 100%);
+      background: rgba(10,10,10,.96);
+      border-top: 1px solid #222;
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 4px;
-      background: rgba(22,22,26,0.94);
-      border: 1px solid #303038;
-      border-radius: 20px;
-      backdrop-filter: blur(18px);
-      box-shadow: 0 15px 50px rgba(0,0,0,0.45);
+      padding: 10px 10px 12px;
+      z-index: 10;
     }
 
-    .bottom-item {
-      border: none;
-      border-radius: 14px;
-      background: transparent;
-      color: #85858e;
-      cursor: pointer;
+    .bottom-nav a {
+      text-decoration: none;
+      color: #777;
+      text-align: center;
       font-size: 10px;
-      font-weight: 650;
+      padding: 5px;
     }
 
-    .bottom-item span {
+    .bottom-nav .nav-icon {
       display: block;
-      font-size: 18px;
+      font-size: 19px;
       margin-bottom: 3px;
     }
 
-    .bottom-item.ativo {
-      background: #fff;
-      color: #09090b;
+    .bottom-nav a.active {
+      color: #fff;
     }
 
-    .future {
+    .hidden {
       display: none;
     }
 
-    .future-card {
-      padding: 25px 18px;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      background: #111114;
-      text-align: center;
-    }
-
-    .future-card .big {
-      font-size: 35px;
-      margin-bottom: 10px;
-    }
-
-    .future-card h2 {
-      margin: 0 0 8px;
-      font-size: 19px;
-    }
-
-    .future-card p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    @media (min-width: 700px) {
-      .quick-nav {
-        grid-template-columns: repeat(4, 1fr);
-      }
-
-      .nav-card {
-        min-height: 135px;
-      }
-
-      .duration-grid {
-        grid-template-columns: repeat(4, 1fr);
-      }
-    }
   </style>
 </head>
 
@@ -535,529 +381,376 @@
 
 <div class="app">
 
-  <header class="topbar">
+  <header>
+    <div class="logo">Karina OS</div>
 
-    <div class="brand">
-
-      <div class="brand-icon">✦</div>
-
-      <div>
-        <div class="brand-name">Karina OS</div>
-        <div class="brand-sub">Criador de Conteúdo</div>
-      </div>
-
+    <div class="status">
+      <span class="status-dot"></span>
+      ONLINE
     </div>
-
-    <div class="status-dot" title="Sistema ativo"></div>
-
   </header>
 
+  <section class="hero">
 
-  <main id="homeSection">
+    <h1>
+      Crie.<br>
+      Publique.<br>
+      Repita.
+    </h1>
 
-    <section class="hero">
+    <p>
+      Seu sistema automático de criação de conteúdo.
+    </p>
 
-      <h1>Crie.<br>Publique.<br>Repita.</h1>
+  </section>
 
-      <p>
-        Seu estúdio automático para transformar uma ideia
-        em conteúdo pronto para o YouTube.
-      </p>
+  <section class="quick-grid">
 
-    </section>
-
-
-    <section class="quick-nav">
-
-      <button class="nav-card principal" onclick="irParaCriacao('Short')">
-
-        <div class="nav-icon">🎬</div>
-
-        <div class="nav-title">
-          Criar Short
-        </div>
-
-        <div class="nav-description">
-          Vídeos verticais rápidos
-        </div>
-
-      </button>
-
-
-      <button class="nav-card" onclick="irParaCriacao('Vídeo Longo')">
-
-        <div class="nav-icon">📺</div>
-
-        <div class="nav-title">
-          Vídeo longo
-        </div>
-
-        <div class="nav-description">
-          Conteúdo completo
-        </div>
-
-      </button>
-
-
-      <button class="nav-card" onclick="mostrarFuturo('thumbnail')">
-
-        <div class="nav-icon">🖼️</div>
-
-        <div class="nav-title">
-          Thumbnail
-        </div>
-
-        <div class="nav-description">
-          Criador visual
-        </div>
-
-      </button>
-
-
-      <button class="nav-card" onclick="mostrarFuturo('videos')">
-
-        <div class="nav-icon">📚</div>
-
-        <div class="nav-title">
-          Meus vídeos
-        </div>
-
-        <div class="nav-description">
-          Histórico e resultados
-        </div>
-
-      </button>
-
-    </section>
-
-
-    <div class="section-title">
-
-      <h2>🎬 Novo conteúdo</h2>
-
-      <span>CONFIGURAÇÃO</span>
-
+    <div class="quick-card">
+      <div class="icon">🎬</div>
+      <strong>Criar Short</strong>
+      <span>Gerar novo conteúdo</span>
     </div>
 
+    <div class="quick-card">
+      <div class="icon">🎥</div>
+      <strong>Vídeo longo</strong>
+      <span>Conteúdo completo</span>
+    </div>
 
-    <section class="panel">
+    <div class="quick-card">
+      <div class="icon">🖼️</div>
+      <strong>Thumbnail</strong>
+      <span>Imagem do vídeo</span>
+    </div>
 
-      <div class="field">
+    <div class="quick-card">
+      <div class="icon">📺</div>
+      <strong>Meus vídeos</strong>
+      <span>Acompanhar resultados</span>
+    </div>
 
-        <label class="field-label">
-          Tipo de conteúdo
-        </label>
+  </section>
 
-        <div class="choice-grid">
+  <section class="section">
 
-          <button
-            type="button"
-            id="btnShort"
-            class="choice ativo"
-            onclick="selecionarTipo('Short')">
+    <div class="section-title">
+      Criar conteúdo
+    </div>
 
-            📱 Short
+    <div class="panel">
 
-            <small>
-              Vertical • 30–90s
-            </small>
-
-          </button>
-
-
-          <button
-            type="button"
-            id="btnLongo"
-            class="choice"
-            onclick="selecionarTipo('Vídeo Longo')">
-
-            📺 Vídeo longo
-
-            <small>
-              Horizontal • 5–15min
-            </small>
-
-          </button>
-
-        </div>
-
-      </div>
-
-
-      <div class="field">
-
-        <label class="field-label">
-          Tema do vídeo
-        </label>
-
-        <input
-          type="text"
-          id="tema"
-          placeholder="Ex.: 7 animais que parecem inventados">
-
-        <span class="field-help">
-          Escreva apenas a ideia. O sistema cuida do restante.
-        </span>
-
-      </div>
-
-
-      <div class="field">
-
-        <label class="field-label">
-          Duração
-        </label>
-
-
-        <div
-          id="duracoesShort"
-          class="duration-grid">
-
-          <button
-            type="button"
-            class="duration-btn"
-            onclick="selecionarDuracao('30 segundos', this)">
-            30s
-          </button>
-
-          <button
-            type="button"
-            class="duration-btn ativo"
-            onclick="selecionarDuracao('45 segundos', this)">
-            45s
-          </button>
-
-          <button
-            type="button"
-            class="duration-btn"
-            onclick="selecionarDuracao('60 segundos', this)">
-            60s
-          </button>
-
-          <button
-            type="button"
-            class="duration-btn"
-            onclick="selecionarDuracao('90 segundos', this)">
-            90s
-          </button>
-
-        </div>
-
-
-        <div
-          id="duracoesLongo"
-          class="duration-grid"
-          style="display:none;">
-
-          <button
-            type="button"
-            class="duration-btn"
-            onclick="selecionarDuracao('5 minutos', this)">
-            5 min
-          </button>
-
-          <button
-            type="button"
-            class="duration-btn"
-            onclick="selecionarDuracao('8 minutos', this)">
-            8 min
-          </button>
-
-          <button
-            type="button"
-            class="duration-btn ativo"
-            onclick="selecionarDuracao('10 minutos', this)">
-            10 min
-          </button>
-
-          <button
-            type="button"
-            class="duration-btn"
-            onclick="selecionarDuracao('15 minutos', this)">
-            15 min
-          </button>
-
-        </div>
-
+      <div class="toggle">
 
         <button
-          type="button"
-          class="custom-duration"
-          onclick="mostrarPersonalizada()">
-
-          ⏱️ Usar duração personalizada
-
+          id="tipoShort"
+          class="active"
+          onclick="selecionarTipo('Short')">
+          SHORT
         </button>
 
-
-        <input
-          type="number"
-          id="duracaoPersonalizada"
-          min="10"
-          max="3600"
-          placeholder="Duração em segundos — 10 a 3600">
+        <button
+          id="tipoLongo"
+          onclick="selecionarTipo('Vídeo Longo')">
+          VÍDEO LONGO
+        </button>
 
       </div>
 
+      <label>
+        Tema
+      </label>
 
-      <div class="field">
+      <input
+        id="tema"
+        type="text"
+        placeholder="Ex.: 7 animais que parecem inventados"
+      >
 
-        <label class="field-label">
-          Estilo editorial
+      <label>
+        Duração
+      </label>
+
+      <div
+        id="duracoesShort"
+        class="duration-grid">
+
+        <button
+          class="active"
+          onclick="selecionarDuracao(this, '30 segundos')">
+          30s
+        </button>
+
+        <button
+          onclick="selecionarDuracao(this, '45 segundos')">
+          45s
+        </button>
+
+        <button
+          onclick="selecionarDuracao(this, '60 segundos')">
+          60s
+        </button>
+
+        <button
+          onclick="selecionarDuracao(this, '90 segundos')">
+          90s
+        </button>
+
+      </div>
+
+      <div
+        id="duracoesLongo"
+        class="duration-grid hidden">
+
+        <button
+          class="active"
+          onclick="selecionarDuracao(this, '5 minutos')">
+          5 min
+        </button>
+
+        <button
+          onclick="selecionarDuracao(this, '8 minutos')">
+          8 min
+        </button>
+
+        <button
+          onclick="selecionarDuracao(this, '10 minutos')">
+          10 min
+        </button>
+
+        <button
+          onclick="selecionarDuracao(this, '15 minutos')">
+          15 min
+        </button>
+
+      </div>
+
+      <label>
+        Duração personalizada
+      </label>
+
+      <input
+        id="duracaoPersonalizada"
+        type="number"
+        min="10"
+        max="3600"
+        placeholder="10 a 3600 segundos">
+
+      <label>
+        Estilo
+      </label>
+
+      <select id="estilo">
+
+        <option>
+          Informativo
+        </option>
+
+        <option>
+          Curioso
+        </option>
+
+        <option>
+          Educacional
+        </option>
+
+        <option>
+          Narrativo
+        </option>
+
+        <option>
+          Viral
+        </option>
+
+      </select>
+
+      <label>
+        Voz
+      </label>
+
+      <select id="voz">
+
+        <option>
+          Natural
+        </option>
+
+        <option>
+          Energética
+        </option>
+
+        <option>
+          Calma
+        </option>
+
+        <option>
+          Jornalística
+        </option>
+
+      </select>
+
+      <label>
+        Idioma
+      </label>
+
+      <select id="idioma">
+
+        <option>
+          Português
+        </option>
+
+        <option>
+          Inglês
+        </option>
+
+        <option>
+          Espanhol
+        </option>
+
+      </select>
+
+      <label>
+        Visual
+      </label>
+
+      <select id="visual">
+
+        <option>
+          Vídeos reais
+        </option>
+
+        <option>
+          Cinematográfico
+        </option>
+
+        <option>
+          Natureza
+        </option>
+
+        <option>
+          Científico
+        </option>
+
+      </select>
+
+      <label>
+        Referências
+      </label>
+
+      <div class="reference-list">
+
+        <label class="reference-item">
+
+          <input
+            type="checkbox"
+            value="Animais pelo Mundo">
+
+          <div>
+            <strong>Animais pelo Mundo</strong>
+            <span>
+              Curiosidades sobre animais, comportamento e narrativa visual.
+            </span>
+          </div>
+
         </label>
 
-        <select id="estilo">
+        <label class="reference-item">
 
-          <option>Curiosidades</option>
-          <option>Mistério</option>
-          <option>História</option>
-          <option>Motivacional</option>
-          <option>Notícias</option>
-          <option>Fatos surpreendentes</option>
+          <input
+            type="checkbox"
+            value="Papo de Biólogo">
 
-        </select>
+          <div>
+            <strong>Papo de Biólogo</strong>
+            <span>
+              Explicação científica, contexto e informações biológicas.
+            </span>
+          </div>
 
-      </div>
-
-
-      <div class="field">
-
-        <label class="field-label">
-          Voz
         </label>
 
-        <select id="voz">
+        <label class="reference-item">
 
-          <option>Feminina</option>
-          <option>Masculina</option>
-          <option>Automática</option>
+          <input
+            type="checkbox"
+            value="Ciência Todo Dia">
 
-        </select>
+          <div>
+            <strong>Ciência Todo Dia</strong>
+            <span>
+              Raciocínio científico, explicações claras e construção de ideias.
+            </span>
+          </div>
 
-      </div>
-
-
-      <div class="field">
-
-        <label class="field-label">
-          Idioma
         </label>
 
-        <select id="idioma">
+        <label class="reference-item">
 
-          <option>Português brasileiro</option>
-          <option>English</option>
-          <option>Español</option>
+          <input
+            type="checkbox"
+            value="Manual do Mundo">
 
-        </select>
+          <div>
+            <strong>Manual do Mundo</strong>
+            <span>
+              Demonstrações, exemplos, explicações acessíveis e didáticas.
+            </span>
+          </div>
 
-      </div>
-
-
-      <div class="field">
-
-        <label class="field-label">
-          Estilo visual
         </label>
 
-        <select id="visual">
+        <label class="reference-item">
 
-          <option>Realista</option>
-          <option>Cinematográfico</option>
-          <option>Documentário</option>
-          <option>Notícias</option>
-          <option>Rápido</option>
-          <option>Viral</option>
+          <input
+            type="checkbox"
+            value="Tá Curioso?">
 
-        </select>
+          <div>
+            <strong>Tá Curioso?</strong>
+            <span>
+              Perguntas, curiosidades, ritmo e descoberta.
+            </span>
+          </div>
 
-      </div>
-
-
-      <div class="field">
-
-        <label class="field-label">
-          📚 Canais de referência
         </label>
 
-        <div class="references-box">
+        <label class="reference-item">
 
+          <input
+            type="checkbox"
+            value="Minutos Psíquicos">
 
-          <label class="reference-item">
-
-            <input
-              type="checkbox"
-              value="Animais pelo Mundo">
-
+          <div>
+            <strong>Minutos Psíquicos</strong>
             <span>
-
-              <span class="reference-name">
-                Animais pelo Mundo
-              </span>
-
-              <span class="reference-description">
-                Curiosidades sobre animais, comportamento e narrativa visual.
-              </span>
-
+              Comportamento, psicologia, narrativa e explicações envolventes.
             </span>
+          </div>
 
-          </label>
-
-
-          <label class="reference-item">
-
-            <input
-              type="checkbox"
-              value="Papo de Biólogo">
-
-            <span>
-
-              <span class="reference-name">
-                Papo de Biólogo
-              </span>
-
-              <span class="reference-description">
-                Explicação científica, contexto e informações biológicas.
-              </span>
-
-            </span>
-
-          </label>
-
-
-          <label class="reference-item">
-
-            <input
-              type="checkbox"
-              value="Ciência Todo Dia">
-
-            <span>
-
-              <span class="reference-name">
-                Ciência Todo Dia
-              </span>
-
-              <span class="reference-description">
-                Raciocínio científico, explicações claras e construção de ideias.
-              </span>
-
-            </span>
-
-          </label>
-
-
-          <label class="reference-item">
-
-            <input
-              type="checkbox"
-              value="Manual do Mundo">
-
-            <span>
-
-              <span class="reference-name">
-                Manual do Mundo
-              </span>
-
-              <span class="reference-description">
-                Demonstrações, exemplos, explicações acessíveis e didáticas.
-              </span>
-
-            </span>
-
-          </label>
-
-
-          <label class="reference-item">
-
-            <input
-              type="checkbox"
-              value="Tá Curioso?">
-
-            <span>
-
-              <span class="reference-name">
-                Tá Curioso?
-              </span>
-
-              <span class="reference-description">
-                Perguntas, curiosidades, ritmo e descoberta.
-              </span>
-
-            </span>
-
-          </label>
-
-
-          <label class="reference-item">
-
-            <input
-              type="checkbox"
-              value="Minutos Psíquicos">
-
-            <span>
-
-              <span class="reference-name">
-                Minutos Psíquicos
-              </span>
-
-              <span class="reference-description">
-                Comportamento, psicologia, narrativa e explicações envolventes.
-              </span>
-
-            </span>
-
-          </label>
-
-        </div>
-
-      </div>
-
-
-      <div class="field">
-
-        <label class="field-label">
-          🎯 Intensidade das referências
         </label>
 
-        <select id="intensidade">
-
-          <option value="Leve">
-            Leve — apenas orientação geral
-          </option>
-
-          <option value="Equilibrada" selected>
-            Equilibrada — estrutura, ritmo e abordagem
-          </option>
-
-          <option value="Forte">
-            Forte — influência editorial mais presente
-          </option>
-
-        </select>
-
       </div>
 
+      <label>
+        Intensidade das referências
+      </label>
 
-      <div class="notice">
+      <select id="intensidade">
 
-        💡 As referências funcionam somente como
-        <strong>orientação editorial</strong> de estrutura,
-        ritmo, abordagem, linguagem e narrativa.
+        <option>
+          Leve
+        </option>
 
-      </div>
+        <option selected>
+          Equilibrada
+        </option>
 
+        <option>
+          Forte
+        </option>
 
-      <div class="notice blue">
-
-        🛡️ <strong>Conteúdo original:</strong>
-        nenhuma frase, roteiro, título, exemplo específico
-        ou sequência identificável deve ser copiada.
-
-      </div>
-
+      </select>
 
       <button
-        type="button"
         id="createButton"
         class="create-button"
         onclick="enviar()">
@@ -1066,89 +759,102 @@
 
       </button>
 
-    </section>
+      <div
+        id="statusPanel"
+        class="status-panel">
 
+        <h3>
+          Acompanhando seu conteúdo
+        </h3>
 
-    <section class="how-card">
+        <div
+          id="statusSubtitle"
+          class="status-subtitle">
+          Seu pedido foi recebido.
+        </div>
 
-      <div class="how-title">
-        ⚙️ O que acontece depois?
-      </div>
+        <div class="progress-list">
 
+          <div
+            id="statusRecebido"
+            class="progress-item active">
 
-      <div class="step">
+            <div class="progress-icon">
+              ✓
+            </div>
 
-        <div class="step-number">1</div>
+            Pedido recebido
 
-        <div>
-          Seu pedido entra automaticamente no sistema.
+          </div>
+
+          <div
+            id="statusRoteiro"
+            class="progress-item">
+
+            <div class="progress-icon">
+              2
+            </div>
+
+            Criando roteiro
+
+          </div>
+
+          <div
+            id="statusVoz"
+            class="progress-item">
+
+            <div class="progress-icon">
+              3
+            </div>
+
+            Gerando voz
+
+          </div>
+
+          <div
+            id="statusMontando"
+            class="progress-item">
+
+            <div class="progress-icon">
+              4
+            </div>
+
+            Montando vídeo
+
+          </div>
+
+          <div
+            id="statusPublicando"
+            class="progress-item">
+
+            <div class="progress-icon">
+              5
+            </div>
+
+            Publicando
+
+          </div>
+
+          <div
+            id="statusConcluido"
+            class="progress-item">
+
+            <div class="progress-icon">
+              ✓
+            </div>
+
+            Concluído
+
+          </div>
+
+        </div>
+
+        <div
+          id="orderInfo"
+          class="order-info">
         </div>
 
       </div>
-
-
-      <div class="step">
-
-        <div class="step-number">2</div>
-
-        <div>
-          A IA cria roteiro, título, descrição e estrutura.
-        </div>
-
-      </div>
-
-
-      <div class="step">
-
-        <div class="step-number">3</div>
-
-        <div>
-          A narração e os visuais são preparados.
-        </div>
-
-      </div>
-
-
-      <div class="step">
-
-        <div class="step-number">4</div>
-
-        <div>
-          O vídeo é editado automaticamente.
-        </div>
-
-      </div>
-
-
-      <div class="step">
-
-        <div class="step-number">5</div>
-
-        <div>
-          O resultado fica pronto para o YouTube.
-        </div>
-
-      </div>
-
-    </section>
-
-  </main>
-
-
-  <section id="futureSection" class="future">
-
-    <div class="future-card">
-
-      <div id="futureIcon" class="big">🖼️</div>
-
-      <h2 id="futureTitle">
-        Criador de Thumbnail
-      </h2>
-
-      <p id="futureText">
-        Esta área será nosso gerador automático de thumbnails.
-        Vamos construir uma solução visual forte e gratuita.
-      </p>
 
     </div>
 
@@ -1156,317 +862,342 @@
 
 </div>
 
-
 <nav class="bottom-nav">
 
-  <button
-    class="bottom-item ativo"
-    onclick="voltarInicio()">
+  <a
+    href="#"
+    class="active">
 
-    <span>⌂</span>
+    <span class="nav-icon">
+      🏠
+    </span>
+
     Início
 
-  </button>
+  </a>
 
+  <a href="#tema">
 
-  <button
-    class="bottom-item"
-    onclick="irParaCriacao('Short')">
+    <span class="nav-icon">
+      ➕
+    </span>
 
-    <span>🎬</span>
     Criar
 
-  </button>
+  </a>
 
+  <a href="#">
 
-  <button
-    class="bottom-item"
-    onclick="mostrarFuturo('thumbnail')">
+    <span class="nav-icon">
+      🖼️
+    </span>
 
-    <span>🖼️</span>
     Thumbnail
 
-  </button>
+  </a>
 
+  <a href="#">
 
-  <button
-    class="bottom-item"
-    onclick="mostrarFuturo('videos')">
+    <span class="nav-icon">
+      📺
+    </span>
 
-    <span>📚</span>
     Vídeos
 
-  </button>
+  </a>
 
 </nav>
 
-
 <script>
 
-let tipo = "Short";
-let duracao = "45 segundos";
+  let tipo = "Short";
+
+  let duracao = "30 segundos";
+
+  let numeroPedido = null;
+
+  let intervaloStatus = null;
 
 
-function selecionarTipo(novoTipo) {
+  function selecionarTipo(novoTipo) {
 
-  tipo = novoTipo;
+    tipo = novoTipo;
 
-  document
-    .getElementById("btnShort")
-    .classList.remove("ativo");
+    const short =
+      document.getElementById("tipoShort");
 
-  document
-    .getElementById("btnLongo")
-    .classList.remove("ativo");
+    const longo =
+      document.getElementById("tipoLongo");
 
+    const duracoesShort =
+      document.getElementById("duracoesShort");
 
-  if (novoTipo === "Short") {
-
-    document
-      .getElementById("btnShort")
-      .classList.add("ativo");
-
-    document
-      .getElementById("duracoesShort")
-      .style.display = "grid";
-
-    document
-      .getElementById("duracoesLongo")
-      .style.display = "none";
-
-    duracao = "45 segundos";
-
-  } else {
-
-    document
-      .getElementById("btnLongo")
-      .classList.add("ativo");
-
-    document
-      .getElementById("duracoesShort")
-      .style.display = "none";
-
-    document
-      .getElementById("duracoesLongo")
-      .style.display = "grid";
-
-    duracao = "10 minutos";
-
-  }
+    const duracoesLongo =
+      document.getElementById("duracoesLongo");
 
 
-  document
-    .getElementById("duracaoPersonalizada")
-    .style.display = "none";
+    if (novoTipo === "Short") {
 
+      short.classList.add("active");
+      longo.classList.remove("active");
 
-  atualizarDuracoes();
+      duracoesShort.classList.remove("hidden");
+      duracoesLongo.classList.add("hidden");
 
-}
+      duracao = "30 segundos";
 
+    } else {
 
-function atualizarDuracoes() {
+      short.classList.remove("active");
+      longo.classList.add("active");
 
-  document
-    .querySelectorAll(".duration-btn")
-    .forEach(function(btn) {
+      duracoesShort.classList.add("hidden");
+      duracoesLongo.classList.remove("hidden");
 
-      btn.classList.remove("ativo");
-
-    });
-
-
-  const botoes =
-    document.querySelectorAll(
-      tipo === "Short"
-        ? "#duracoesShort .duration-btn"
-        : "#duracoesLongo .duration-btn"
-    );
-
-
-  botoes.forEach(function(btn) {
-
-    const texto = btn.textContent.trim();
-
-    if (
-      (tipo === "Short" && texto === "45s") ||
-      (tipo === "Vídeo Longo" && texto === "10 min")
-    ) {
-
-      btn.classList.add("ativo");
+      duracao = "5 minutos";
 
     }
 
-  });
-
-}
+  }
 
 
-function selecionarDuracao(novaDuracao, botao) {
+  function selecionarDuracao(botao, novaDuracao) {
 
-  duracao = novaDuracao;
+    duracao = novaDuracao;
 
-  document
-    .querySelectorAll(".duration-btn")
-    .forEach(function(btn) {
+    const botoes =
+      botao.parentElement.querySelectorAll("button");
 
-      btn.classList.remove("ativo");
+    botoes.forEach(function(item) {
+      item.classList.remove("active");
+    });
+
+    botao.classList.add("active");
+
+    document
+      .getElementById("duracaoPersonalizada")
+      .value = "";
+
+  }
+
+
+  function mostrarStatus() {
+
+    document
+      .getElementById("statusPanel")
+      .classList.add("show");
+
+  }
+
+
+  function limparStatus() {
+
+    const ids = [
+      "statusRecebido",
+      "statusRoteiro",
+      "statusVoz",
+      "statusMontando",
+      "statusPublicando",
+      "statusConcluido"
+    ];
+
+    ids.forEach(function(id) {
+
+      const elemento =
+        document.getElementById(id);
+
+      elemento.classList.remove("active");
+      elemento.classList.remove("done");
+      elemento.classList.remove("error");
 
     });
 
-  botao.classList.add("ativo");
+  }
 
 
-  document
-    .getElementById("duracaoPersonalizada")
-    .style.display = "none";
+  function atualizarStatus(status) {
 
-}
+    limparStatus();
 
+    const ordem = [
+      "recebido",
+      "roteiro",
+      "voz",
+      "montando",
+      "publicando",
+      "concluido"
+    ];
 
-function mostrarPersonalizada() {
+    const nomes = {
+      recebido: "Pedido recebido.",
+      roteiro: "O roteiro está sendo criado.",
+      voz: "A voz está sendo gerada.",
+      montando: "O vídeo está sendo montado.",
+      publicando: "O vídeo está sendo preparado para publicação.",
+      concluido: "Conteúdo concluído!"
+    };
 
-  const campo =
-    document.getElementById("duracaoPersonalizada");
-
-  campo.style.display = "block";
-
-  campo.focus();
-
-}
-
-
-function irParaCriacao(novoTipo) {
-
-  document
-    .getElementById("futureSection")
-    .style.display = "none";
-
-  document
-    .getElementById("homeSection")
-    .style.display = "block";
-
-  selecionarTipo(novoTipo);
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-
-}
+    const posicao =
+      ordem.indexOf(status);
 
 
-function voltarInicio() {
+    if (status === "erro") {
 
-  document
-    .getElementById("futureSection")
-    .style.display = "none";
+      document
+        .getElementById("statusRecebido")
+        .classList.add("error");
 
-  document
-    .getElementById("homeSection")
-    .style.display = "block";
+      document
+        .getElementById("statusRecebido")
+        .querySelector(".progress-icon")
+        .textContent = "!";
 
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+      document
+        .getElementById("statusSubtitle")
+        .textContent =
+        "Ocorreu um erro durante o processamento.";
 
-}
+      return;
 
-
-function mostrarFuturo(tipoTela) {
-
-  document
-    .getElementById("homeSection")
-    .style.display = "none";
-
-  document
-    .getElementById("futureSection")
-    .style.display = "block";
+    }
 
 
-  const icon =
-    document.getElementById("futureIcon");
+    ordem.forEach(function(item, index) {
 
-  const title =
-    document.getElementById("futureTitle");
+      const elemento =
+        document.getElementById(
+          "status" +
+          item.charAt(0).toUpperCase() +
+          item.slice(1)
+        );
 
-  const text =
-    document.getElementById("futureText");
+      if (!elemento) {
+        return;
+      }
+
+      if (index < posicao) {
+        elemento.classList.add("done");
+        elemento.querySelector(".progress-icon").textContent = "✓";
+      }
+
+      if (index === posicao) {
+        elemento.classList.add("active");
+
+        if (item !== "concluido") {
+          elemento.querySelector(".progress-icon").textContent = "●";
+        }
+      }
+
+    });
 
 
-  if (tipoTela === "thumbnail") {
-
-    icon.textContent = "🖼️";
-
-    title.textContent =
-      "Criador de Thumbnail";
-
-    text.textContent =
-      "Aqui vamos construir nosso gerador automático de thumbnails, com foco em qualidade visual, impacto e soluções gratuitas.";
-
-  } else {
-
-    icon.textContent = "📚";
-
-    title.textContent =
-      "Meus vídeos";
-
-    text.textContent =
-      "Aqui ficará sua biblioteca de vídeos, status de processamento, resultados e links para o YouTube.";
+    document
+      .getElementById("statusSubtitle")
+      .textContent =
+      nomes[status] ||
+      "Processando seu conteúdo.";
 
   }
 
 
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+  async function consultarStatus() {
 
-}
+    if (!numeroPedido) {
+      return;
+    }
+
+    try {
+
+      const resposta =
+        await fetch(
+          "/.netlify/functions/status-pedido?numero=" +
+          encodeURIComponent(numeroPedido)
+        );
+
+      const resultado =
+        await resposta.json();
 
 
-async function enviar() {
+      if (!resposta.ok || !resultado.sucesso) {
+        throw new Error(
+          resultado.erro ||
+          "Não foi possível consultar o status."
+        );
+      }
 
-  const tema =
-    document
-      .getElementById("tema")
-      .value
-      .trim();
+
+      atualizarStatus(resultado.status);
 
 
-  if (!tema) {
+      document
+        .getElementById("orderInfo")
+        .innerHTML =
+        "<strong>Pedido #" +
+        resultado.numero +
+        "</strong><br>" +
+        resultado.titulo;
 
-    alert("Digite o tema do vídeo.");
 
-    return;
+      if (
+        resultado.status === "concluido" ||
+        resultado.status === "erro"
+      ) {
+
+        if (intervaloStatus) {
+          clearInterval(intervaloStatus);
+          intervaloStatus = null;
+        }
+
+      }
+
+    } catch (erro) {
+
+      console.error(
+        "Erro ao consultar status:",
+        erro
+      );
+
+    }
 
   }
 
 
-  const personalizada =
-    document
-      .getElementById("duracaoPersonalizada")
-      .value;
+  function iniciarAcompanhamento(numero) {
+
+    numeroPedido = numero;
+
+    mostrarStatus();
+
+    atualizarStatus("recebido");
+
+    consultarStatus();
+
+    if (intervaloStatus) {
+      clearInterval(intervaloStatus);
+    }
+
+    intervaloStatus =
+      setInterval(
+        consultarStatus,
+        10000
+      );
+
+  }
 
 
-  let duracaoFinal = duracao;
+  async function enviar() {
+
+    const tema =
+      document
+        .getElementById("tema")
+        .value
+        .trim();
 
 
-  if (personalizada) {
-
-    const segundos =
-      parseInt(personalizada);
-
-
-    if (
-      isNaN(segundos) ||
-      segundos < 10 ||
-      segundos > 3600
-    ) {
+    if (!tema) {
 
       alert(
-        "A duração personalizada deve estar entre 10 e 3600 segundos."
+        "Digite o tema do vídeo."
       );
 
       return;
@@ -1474,153 +1205,211 @@ async function enviar() {
     }
 
 
-    duracaoFinal =
-      segundos + " segundos";
-
-  }
-
-
-  const estilo =
-    document
-      .getElementById("estilo")
-      .value;
+    const personalizada =
+      document
+        .getElementById("duracaoPersonalizada")
+        .value;
 
 
-  const voz =
-    document
-      .getElementById("voz")
-      .value;
+    let duracaoFinal =
+      duracao;
 
 
-  const idioma =
-    document
-      .getElementById("idioma")
-      .value;
+    if (personalizada) {
+
+      const segundos =
+        parseInt(personalizada);
 
 
-  const visual =
-    document
-      .getElementById("visual")
-      .value;
+      if (
+        isNaN(segundos) ||
+        segundos < 10 ||
+        segundos > 3600
+      ) {
+
+        alert(
+          "A duração personalizada deve estar entre 10 e 3600 segundos."
+        );
+
+        return;
+
+      }
 
 
-  const intensidade =
-    document
-      .getElementById("intensidade")
-      .value;
-
-
-  const referenciasSelecionadas =
-    document.querySelectorAll(
-      ".reference-item input:checked"
-    );
-
-
-  const referencias = [];
-
-
-  referenciasSelecionadas.forEach(function(item) {
-
-    referencias.push(item.value);
-
-  });
-
-
-  const botao =
-    document.getElementById("createButton");
-
-
-  botao.disabled = true;
-
-  botao.textContent =
-    "⏳ ENVIANDO PEDIDO...";
-
-
-  try {
-
-    const resposta =
-      await fetch("/.netlify/functions/criar-pedido", {
-
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-
-          tipo: tipo,
-
-          tema: tema,
-
-          duracao: duracaoFinal,
-
-          estilo: estilo,
-
-          voz: voz,
-
-          idioma: idioma,
-
-          visual: visual,
-
-          referencias: referencias,
-
-          intensidade: intensidade
-
-        })
-
-      });
-
-
-    const resultado =
-      await resposta.json();
-
-
-    if (!resposta.ok || !resultado.sucesso) {
-
-      throw new Error(
-        resultado.erro ||
-        "Não foi possível enviar o pedido."
-      );
+      duracaoFinal =
+        segundos +
+        " segundos";
 
     }
 
 
-    botao.textContent =
-      "✅ PEDIDO ENVIADO!";
+    const estilo =
+      document
+        .getElementById("estilo")
+        .value;
 
 
-    alert(
-      "Pedido enviado com sucesso! O Karina OS começou a trabalhar."
+    const voz =
+      document
+        .getElementById("voz")
+        .value;
+
+
+    const idioma =
+      document
+        .getElementById("idioma")
+        .value;
+
+
+    const visual =
+      document
+        .getElementById("visual")
+        .value;
+
+
+    const intensidade =
+      document
+        .getElementById("intensidade")
+        .value;
+
+
+    const referenciasSelecionadas =
+      document.querySelectorAll(
+        ".reference-item input:checked"
+      );
+
+
+    const referencias = [];
+
+
+    referenciasSelecionadas.forEach(
+      function(item) {
+
+        referencias.push(
+          item.value
+        );
+
+      }
     );
 
 
-    document
-      .getElementById("tema")
-      .value = "";
+    const botao =
+      document.getElementById(
+        "createButton"
+      );
 
 
-  } catch (erro) {
-
-    console.error(erro);
-
-
-    alert(
-      "Não foi possível enviar o pedido.\n\n" +
-      erro.message
-    );
-
+    botao.disabled = true;
 
     botao.textContent =
-      "🚀 CRIAR CONTEÚDO";
+      "⏳ ENVIANDO PEDIDO...";
 
-  } finally {
 
-    botao.disabled = false;
+    try {
+
+      const resposta =
+        await fetch(
+          "/.netlify/functions/criar-pedido",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+
+              tipo: tipo,
+
+              tema: tema,
+
+              duracao: duracaoFinal,
+
+              estilo: estilo,
+
+              voz: voz,
+
+              idioma: idioma,
+
+              visual: visual,
+
+              referencias: referencias,
+
+              intensidade: intensidade
+
+            })
+          }
+        );
+
+
+      const resultado =
+        await resposta.json();
+
+
+      if (
+        !resposta.ok ||
+        !resultado.sucesso
+      ) {
+
+        throw new Error(
+          resultado.erro ||
+          "Não foi possível enviar o pedido."
+        );
+
+      }
+
+
+      botao.textContent =
+        "✅ PEDIDO ENVIADO!";
+
+
+      document
+        .getElementById("statusSubtitle")
+        .textContent =
+        "Pedido recebido. Iniciando processamento...";
+
+
+      document
+        .getElementById("tema")
+        .value = "";
+
+
+      iniciarAcompanhamento(
+        resultado.numero
+      );
+
+
+      document
+        .getElementById("statusPanel")
+        .scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+
+
+    } catch (erro) {
+
+      console.error(erro);
+
+
+      alert(
+        "Não foi possível enviar o pedido.\n\n" +
+        erro.message
+      );
+
+
+      botao.textContent =
+        "🚀 CRIAR CONTEÚDO";
+
+
+    } finally {
+
+      botao.disabled = false;
+
+    }
 
   }
-
-}
 
 </script>
 
