@@ -39,7 +39,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pillow requests
 
-      - name: Gerar thumbnail temática
+      - name: Gerar thumbnail profissional
         env:
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
         run: |
@@ -48,27 +48,30 @@ jobs:
           import os
           import re
           import sys
-          import textwrap
           import requests
 
           from io import BytesIO
-          from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
+          from PIL import Image
+          from PIL import ImageDraw
+          from PIL import ImageFont
+          from PIL import ImageEnhance
+          from PIL import ImageFilter
+
+          # ==========================================================
+          # ARQUIVOS
+          # ==========================================================
 
           METADATA_FILE = "resultado/youtube-metadata.json"
           OUTPUT_FILE = "resultado/thumbnail.jpg"
           CREDIT_FILE = "resultado/pexels-credit.txt"
 
-          # ==========================================================
-          # VALIDAÇÕES
-          # ==========================================================
-
           if not os.path.exists(METADATA_FILE):
               print("ERRO: youtube-metadata.json não encontrado.")
               sys.exit(1)
 
-          api_key = os.environ.get("PEXELS_API_KEY", "").strip()
+          API_KEY = os.environ.get("PEXELS_API_KEY", "").strip()
 
-          if not api_key:
+          if not API_KEY:
               print("ERRO: PEXELS_API_KEY não configurada.")
               sys.exit(1)
 
@@ -78,27 +81,102 @@ jobs:
           titulo = str(metadata.get("titulo", "")).strip()
 
           if not titulo:
-              print("ERRO: título do vídeo não encontrado.")
+              print("ERRO: título vazio.")
               sys.exit(1)
 
           titulo = " ".join(titulo.split())
 
-          print(f"Título do vídeo: {titulo}")
+          print("==========================================")
+          print("GERADOR DE THUMBNAIL V2")
+          print("==========================================")
+          print(f"Título: {titulo}")
 
           # ==========================================================
-          # CONVERTER TÍTULO EM BUSCA
+          # CONFIGURAÇÃO
           # ==========================================================
 
-          palavras_ignoradas = {
+          W = 1280
+          H = 720
+
+          # ==========================================================
+          # PALAVRAS IRRELEVANTES PARA BUSCA
+          # ==========================================================
+
+          ignoradas = {
               "a", "o", "as", "os",
               "um", "uma", "uns", "umas",
               "de", "do", "da", "dos", "das",
               "em", "no", "na", "nos", "nas",
               "por", "para", "com",
-              "e", "ou",
-              "que", "como",
-              "sobre",
-              "se"
+              "e", "ou", "que",
+              "como", "sobre",
+              "mais", "menos",
+              "se", "é",
+              "são", "um", "uma"
+          }
+
+          # ==========================================================
+          # TRADUÇÕES PARA BUSCA VISUAL
+          # ==========================================================
+
+          traducoes = {
+              "baleia": "whale",
+              "baleias": "whales",
+              "azul": "blue whale",
+              "tubarão": "shark",
+              "tubarões": "sharks",
+              "golfinho": "dolphin",
+              "golfinhos": "dolphins",
+              "leão": "lion",
+              "leões": "lions",
+              "tigre": "tiger",
+              "tigres": "tigers",
+              "elefante": "elephant",
+              "elefantes": "elephants",
+              "girafa": "giraffe",
+              "girafas": "giraffes",
+              "cachorro": "dog",
+              "cachorros": "dogs",
+              "gato": "cat",
+              "gatos": "cats",
+              "aves": "birds",
+              "pássaro": "bird",
+              "pássaros": "birds",
+              "inseto": "insect",
+              "insetos": "insects",
+              "dinossauro": "dinosaur",
+              "dinossauros": "dinosaurs",
+              "oceano": "ocean",
+              "oceanos": "ocean",
+              "mar": "ocean",
+              "floresta": "forest",
+              "natureza": "nature",
+              "espaço": "space",
+              "universo": "universe",
+              "planeta": "planet",
+              "planetas": "planets",
+              "terra": "earth",
+              "lua": "moon",
+              "sol": "sun",
+              "vulcão": "volcano",
+              "vulcões": "volcano",
+              "cérebro": "brain",
+              "ciência": "science",
+              "ciencia": "science",
+              "psicologia": "psychology",
+              "humano": "human",
+              "humanos": "humans",
+              "corpo": "human body",
+              "água": "water",
+              "fogo": "fire",
+              "tecnologia": "technology",
+              "robô": "robot",
+              "robôs": "robots",
+              "cidade": "city",
+              "história": "history",
+              "histórico": "history",
+              "comida": "food",
+              "alimentos": "food"
           }
 
           palavras = re.findall(
@@ -106,101 +184,49 @@ jobs:
               titulo.lower()
           )
 
-          palavras_importantes = [
-              palavra
-              for palavra in palavras
-              if palavra not in palavras_ignoradas
-              and len(palavra) >= 3
+          importantes = [
+              p for p in palavras
+              if p not in ignoradas
+              and len(p) >= 3
           ]
 
-          if not palavras_importantes:
-              palavras_importantes = palavras[:5]
+          if not importantes:
+              importantes = palavras[:5]
 
-          # Pega no máximo as palavras mais relevantes do título.
-          termos = palavras_importantes[:6]
+          termos = importantes[:7]
 
-          busca = " ".join(termos)
-
-          # Inglês costuma trazer uma variedade visual maior no Pexels.
-          traducoes = {
-              "animais": "animals",
-              "animal": "animal",
-              "cachorro": "dog",
-              "cães": "dogs",
-              "gato": "cat",
-              "gatos": "cats",
-              "leão": "lion",
-              "leões": "lions",
-              "tigre": "tiger",
-              "tigres": "tigers",
-              "aves": "birds",
-              "pássaros": "birds",
-              "mar": "ocean",
-              "oceano": "ocean",
-              "floresta": "forest",
-              "natureza": "nature",
-              "espaço": "space",
-              "planeta": "planet",
-              "planetas": "planets",
-              "universo": "universe",
-              "cérebro": "brain",
-              "ciencia": "science",
-              "ciência": "science",
-              "psicologia": "psychology",
-              "humano": "human",
-              "humanos": "humans",
-              "corpo": "human body",
-              "água": "water",
-              "fogo": "fire",
-              "vulcão": "volcano",
-              "vulcões": "volcano",
-              "dinossauro": "dinosaur",
-              "dinossauros": "dinosaurs",
-              "insetos": "insects",
-              "inseto": "insect",
-              "comida": "food",
-              "casa": "home",
-              "cidade": "city",
-              "tecnologia": "technology",
-              "robô": "robot",
-              "robôs": "robots",
-              "eletrônica": "electronics",
-              "história": "history",
-              "terra": "earth",
-          }
-
-          termos_busca = [
-              traducoes.get(t, t)
-              for t in termos
+          termos_ingles = [
+              traducoes.get(p, p)
+              for p in termos
           ]
 
-          busca_ingles = " ".join(termos_busca)
+          busca = " ".join(termos_ingles)
 
-          print(f"Busca no Pexels: {busca_ingles}")
+          print(f"Busca principal: {busca}")
 
           # ==========================================================
-          # BUSCAR IMAGEM NO PEXELS
+          # BUSCA PEXELS
           # ==========================================================
 
           headers = {
-              "Authorization": api_key,
-              "User-Agent": "KarinaOS-Thumbnail/1.0"
+              "Authorization": API_KEY,
+              "User-Agent": "KarinaOS-Thumbnail/2.0"
           }
 
-          url = "https://api.pexels.com/v1/search"
+          endpoint = "https://api.pexels.com/v1/search"
 
-          params = {
-              "query": busca_ingles,
+          parametros = {
+              "query": busca,
               "orientation": "landscape",
               "size": "large",
-              "per_page": 15,
+              "per_page": 30,
               "locale": "en-US"
           }
 
           resposta = requests.get(
-              url,
+              endpoint,
               headers=headers,
-              params=params,
+              params=parametros,
               timeout=30
           )
 
@@ -213,39 +239,51 @@ jobs:
               sys.exit(1)
 
           dados = resposta.json()
-
           fotos = dados.get("photos", [])
 
           if not fotos:
-              print("Nenhuma imagem encontrada no Pexels.")
+              print("Nenhuma imagem encontrada.")
               sys.exit(1)
 
           # ==========================================================
-          # ESCOLHER A MELHOR IMAGEM
+          # ESCOLHA DA IMAGEM
+          #
+          # Preferimos imagens:
+          # - grandes
+          # - horizontais
+          # - próximas de 16:9
           # ==========================================================
 
           melhor = None
-          melhor_pontuacao = -1
+          melhor_pontuacao = -999999
 
           for foto in fotos:
+
               largura = int(foto.get("width", 0))
               altura = int(foto.get("height", 0))
 
-              if largura <= 0 or altura <= 0:
+              if largura < 1000 or altura < 500:
                   continue
 
               proporcao = largura / altura
 
-              # Preferência por imagens próximas de 16:9.
-              diferenca = abs(proporcao - (16 / 9))
+              diferenca = abs(
+                  proporcao - (16 / 9)
+              )
 
-              pontuacao = 100 - (diferenca * 50)
+              pontuacao = 100
 
-              if largura >= 1600:
-                  pontuacao += 20
+              pontuacao -= diferenca * 60
 
-              if altura >= 900:
+              if largura >= 1800:
+                  pontuacao += 15
+
+              if altura >= 1000:
                   pontuacao += 10
+
+              # Fotos extremamente panorâmicas recebem penalidade.
+              if proporcao > 2.2:
+                  pontuacao -= 25
 
               if pontuacao > melhor_pontuacao:
                   melhor_pontuacao = pontuacao
@@ -254,67 +292,67 @@ jobs:
           if melhor is None:
               melhor = fotos[0]
 
-          foto_url = (
-              melhor
-              .get("src", {})
-              .get("large2x")
-              or melhor
-              .get("src", {})
-              .get("large")
+          src = melhor.get("src", {})
+
+          imagem_url = (
+              src.get("large2x")
+              or src.get("large")
+              or src.get("original")
           )
 
-          if not foto_url:
-              print("ERRO: Pexels não retornou URL da imagem.")
+          if not imagem_url:
+              print("ERRO: URL da imagem não encontrada.")
               sys.exit(1)
 
           foto_id = melhor.get("id")
-          pagina_pexels = melhor.get("url", "")
-          fotografo = melhor.get("photographer", "Pexels")
+          fotografo = melhor.get(
+              "photographer",
+              "Pexels"
+          )
+          pagina = melhor.get("url", "")
 
-          print(f"Foto Pexels selecionada: {foto_id}")
+          print(f"Imagem escolhida: {foto_id}")
           print(f"Fotógrafo: {fotografo}")
-          print(f"Página: {pagina_pexels}")
 
           # ==========================================================
-          # BAIXAR IMAGEM
+          # DOWNLOAD
           # ==========================================================
 
-          imagem_resposta = requests.get(
-              foto_url,
+          download = requests.get(
+              imagem_url,
               headers={
                   "User-Agent": "Mozilla/5.0"
               },
               timeout=60
           )
 
-          if imagem_resposta.status_code != 200:
+          if download.status_code != 200:
               print(
                   "ERRO ao baixar imagem:",
-                  imagem_resposta.status_code
+                  download.status_code
               )
               sys.exit(1)
 
           imagem = Image.open(
-              BytesIO(imagem_resposta.content)
+              BytesIO(download.content)
           ).convert("RGB")
 
-          # ==========================================================
-          # TAMANHO FINAL
-          # ==========================================================
-
-          LARGURA = 1280
-          ALTURA = 720
-
-          proporcao_destino = LARGURA / ALTURA
-          proporcao_original = imagem.width / imagem.height
+          print(
+              f"Imagem original: "
+              f"{imagem.width}x{imagem.height}"
+          )
 
           # ==========================================================
-          # CROP CINEMATOGRÁFICO
+          # CROP 16:9
           # ==========================================================
 
-          if proporcao_original > proporcao_destino:
+          alvo = W / H
+          atual = imagem.width / imagem.height
+
+          if atual > alvo:
+
               nova_largura = int(
-                  imagem.height * proporcao_destino
+                  imagem.height * alvo
               )
 
               esquerda = (
@@ -331,8 +369,9 @@ jobs:
               )
 
           else:
+
               nova_altura = int(
-                  imagem.width / proporcao_destino
+                  imagem.width / alvo
               )
 
               topo = (
@@ -349,63 +388,79 @@ jobs:
               )
 
           imagem = imagem.resize(
-              (LARGURA, ALTURA),
+              (W, H),
               Image.Resampling.LANCZOS
           )
 
           # ==========================================================
-          # TRATAMENTO DE IMAGEM
+          # TRATAMENTO CINEMATOGRÁFICO
           # ==========================================================
 
-          imagem = ImageEnhance.Contrast(imagem).enhance(1.12)
-          imagem = ImageEnhance.Color(imagem).enhance(1.08)
-          imagem = ImageEnhance.Sharpness(imagem).enhance(1.08)
+          imagem = ImageEnhance.Contrast(
+              imagem
+          ).enhance(1.16)
+
+          imagem = ImageEnhance.Color(
+              imagem
+          ).enhance(1.12)
+
+          imagem = ImageEnhance.Sharpness(
+              imagem
+          ).enhance(1.10)
 
           # ==========================================================
-          # FUNDO ESCURECIDO
+          # ESCURECER O LADO ESQUERDO
+          #
+          # O objetivo é criar espaço para o texto sem esconder
+          # completamente a fotografia.
           # ==========================================================
 
           overlay = Image.new(
               "RGBA",
-              (LARGURA, ALTURA),
+              (W, H),
               (0, 0, 0, 0)
           )
 
-          overlay_draw = ImageDraw.Draw(overlay)
+          od = ImageDraw.Draw(overlay)
 
-          # Escurece principalmente a área do texto.
-          for x in range(LARGURA):
-              intensidade = int(
-                  175 * max(
+          for x in range(W):
+
+              proporcao = x / W
+
+              if proporcao < 0.62:
+                  intensidade = int(
+                      150 * (1 - proporcao / 0.62)
+                  )
+              else:
+                  intensidade = 0
+
+              od.line(
+                  (x, 0, x, H),
+                  fill=(
                       0,
-                      1 - (x / LARGURA) * 1.4
+                      0,
+                      0,
+                      intensidade
                   )
               )
 
-              overlay_draw.rectangle(
-                  (
-                      x,
-                      0,
-                      x + 1,
-                      ALTURA
-                  ),
-                  fill=(0, 0, 0, intensidade)
-              )
+          # Escurecimento suave na parte inferior.
+          for y in range(H):
 
-          # Gradiente inferior.
-          for y in range(ALTURA):
+              proporcao = y / H
+
               intensidade = int(
-                  120 * (y / ALTURA)
+                  65 * proporcao
               )
 
-              overlay_draw.line(
-                  (
+              od.line(
+                  (0, y, W, y),
+                  fill=(
                       0,
-                      y,
-                      LARGURA,
-                      y
-                  ),
-                  fill=(0, 0, 0, intensidade)
+                      0,
+                      0,
+                      intensidade
+                  )
               )
 
           imagem = Image.alpha_composite(
@@ -413,10 +468,50 @@ jobs:
               overlay
           ).convert("RGB")
 
+          # ==========================================================
+          # VINHETA
+          # ==========================================================
+
+          vinheta = Image.new(
+              "RGBA",
+              (W, H),
+              (0, 0, 0, 0)
+          )
+
+          vd = ImageDraw.Draw(vinheta)
+
+          # Camadas suaves nas bordas.
+          for margem in range(80):
+
+              alpha = int(
+                  70 * (1 - margem / 80)
+              )
+
+              vd.rectangle(
+                  (
+                      margem,
+                      margem,
+                      W - margem,
+                      H - margem
+                  ),
+                  outline=(
+                      0,
+                      0,
+                      0,
+                      alpha
+                  ),
+                  width=1
+              )
+
+          imagem = Image.alpha_composite(
+              imagem.convert("RGBA"),
+              vinheta
+          ).convert("RGB")
+
           draw = ImageDraw.Draw(imagem)
 
           # ==========================================================
-          # FONTES
+          # FONTE
           # ==========================================================
 
           fontes = [
@@ -427,6 +522,7 @@ jobs:
           fonte_path = None
 
           for caminho in fontes:
+
               if os.path.exists(caminho):
                   fonte_path = caminho
                   break
@@ -435,79 +531,135 @@ jobs:
               print("ERRO: fonte não encontrada.")
               sys.exit(1)
 
-          def fonte(tamanho):
+          def get_font(tamanho):
               return ImageFont.truetype(
                   fonte_path,
                   tamanho
               )
 
           # ==========================================================
-          # TEXTO CURTO PARA THUMBNAIL
+          # CRIAR TEXTO CURTO
+          #
+          # A thumbnail não usa o título inteiro.
           # ==========================================================
-
-          # A thumbnail não deve repetir um título gigantesco.
-          # Tenta encontrar uma versão curta baseada no próprio título.
 
           palavras_titulo = titulo.split()
 
-          if len(palavras_titulo) > 8:
-              palavras_thumb = palavras_titulo[:8]
-          else:
-              palavras_thumb = palavras_titulo
+          # Remove termos muito genéricos da versão da thumbnail.
+          palavras_visuais = [
+              p for p in palavras_titulo
+              if p.lower() not in ignoradas
+          ]
 
-          texto_thumb = " ".join(
-              palavras_thumb
+          if len(palavras_visuais) >= 2:
+
+              # Prioriza as primeiras palavras relevantes.
+              texto_thumb = " ".join(
+                  palavras_visuais[:5]
+              )
+
+          else:
+              texto_thumb = titulo
+
+          # ==========================================================
+          # TENTATIVA DE REDUZIR TEXTO EXCESSIVO
+          # ==========================================================
+
+          if len(texto_thumb) > 34:
+
+              texto_thumb = " ".join(
+                  texto_thumb.split()[:4]
+              )
+
+          print(
+              f"Texto da thumbnail: {texto_thumb}"
           )
+
+          # ==========================================================
+          # FONTE PRINCIPAL
+          # ==========================================================
+
+          tamanho = 88
+
+          while tamanho >= 54:
+
+              fonte_principal = get_font(tamanho)
+
+              caixa = draw.multiline_textbbox(
+                  (0, 0),
+                  texto_thumb,
+                  font=fonte_principal,
+                  spacing=4,
+                  stroke_width=4
+              )
+
+              largura_texto = (
+                  caixa[2] - caixa[0]
+              )
+
+              if largura_texto <= 700:
+                  break
+
+              tamanho -= 4
 
           # ==========================================================
           # QUEBRA DE LINHAS
           # ==========================================================
 
-          tamanho_fonte = 82
-          fonte_principal = fonte(tamanho_fonte)
-
-          largura_maxima = 760
+          palavras = texto_thumb.split()
 
           linhas = []
-          linha = ""
+          linha_atual = ""
 
-          for palavra in texto_thumb.split():
+          largura_maxima = 700
+
+          for palavra in palavras:
 
               teste = (
                   palavra
-                  if not linha
-                  else linha + " " + palavra
+                  if not linha_atual
+                  else linha_atual + " " + palavra
               )
 
               caixa = draw.textbbox(
                   (0, 0),
                   teste,
                   font=fonte_principal,
-                  stroke_width=5
+                  stroke_width=4
               )
 
-              largura = caixa[2] - caixa[0]
+              largura = (
+                  caixa[2] - caixa[0]
+              )
 
               if largura <= largura_maxima:
-                  linha = teste
+
+                  linha_atual = teste
+
               else:
-                  if linha:
-                      linhas.append(linha)
 
-                  linha = palavra
+                  if linha_atual:
+                      linhas.append(
+                          linha_atual
+                      )
 
-          if linha:
-              linhas.append(linha)
+                  linha_atual = palavra
 
-          linhas = linhas[:4]
+          if linha_atual:
+              linhas.append(
+                  linha_atual
+              )
+
+          linhas = linhas[:3]
 
           # ==========================================================
-          # PAINEL DE TEXTO
+          # MEDIR TEXTO
           # ==========================================================
 
-          altura_linhas = []
+          alturas = []
 
           for linha in linhas:
+
               caixa = draw.textbbox(
                   (0, 0),
                   linha,
@@ -515,85 +667,54 @@ jobs:
                   stroke_width=5
               )
 
-              altura_linhas.append(
+              alturas.append(
                   caixa[3] - caixa[1]
               )
 
-          espacamento = 12
+          espacamento = 10
 
           altura_total = (
-              sum(altura_linhas)
-              + espacamento * max(
-                  0,
+              sum(alturas)
+              + espacamento * (
                   len(linhas) - 1
               )
           )
 
-          margem_x = 55
-          margem_y = 55
-
-          painel_topo = max(
-              margem_y,
-              (ALTURA - altura_total) // 2 - 35
-          )
-
-          painel_baixo = min(
-              ALTURA - margem_y,
-              painel_topo
-              + altura_total
-              + 70
-          )
-
           # ==========================================================
-          # PAINEL TRANSPARENTE
+          # POSICIONAMENTO
           # ==========================================================
 
-          painel = Image.new(
-              "RGBA",
-              (LARGURA, ALTURA),
-              (0, 0, 0, 0)
-          )
+          x = 55
 
-          painel_draw = ImageDraw.Draw(painel)
-
-          painel_draw.rounded_rectangle(
-              (
-                  margem_x,
-                  painel_topo,
-                  margem_x + 800,
-                  painel_baixo
-              ),
-              radius=28,
-              fill=(0, 0, 0, 135)
-          )
-
-          imagem = Image.alpha_composite(
-              imagem.convert("RGBA"),
-              painel
-          ).convert("RGB")
-
-          draw = ImageDraw.Draw(imagem)
+          y = (
+              H - altura_total
+          ) / 2
 
           # ==========================================================
-          # LINHA DE DESTAQUE
+          # PEQUENA LINHA DE DESTAQUE
+          #
+          # Não é logo nem marca d'água.
+          # Serve apenas para criar hierarquia visual.
           # ==========================================================
+
+          altura_destaque = (
+              altura_total + 30
+          )
 
           draw.rounded_rectangle(
               (
-                  margem_x,
-                  painel_topo,
-                  margem_x + 14,
-                  painel_baixo
+                  x,
+                  y - 18,
+                  x + 12,
+                  y + altura_destaque
               ),
-              radius=7,
+              radius=6,
               fill="white"
           )
 
           # ==========================================================
-          # TEXTO
+          # TEXTO PRINCIPAL
           # ==========================================================
-
-          y = painel_topo + 30
 
           for indice, linha in enumerate(linhas):
 
@@ -610,33 +731,51 @@ jobs:
 
               draw.text(
                   (
-                      margem_x + 38,
+                      x + 35,
                       y
                   ),
                   linha,
                   font=fonte_principal,
                   fill="white",
-                  stroke_width=7,
+                  stroke_width=8,
                   stroke_fill="black"
               )
 
-              y += altura + espacamento
+              y += (
+                  altura
+                  + espacamento
+              )
 
           # ==========================================================
-          # BORDA DISCRETA
+          # PEQUENO EFEITO DE PROFUNDIDADE
           # ==========================================================
 
-          draw.rounded_rectangle(
-              (
-                  8,
-                  8,
-                  LARGURA - 8,
-                  ALTURA - 8
-              ),
-              radius=18,
-              outline="white",
-              width=4
+          sombra = Image.new(
+              "RGBA",
+              (W, H),
+              (0, 0, 0, 0)
           )
+
+          sd = ImageDraw.Draw(sombra)
+
+          sd.rectangle(
+              (
+                  0,
+                  H - 90,
+                  W,
+                  H
+              ),
+              fill=(0, 0, 0, 35)
+          )
+
+          sombra = sombra.filter(
+              ImageFilter.GaussianBlur(12)
+          )
+
+          imagem = Image.alpha_composite(
+              imagem.convert("RGBA"),
+              sombra
+          ).convert("RGB")
 
           # ==========================================================
           # SALVAR
@@ -645,12 +784,12 @@ jobs:
           imagem.save(
               OUTPUT_FILE,
               "JPEG",
-              quality=95,
+              quality=96,
               optimize=True
           )
 
           # ==========================================================
-          # CRÉDITO PEXELS SEPARADO
+          # CRÉDITO SEPARADO
           # ==========================================================
 
           with open(
@@ -658,21 +797,25 @@ jobs:
               "w",
               encoding="utf-8"
           ) as f:
+
               f.write(
                   "Imagem utilizada na thumbnail: Pexels\n"
               )
+
               f.write(
                   f"Fotógrafo: {fotografo}\n"
               )
+
               f.write(
-                  f"Página da imagem: {pagina_pexels}\n"
+                  f"Página da imagem: {pagina}\n"
               )
+
               f.write(
                   "Fonte: https://www.pexels.com/\n"
               )
 
           # ==========================================================
-          # VALIDAÇÃO FINAL
+          # VALIDAÇÃO
           # ==========================================================
 
           final = Image.open(
@@ -681,20 +824,23 @@ jobs:
 
           if final.size != (1280, 720):
               print(
-                  f"ERRO: tamanho final incorreto: {final.size}"
+                  "ERRO: tamanho final incorreto:",
+                  final.size
               )
               sys.exit(1)
 
           print("==========================================")
-          print("THUMBNAIL TEMÁTICA GERADA COM SUCESSO")
+          print("THUMBNAIL V2 GERADA")
           print("==========================================")
-          print(f"Tamanho: {final.size}")
-          print(f"Imagem Pexels: {foto_id}")
-          print(f"Fotógrafo: {fotografo}")
-          print("Sem marca d'água.")
-          print("Sem logotipo.")
-          print("Sem assinatura.")
-          print("Crédito salvo separadamente.")
+          print("1280x720")
+          print("Imagem temática do Pexels")
+          print("Texto reduzido")
+          print("Composição cinematográfica")
+          print("Sem borda externa")
+          print("Sem painel gigante")
+          print("Sem logo")
+          print("Sem assinatura")
+          print("Sem marca d'água")
           print("==========================================")
           PY
 
@@ -710,8 +856,9 @@ jobs:
       - name: Finalizar
         run: |
           echo "=========================================="
-          echo "WORKFLOW DE THUMBNAIL FINALIZADO"
+          echo "THUMBNAIL V2 FINALIZADA"
           echo "=========================================="
-          echo "Thumbnail: thumbnail.jpg"
-          echo "Crédito: pexels-credit.txt"
+          echo "Arquivo: thumbnail.jpg"
+          echo "Tamanho: 1280x720"
+          echo "Sem marca d'água."
           echo "Disponível no artefato thumbnail-youtube."
