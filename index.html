@@ -61,8 +61,6 @@
       padding: 18px 16px 30px;
     }
 
-    /* HEADER */
-
     .topbar {
       display: flex;
       align-items: center;
@@ -109,8 +107,6 @@
       box-shadow: 0 0 12px rgba(114,230,160,0.6);
     }
 
-    /* HERO */
-
     .hero {
       margin-bottom: 22px;
     }
@@ -130,8 +126,6 @@
       line-height: 1.5;
       max-width: 540px;
     }
-
-    /* NAV CARDS */
 
     .quick-nav {
       display: grid;
@@ -177,8 +171,6 @@
       line-height: 1.35;
     }
 
-    /* SECTION */
-
     .section-title {
       display: flex;
       align-items: center;
@@ -196,8 +188,6 @@
       color: var(--muted);
       font-size: 11px;
     }
-
-    /* FORM CARD */
 
     .panel {
       background: rgba(20,20,23,0.92);
@@ -254,8 +244,6 @@
       border-color: #686871;
     }
 
-    /* TYPE */
-
     .choice-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -292,8 +280,6 @@
     .choice.ativo small {
       color: #55555d;
     }
-
-    /* DURATION */
 
     .duration-grid {
       display: grid;
@@ -334,8 +320,6 @@
       display: none;
       margin-top: 9px;
     }
-
-    /* REFERENCES */
 
     .references-box {
       border: 1px solid var(--border);
@@ -379,8 +363,6 @@
       line-height: 1.4;
     }
 
-    /* NOTICE */
-
     .notice {
       padding: 13px;
       margin-top: 12px;
@@ -402,8 +384,6 @@
       color: #a9c3d5;
     }
 
-    /* CREATE */
-
     .create-button {
       width: 100%;
       min-height: 58px;
@@ -423,7 +403,10 @@
       transform: scale(.985);
     }
 
-    /* INFO */
+    .create-button:disabled {
+      opacity: .65;
+      cursor: wait;
+    }
 
     .how-card {
       margin-top: 14px;
@@ -461,8 +444,6 @@
       font-weight: 800;
       flex-shrink: 0;
     }
-
-    /* BOTTOM NAV */
 
     .bottom-nav {
       position: fixed;
@@ -504,8 +485,6 @@
       background: #fff;
       color: #09090b;
     }
-
-    /* PLACEHOLDER SECTIONS */
 
     .future {
       display: none;
@@ -556,8 +535,6 @@
 
 <div class="app">
 
-  <!-- HEADER -->
-
   <header class="topbar">
 
     <div class="brand">
@@ -575,8 +552,6 @@
 
   </header>
 
-
-  <!-- HOME -->
 
   <main id="homeSection">
 
@@ -665,11 +640,7 @@
     </div>
 
 
-    <!-- FORM -->
-
     <section class="panel">
-
-      <!-- TYPE -->
 
       <div class="field">
 
@@ -713,8 +684,6 @@
       </div>
 
 
-      <!-- THEME -->
-
       <div class="field">
 
         <label class="field-label">
@@ -732,8 +701,6 @@
 
       </div>
 
-
-      <!-- DURATION -->
 
       <div class="field">
 
@@ -833,8 +800,6 @@
       </div>
 
 
-      <!-- STYLE -->
-
       <div class="field">
 
         <label class="field-label">
@@ -855,8 +820,6 @@
       </div>
 
 
-      <!-- VOICE -->
-
       <div class="field">
 
         <label class="field-label">
@@ -874,8 +837,6 @@
       </div>
 
 
-      <!-- LANGUAGE -->
-
       <div class="field">
 
         <label class="field-label">
@@ -892,8 +853,6 @@
 
       </div>
 
-
-      <!-- VISUAL -->
 
       <div class="field">
 
@@ -914,8 +873,6 @@
 
       </div>
 
-
-      <!-- REFERENCES -->
 
       <div class="field">
 
@@ -1056,8 +1013,6 @@
       </div>
 
 
-      <!-- INTENSITY -->
-
       <div class="field">
 
         <label class="field-label">
@@ -1101,10 +1056,9 @@
       </div>
 
 
-      <!-- CREATE -->
-
       <button
         type="button"
+        id="createButton"
         class="create-button"
         onclick="enviar()">
 
@@ -1114,8 +1068,6 @@
 
     </section>
 
-
-    <!-- HOW IT WORKS -->
 
     <section class="how-card">
 
@@ -1183,8 +1135,6 @@
   </main>
 
 
-  <!-- FUTURE -->
-
   <section id="futureSection" class="future">
 
     <div class="future-card">
@@ -1206,8 +1156,6 @@
 
 </div>
 
-
-<!-- BOTTOM NAV -->
 
 <nav class="bottom-nav">
 
@@ -1478,7 +1426,7 @@ function mostrarFuturo(tipoTela) {
 }
 
 
-function enviar() {
+async function enviar() {
 
   const tema =
     document
@@ -1578,66 +1526,99 @@ function enviar() {
   });
 
 
-  const tituloIssue =
-    tipo === "Short"
-      ? "Criar Short: " + tema
-      : "Criar Vídeo Longo: " + tema;
+  const botao =
+    document.getElementById("createButton");
 
 
-  const corpo =
+  botao.disabled = true;
 
-`### TIPO DE CONTEÚDO
-${tipo}
-
-### TEMA
-${tema}
-
-### DURAÇÃO
-${duracaoFinal}
-
-### ESTILO
-${estilo}
-
-### VOZ
-${voz}
-
-### IDIOMA
-${idioma}
-
-### VISUAL
-${visual}
-
-### REFERÊNCIAS
-${referencias.length
-  ? referencias.join(", ")
-  : "Nenhuma selecionada"}
-
-### INTENSIDADE DAS REFERÊNCIAS
-${intensidade}
-
-### ORIENTAÇÃO EDITORIAL
-Use as referências selecionadas somente como orientação
-de estrutura, ritmo, abordagem, linguagem, narrativa e
-forma de apresentar informações.
-
-Não copie frases, roteiros, títulos, textos, exemplos
-específicos ou sequências identificáveis das referências.
-
-O resultado deve ser original e adequado ao tema solicitado.
-
-### STATUS
-Novo pedido de conteúdo`;
+  botao.textContent =
+    "⏳ ENVIANDO PEDIDO...";
 
 
-  const url =
-    "https://github.com/karinaosproject/youtube-shorts-automatico/issues/new"
-    + "?title="
-    + encodeURIComponent(tituloIssue)
-    + "&body="
-    + encodeURIComponent(corpo);
+  try {
+
+    const resposta =
+      await fetch("/.netlify/functions/criar-pedido", {
+
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+
+          tipo: tipo,
+
+          tema: tema,
+
+          duracao: duracaoFinal,
+
+          estilo: estilo,
+
+          voz: voz,
+
+          idioma: idioma,
+
+          visual: visual,
+
+          referencias: referencias,
+
+          intensidade: intensidade
+
+        })
+
+      });
 
 
-  window.location.href = url;
+    const resultado =
+      await resposta.json();
+
+
+    if (!resposta.ok || !resultado.sucesso) {
+
+      throw new Error(
+        resultado.erro ||
+        "Não foi possível enviar o pedido."
+      );
+
+    }
+
+
+    botao.textContent =
+      "✅ PEDIDO ENVIADO!";
+
+
+    alert(
+      "Pedido enviado com sucesso! O Karina OS começou a trabalhar."
+    );
+
+
+    document
+      .getElementById("tema")
+      .value = "";
+
+
+  } catch (erro) {
+
+    console.error(erro);
+
+
+    alert(
+      "Não foi possível enviar o pedido.\n\n" +
+      erro.message
+    );
+
+
+    botao.textContent =
+      "🚀 CRIAR CONTEÚDO";
+
+  } finally {
+
+    botao.disabled = false;
+
+  }
 
 }
 
