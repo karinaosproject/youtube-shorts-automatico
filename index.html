@@ -1,9 +1,15 @@
-<!DOCTYPE html><html lang="pt-BR"><head>  <meta charset="UTF-8"><meta
-name="viewport"
-content="width=device-width, initial-scale=1.0">
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+  >
 
-  <title>Karina OS</title>  <style>
+  <title>Karina OS</title>
 
+  <style>
     * {
       box-sizing: border-box;
     }
@@ -15,508 +21,648 @@ content="width=device-width, initial-scale=1.0">
     body {
       margin: 0;
       background: #050505;
-      color: #ffffff;
-      font-family: Arial, Helvetica, sans-serif;
+      color: #fff;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
     }
 
     button,
     input,
-    select {
+    select,
+    textarea {
       font-family: inherit;
     }
 
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
     .app {
+      width: 100%;
       max-width: 520px;
-      margin: auto;
+      margin: 0 auto;
       min-height: 100vh;
-      padding-bottom: 100px;
+      padding-bottom: 90px;
     }
 
-    header {
-      padding: 22px 20px 10px;
+    /* =========================================================
+       TOPO
+       ========================================================= */
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: center;
+
+      padding: 15px 18px;
+
+      background: rgba(5, 5, 5, 0.94);
+      border-bottom: 1px solid #181818;
+      backdrop-filter: blur(12px);
     }
 
-    .logo {
-      font-size: 22px;
+    .brand {
+      font-size: 18px;
       font-weight: 800;
+      letter-spacing: -0.5px;
     }
 
-    .status {
+    .online {
       display: flex;
       align-items: center;
-      gap: 7px;
-      font-size: 12px;
-      color: #aaa;
+      gap: 6px;
+
+      color: #8d8d8d;
+      font-size: 10px;
+      font-weight: 600;
     }
 
-    .status-dot {
-      width: 8px;
-      height: 8px;
+    .online-dot {
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
-      background: #00ff88;
-      box-shadow: 0 0 10px #00ff88;
+      background: #fff;
     }
 
-    .hero {
-      padding: 25px 20px 20px;
-    }
-
-    .hero h1 {
-      font-size: 34px;
-      line-height: 1.05;
-      margin: 0 0 12px;
-    }
-
-    .hero p {
-      margin: 0;
-      color: #999;
-      font-size: 15px;
-      line-height: 1.5;
-    }
-
-    .quick-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      padding: 10px 20px 20px;
-    }
-
-    .quick-card {
-      background: #111;
-      border: 1px solid #242424;
-      border-radius: 18px;
-      padding: 18px;
-      min-height: 105px;
-      cursor: pointer;
-    }
-
-    .quick-card .icon {
-      font-size: 24px;
-      margin-bottom: 12px;
-    }
-
-    .quick-card strong {
-      display: block;
-      font-size: 14px;
-      margin-bottom: 5px;
-    }
-
-    .quick-card span {
-      color: #777;
-      font-size: 12px;
-    }
+    /* =========================================================
+       SEÇÕES
+       ========================================================= */
 
     .section {
-      padding: 12px 20px;
+      display: none;
+      padding: 18px;
     }
 
-    .section-title {
-      font-size: 13px;
+    .section.active {
+      display: block;
+    }
+
+    /* =========================================================
+       HERO
+       ========================================================= */
+
+    .hero {
+      padding: 30px 0 20px;
+    }
+
+    .hero-label {
       color: #777;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
-      letter-spacing: 1px;
       margin-bottom: 10px;
     }
 
+    .hero h1 {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.05;
+      letter-spacing: -1.5px;
+    }
+
+    .hero p {
+      margin: 12px 0 0;
+      color: #777;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* =========================================================
+       PAINÉIS
+       ========================================================= */
+
     .panel {
-      background: #0e0e0e;
-      border: 1px solid #222;
-      border-radius: 20px;
-      padding: 18px;
+      background: #0c0c0c;
+      border: 1px solid #1c1c1c;
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 16px;
     }
 
-    label {
+    .panel-title {
+      margin: 0 0 5px;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .panel-subtitle {
+      margin: 0 0 16px;
+      color: #666;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    /* =========================================================
+       CARDS RÁPIDOS
+       ========================================================= */
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .quick-card {
+      width: 100%;
+      min-height: 100px;
+
+      padding: 14px;
+
+      text-align: left;
+
+      background: #0d0d0d;
+      color: #fff;
+
+      border: 1px solid #1f1f1f;
+      border-radius: 15px;
+
+      cursor: pointer;
+
+      transition:
+        transform .15s ease,
+        border-color .15s ease;
+    }
+
+    .quick-card:active {
+      transform: scale(.98);
+    }
+
+    .quick-card:hover {
+      border-color: #363636;
+    }
+
+    .quick-icon {
+      font-size: 22px;
+      margin-bottom: 13px;
+    }
+
+    .quick-title {
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .quick-description {
+      margin-top: 4px;
+      color: #666;
+      font-size: 10px;
+      line-height: 1.4;
+    }
+
+    /* =========================================================
+       FORMULÁRIO
+       ========================================================= */
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    .field-label {
       display: block;
-      font-size: 12px;
-      color: #999;
-      margin-bottom: 7px;
+      margin-bottom: 8px;
+
+      color: #aaa;
+      font-size: 11px;
+      font-weight: 700;
     }
 
-    input,
+    input[type="text"],
+    input[type="number"],
+    textarea,
     select {
       width: 100%;
+
+      background: #111;
+      color: #fff;
+
       border: 1px solid #292929;
-      background: #151515;
-      color: white;
-      border-radius: 12px;
-      padding: 13px;
+      border-radius: 11px;
+
+      padding: 12px;
+
+      font-size: 12px;
       outline: none;
-      margin-bottom: 15px;
-      font-size: 14px;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
     }
 
     input:focus,
+    textarea:focus,
     select:focus {
       border-color: #555;
     }
 
-    .toggle {
+    .segmented {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      background: #111;
-      padding: 4px;
-      border-radius: 13px;
-      margin-bottom: 15px;
-    }
-
-    .toggle button {
-      border: 0;
-      background: transparent;
-      color: #777;
-      padding: 11px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 700;
-    }
-
-    .toggle button.active {
-      background: #fff;
-      color: #000;
-    }
-
-    .duration-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 7px;
-      margin-bottom: 15px;
     }
 
-    .duration-grid button {
+    .segment-button {
+      padding: 11px 8px;
+
+      background: #111;
+      color: #777;
+
       border: 1px solid #292929;
-      background: #151515;
-      color: #aaa;
       border-radius: 10px;
-      padding: 10px 4px;
+
+      font-size: 11px;
+      font-weight: 700;
+
       cursor: pointer;
     }
 
-    .duration-grid button.active {
+    .segment-button.active {
       background: #fff;
       color: #000;
       border-color: #fff;
     }
 
-    .reference-list {
+    .option-grid {
       display: grid;
+      grid-template-columns: repeat(2, 1fr);
       gap: 8px;
-      margin-bottom: 15px;
     }
 
-    .reference-item {
-      background: #151515;
-      border: 1px solid #292929;
-      border-radius: 12px;
-      padding: 11px;
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
+    .option {
+      position: relative;
     }
 
-    .reference-item input {
-      width: auto;
-      margin: 2px 0 0;
+    .option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
     }
 
-    .reference-item div {
-      flex: 1;
-    }
-
-    .reference-item strong {
+    .option label {
       display: block;
-      font-size: 13px;
-      margin-bottom: 4px;
-    }
 
-    .reference-item span {
-      display: block;
+      padding: 11px 9px;
+
+      background: #111;
       color: #777;
+
+      border: 1px solid #292929;
+      border-radius: 10px;
+
       font-size: 11px;
-      line-height: 1.4;
-    }
+      font-weight: 600;
 
-    .create-button {
-      width: 100%;
-      border: 0;
-      border-radius: 15px;
-      padding: 16px;
-      background: #ffffff;
-      color: #000;
-      font-weight: 900;
       cursor: pointer;
-      font-size: 14px;
-      margin-top: 5px;
+
+      text-align: center;
     }
 
-    .create-button:disabled {
-      opacity: .65;
+    .option input:checked + label {
+      background: #fff;
+      color: #000;
+      border-color: #fff;
+    }
+
+    .references {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .reference {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+
+      padding: 10px;
+
+      background: #111;
+      border: 1px solid #242424;
+      border-radius: 10px;
+
+      cursor: pointer;
+    }
+
+    .reference input {
+      accent-color: #fff;
+    }
+
+    .reference span {
+      color: #aaa;
+      font-size: 11px;
+    }
+
+    .reference input:checked + span {
+      color: #fff;
+      font-weight: 700;
+    }
+
+    /* =========================================================
+       BOTÃO PRINCIPAL
+       ========================================================= */
+
+    .primary-button {
+      width: 100%;
+
+      padding: 14px;
+
+      background: #fff;
+      color: #000;
+
+      border: 0;
+      border-radius: 12px;
+
+      font-size: 13px;
+      font-weight: 800;
+
+      cursor: pointer;
+
+      transition:
+        transform .15s ease,
+        opacity .15s ease;
+    }
+
+    .primary-button:active {
+      transform: scale(.98);
+    }
+
+    .primary-button:disabled {
+      opacity: .45;
       cursor: wait;
     }
 
+    /* =========================================================
+       STATUS
+       ========================================================= */
+
     .status-panel {
-      display: none;
-      background: #0e0e0e;
-      border: 1px solid #222;
-      border-radius: 20px;
-      padding: 18px;
-      margin-top: 15px;
+      margin-top: 18px;
     }
 
-    .status-panel.show {
-      display: block;
+    .status-title {
+      font-size: 15px;
+      font-weight: 800;
+      margin-bottom: 5px;
     }
 
-    .status-panel h3 {
-      margin: 0 0 5px;
-      font-size: 16px;
+    .status-number {
+      color: #666;
+      font-size: 10px;
+      margin-bottom: 16px;
     }
 
-    .status-subtitle {
-      color: #777;
-      font-size: 12px;
-      margin-bottom: 18px;
-      line-height: 1.4;
+    .status-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    .progress-list {
-      display: grid;
-      gap: 10px;
-    }
-
-    .progress-item {
+    .status-step {
       display: flex;
       align-items: center;
       gap: 10px;
+
       padding: 11px;
-      border-radius: 12px;
-      background: #151515;
-      color: #666;
-      font-size: 13px;
+
+      background: #111;
+      border: 1px solid #1d1d1d;
+      border-radius: 11px;
+
+      color: #555;
+      font-size: 11px;
     }
 
-    .progress-icon {
-      width: 25px;
-      height: 25px;
-      border-radius: 50%;
+    .status-icon {
+      width: 23px;
+      height: 23px;
+
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #242424;
-      flex-shrink: 0;
-      font-size: 11px;
-      font-weight: bold;
+
+      border-radius: 50%;
+
+      background: #1b1b1b;
+      color: #555;
+
+      font-size: 10px;
+      font-weight: 800;
     }
 
-    .progress-item.active {
+    .status-step.active {
       color: #fff;
+      border-color: #333;
     }
 
-    .progress-item.active .progress-icon {
+    .status-step.active .status-icon {
       background: #fff;
       color: #000;
     }
 
-    .progress-item.done {
-      color: #00ff88;
-    }
-
-    .progress-item.done .progress-icon {
-      background: #00ff88;
-      color: #000;
-    }
-
-    .progress-item.error {
-      color: #ff5555;
-    }
-
-    .progress-item.error .progress-icon {
-      background: #ff5555;
-      color: #000;
-    }
-
-    .order-info {
-      margin-top: 15px;
-      padding-top: 15px;
-      border-top: 1px solid #222;
-      color: #777;
-      font-size: 11px;
-      line-height: 1.5;
-    }
-
-    .order-info strong {
+    .status-step.done {
       color: #aaa;
     }
 
-    /* MEUS VÍDEOS */
-
-    #videosSection {
-      display: none;
+    .status-step.done .status-icon {
+      background: #333;
+      color: #fff;
     }
 
-    #videosSection.show {
-      display: block;
+    .status-step.error {
+      border-color: #4a2222;
+      color: #fff;
     }
+
+    .status-step.error .status-icon {
+      background: #fff;
+      color: #000;
+    }
+
+    /* =========================================================
+       MEUS VÍDEOS
+       ========================================================= */
 
     .videos-header {
       display: flex;
+      align-items: flex-start;
       justify-content: space-between;
-      align-items: center;
       gap: 10px;
-      margin-bottom: 12px;
+
+      margin-bottom: 16px;
     }
 
     .videos-header h2 {
       margin: 0;
-      font-size: 20px;
+      font-size: 17px;
+    }
+
+    .videos-count {
+      margin-top: 4px;
+      color: #777;
+      font-size: 11px;
     }
 
     .refresh-button {
-      border: 1px solid #292929;
-      background: #151515;
+      flex-shrink: 0;
+
+      background: #111;
       color: #fff;
-      border-radius: 10px;
-      padding: 9px 12px;
+
+      border: 1px solid #292929;
+      border-radius: 9px;
+
+      padding: 9px 10px;
+
+      font-size: 10px;
+      font-weight: 700;
+
       cursor: pointer;
+    }
+
+    .library-tools {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .library-tools input,
+    .library-tools select {
+      box-sizing: border-box;
+
+      background: #111;
+      color: #fff;
+
+      border: 1px solid #292929;
+      border-radius: 10px;
+
+      padding: 11px 12px;
+
       font-size: 12px;
+      outline: none;
     }
 
-    .refresh-button:disabled {
-      opacity: .5;
-      cursor: wait;
+    .library-tools input {
+      flex: 1;
+      min-width: 0;
     }
 
-    .videos-loading {
-      color: #777;
-      font-size: 13px;
-      text-align: center;
-      padding: 25px 10px;
+    .library-tools select {
+      width: 115px;
     }
 
-    .videos-empty {
-      color: #777;
-      font-size: 13px;
-      text-align: center;
-      padding: 30px 15px;
-      line-height: 1.5;
+    .library-tools input:focus,
+    .library-tools select:focus {
+      border-color: #555;
     }
 
     .video-list {
-      display: grid;
-      gap: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
     .video-card {
-      background: #111;
-      border: 1px solid #242424;
-      border-radius: 17px;
       overflow: hidden;
+
+      background: #111;
+
+      border: 1px solid #252525;
+      border-radius: 16px;
+
+      padding: 0;
+
+      box-shadow: 0 8px 25px rgba(0, 0, 0, .18);
     }
 
-    .video-thumbnail-wrapper {
+    .video-card-preview {
       position: relative;
+
       width: 100%;
       aspect-ratio: 16 / 9;
-      background: #181818;
+
+      background: #050505;
+
       overflow: hidden;
     }
 
-    .video-thumbnail {
+    .video-card-preview img {
       width: 100%;
       height: 100%;
-      display: block;
+
       object-fit: cover;
+
+      display: block;
     }
 
-    .video-play {
+    .video-card-play {
       position: absolute;
+
       left: 50%;
       top: 50%;
+
       transform: translate(-50%, -50%);
+
       width: 54px;
       height: 54px;
+
       border-radius: 50%;
       border: 0;
+
       background: rgba(0, 0, 0, .78);
       color: #fff;
-      font-size: 23px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
+
+      font-size: 22px;
+
       cursor: pointer;
     }
 
-    .video-card-content {
-      padding: 15px;
+    .video-card-body {
+      padding: 14px;
     }
 
     .video-card-title {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 700;
       line-height: 1.35;
-      margin-bottom: 12px;
+
+      margin-bottom: 9px;
     }
 
     .video-card-meta {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+
       gap: 8px;
-      color: #666;
-      font-size: 10px;
-      margin-bottom: 12px;
+
+      margin-bottom: 9px;
     }
 
     .video-card-number {
-      color: #888;
+      color: #777;
+      font-size: 11px;
     }
 
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      border-radius: 20px;
-      padding: 6px 9px;
+    .video-card-date {
+      color: #666;
       font-size: 10px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
 
-    .badge-recebido {
-      background: #202020;
-      color: #aaa;
-    }
-
-    .badge-roteiro {
-      background: #202020;
-      color: #fff;
-    }
-
-    .badge-voz {
-      background: #202020;
-      color: #fff;
-    }
-
-    .badge-montando {
-      background: #202020;
-      color: #fff;
-    }
-
-    .badge-publicando {
-      background: #202020;
-      color: #fff;
-    }
-
-    .badge-concluido {
-      background: #07351f;
-      color: #00ff88;
-    }
-
-    .badge-erro {
-      background: #351010;
-      color: #ff6666;
+      margin-bottom: 13px;
     }
 
     .video-card-actions {
@@ -527,1853 +673,1682 @@ content="width=device-width, initial-scale=1.0">
     .video-card-actions button,
     .video-card-actions a {
       flex: 1;
+
       text-align: center;
       text-decoration: none;
-      border: 1px solid #292929;
-      background: #151515;
-      color: #fff;
+
+      border: 0;
       border-radius: 10px;
-      padding: 10px;
-      font-size: 11px;
+
+      padding: 11px 8px;
+
+      font-size: 12px;
+      font-weight: 700;
+
       cursor: pointer;
     }
 
-    .video-card-actions a.primary {
+    .youtube-button {
       background: #fff;
       color: #000;
-      border-color: #fff;
-      font-weight: 800;
     }
 
-    .video-card-actions button:hover,
-    .video-card-actions a:hover,
-    .refresh-button:hover {
+    .follow-button {
       background: #202020;
+      color: #fff;
+
+      border: 1px solid #333 !important;
     }
 
-    .video-card-actions a.primary:hover {
-      background: #ddd;
-    }
+    .videos-loading,
+    .videos-empty,
+    .library-no-result {
+      text-align: center;
 
-    .video-not-published {
+      padding: 30px 15px;
+
       color: #666;
-      font-size: 11px;
-      margin-bottom: 12px;
-      line-height: 1.4;
+
+      font-size: 12px;
+      line-height: 1.5;
     }
+
+    /* =========================================================
+       BADGES
+       ========================================================= */
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 4px 7px;
+
+      border-radius: 6px;
+
+      font-size: 9px;
+      font-weight: 800;
+
+      white-space: nowrap;
+    }
+
+    .badge-recebido {
+      background: #202020;
+      color: #aaa;
+    }
+
+    .badge-roteiro {
+      background: #292929;
+      color: #fff;
+    }
+
+    .badge-voz {
+      background: #292929;
+      color: #fff;
+    }
+
+    .badge-montando {
+      background: #292929;
+      color: #fff;
+    }
+
+    .badge-publicando {
+      background: #fff;
+      color: #000;
+    }
+
+    .badge-concluido {
+      background: #fff;
+      color: #000;
+    }
+
+    .badge-erro {
+      background: #3a2020;
+      color: #fff;
+    }
+
+    /* =========================================================
+       THUMBNAIL
+       ========================================================= */
+
+    .thumbnail-placeholder {
+      text-align: center;
+
+      padding: 45px 20px;
+
+      color: #666;
+
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    /* =========================================================
+       NAVEGAÇÃO
+       ========================================================= */
 
     .bottom-nav {
       position: fixed;
-      bottom: 0;
+
       left: 50%;
+      bottom: 10px;
+
       transform: translateX(-50%);
-      width: min(520px, 100%);
-      background: rgba(10,10,10,.96);
-      border-top: 1px solid #222;
+
+      z-index: 30;
+
+      width: calc(100% - 24px);
+      max-width: 496px;
+
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      padding: 10px 10px 12px;
-      z-index: 10;
-      backdrop-filter: blur(10px);
+      gap: 5px;
+
+      padding: 6px;
+
+      background: rgba(14, 14, 14, .96);
+
+      border: 1px solid #252525;
+      border-radius: 15px;
+
+      box-shadow: 0 10px 35px rgba(0, 0, 0, .4);
+
+      backdrop-filter: blur(12px);
     }
 
-    .bottom-nav a {
-      text-decoration: none;
-      color: #777;
-      text-align: center;
-      font-size: 10px;
-      padding: 5px;
+    .nav-button {
+      padding: 10px 5px;
+
+      background: transparent;
+      color: #666;
+
+      border: 0;
+      border-radius: 10px;
+
+      font-size: 9px;
+      font-weight: 700;
+
       cursor: pointer;
     }
 
-    .bottom-nav .nav-icon {
-      display: block;
-      font-size: 19px;
-      margin-bottom: 3px;
+    .nav-button.active {
+      background: #fff;
+      color: #000;
     }
 
-    .bottom-nav a.active {
-      color: #fff;
+    .nav-icon {
+      display: block;
+
+      margin-bottom: 4px;
+
+      font-size: 16px;
     }
+
+    /* =========================================================
+       UTILITÁRIOS
+       ========================================================= */
 
     .hidden {
       display: none !important;
     }
 
-  </style></head><body><div class="app">  <header><div class="logo">
-  Karina OS
-</div>
+    .notice {
+      padding: 12px;
 
-<div class="status">
+      background: #111;
+      border: 1px solid #242424;
+      border-radius: 11px;
 
-  <span class="status-dot"></span>
+      color: #888;
 
-  ONLINE
+      font-size: 11px;
+      line-height: 1.5;
 
-</div>
+      margin-top: 12px;
+    }
 
-  </header>  <section id="homeSection"><section class="hero">
+    @media (max-width: 420px) {
+      .library-tools {
+        flex-direction: column;
+      }
 
-  <h1>
-    Crie.<br>
-    Publique.<br>
-    Repita.
-  </h1>
+      .library-tools select {
+        width: 100%;
+      }
 
-  <p>
-    Seu sistema automático de criação de conteúdo.
-  </p>
+      .video-card-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
 
-</section>
+<body>
+
+  <div class="app">
+
+    <!-- =======================================================
+         TOPO
+         ======================================================= -->
+
+    <header class="topbar">
+
+      <div class="brand">
+        Karina OS
+      </div>
+
+      <div class="online">
+        <span class="online-dot"></span>
+        ONLINE
+      </div>
+
+    </header>
 
 
-<section class="quick-grid">
+    <!-- =======================================================
+         INÍCIO
+         ======================================================= -->
 
-  <div
-    class="quick-card"
-    onclick="irParaCriar()">
+    <section
+      id="inicioSection"
+      class="section active"
+    >
 
-    <div class="icon">
-      🎬
-    </div>
+      <div class="hero">
 
-    <strong>
-      Criar Short
-    </strong>
+        <div class="hero-label">
+          AUTOMAÇÃO DE CONTEÚDO
+        </div>
 
-    <span>
-      Gerar novo conteúdo
-    </span>
+        <h1>
+          Crie.<br>
+          Publique.<br>
+          Repita.
+        </h1>
+
+        <p>
+          Seu sistema automático para produção
+          e publicação de conteúdo.
+        </p>
+
+      </div>
+
+
+      <div class="quick-grid">
+
+        <button
+          class="quick-card"
+          onclick="mostrarCriar()"
+        >
+
+          <div class="quick-icon">
+            🎬
+          </div>
+
+          <div class="quick-title">
+            Criar Short
+          </div>
+
+          <div class="quick-description">
+            Gere um novo vídeo automaticamente.
+          </div>
+
+        </button>
+
+
+        <button
+          class="quick-card"
+          onclick="mostrarCriarLongo()"
+        >
+
+          <div class="quick-icon">
+            🎥
+          </div>
+
+          <div class="quick-title">
+            Vídeo longo
+          </div>
+
+          <div class="quick-description">
+            Prepare conteúdos maiores.
+          </div>
+
+        </button>
+
+
+        <button
+          class="quick-card"
+          onclick="mostrarThumbnail()"
+        >
+
+          <div class="quick-icon">
+            🖼️
+          </div>
+
+          <div class="quick-title">
+            Thumbnail
+          </div>
+
+          <div class="quick-description">
+            Área de miniaturas.
+          </div>
+
+        </button>
+
+
+        <button
+          class="quick-card"
+          onclick="mostrarVideos()"
+        >
+
+          <div class="quick-icon">
+            📺
+          </div>
+
+          <div class="quick-title">
+            Meus vídeos
+          </div>
+
+          <div class="quick-description">
+            Sua biblioteca de conteúdos.
+          </div>
+
+        </button>
+
+      </div>
+
+
+      <div class="panel">
+
+        <h2 class="panel-title">
+          ⚡ Automação ativa
+        </h2>
+
+        <p class="panel-subtitle">
+          O sistema recebe seu pedido, cria o roteiro,
+          gera a narração, monta o vídeo e envia para
+          o YouTube automaticamente.
+        </p>
+
+        <div class="notice">
+          Você pode acompanhar cada etapa em
+          <strong>Meus vídeos</strong>.
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =======================================================
+         CRIAR
+         ======================================================= -->
+
+    <section
+      id="criarSection"
+      class="section"
+    >
+
+      <div class="hero">
+
+        <div class="hero-label">
+          NOVO CONTEÚDO
+        </div>
+
+        <h1>
+          Criar conteúdo
+        </h1>
+
+        <p>
+          Configure seu vídeo e envie para a automação.
+        </p>
+
+      </div>
+
+
+      <div class="panel">
+
+        <!-- TIPO -->
+
+        <div class="field">
+
+          <label class="field-label">
+            Tipo de conteúdo
+          </label>
+
+          <div class="segmented">
+
+            <button
+              id="tipoShortButton"
+              class="segment-button active"
+              onclick="selecionarTipo('Short')"
+            >
+              Short
+            </button>
+
+            <button
+              id="tipoLongoButton"
+              class="segment-button"
+              onclick="selecionarTipo('Vídeo longo')"
+            >
+              Vídeo longo
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- TEMA -->
+
+        <div class="field">
+
+          <label
+            class="field-label"
+            for="tema"
+          >
+            Tema
+          </label>
+
+          <input
+            id="tema"
+            type="text"
+            placeholder="Ex.: 5 animais que parecem inventados"
+          >
+
+        </div>
+
+
+        <!-- DURAÇÃO -->
+
+        <div class="field">
+
+          <label class="field-label">
+            Duração
+          </label>
+
+          <div
+            id="duracoesShort"
+            class="option-grid"
+          >
+
+            <div class="option">
+              <input
+                id="duracao30"
+                type="radio"
+                name="duracao"
+                value="30 segundos"
+              >
+              <label for="duracao30">
+                30 segundos
+              </label>
+            </div>
+
+            <div class="option">
+              <input
+                id="duracao45"
+                type="radio"
+                name="duracao"
+                value="45 segundos"
+              >
+              <label for="duracao45">
+                45 segundos
+              </label>
+            </div>
+
+            <div class="option">
+              <input
+                id="duracao60"
+                type="radio"
+                name="duracao"
+                value="60 segundos"
+                checked
+              >
+              <label for="duracao60">
+                60 segundos
+              </label>
+            </div>
+
+            <div class="option">
+              <input
+                id="duracao90"
+                type="radio"
+                name="duracao"
+                value="90 segundos"
+              >
+              <label for="duracao90">
+                90 segundos
+              </label>
+            </div>
+
+          </div>
+
+
+          <div
+            id="duracoesLongo"
+            class="option-grid hidden"
+          >
+
+            <div class="option">
+              <input
+                id="duracao5"
+                type="radio"
+                name="duracao"
+                value="5 minutos"
+              >
+              <label for="duracao5">
+                5 minutos
+              </label>
+            </div>
+
+            <div class="option">
+              <input
+                id="duracao8"
+                type="radio"
+                name="duracao"
+                value="8 minutos"
+              >
+              <label for="duracao8">
+                8 minutos
+              </label>
+            </div>
+
+            <div class="option">
+              <input
+                id="duracao10"
+                type="radio"
+                name="duracao"
+                value="10 minutos"
+              >
+              <label for="duracao10">
+                10 minutos
+              </label>
+            </div>
+
+            <div class="option">
+              <input
+                id="duracao15"
+                type="radio"
+                name="duracao"
+                value="15 minutos"
+              >
+              <label for="duracao15">
+                15 minutos
+              </label>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- ESTILO -->
+
+        <div class="field">
+
+          <label class="field-label">
+            Estilo
+          </label>
+
+          <div class="option-grid">
+
+            <div class="option">
+              <input
+                id="estiloInformativo"
+                type="radio"
+                name="estilo"
+                value="Informativo"
+                checked
+              >
+              <label for="estiloInformativo">
+                Informativo
+              </label>
+            </div>
+
+            <div class="option">
+              <input
+                id="estiloCurioso"
+                type="radio"
+                name="estilo"
+                value="Curioso"
+              >
+              <label for="estiloCurioso">
+                Curioso
+              </label>
+            </div>
+
+            <div class="option">
+              <input
+                id="estiloEducacional"
+                type="radio"
+                name="estilo"
+                value="Educacional"
+              >
+              <label for="estiloEducacional">
+                Educacional
+              </label>
+            </div>
+
+            <div class="option">
+              <input
+                id="estiloNarrativo"
+                type="radio"
+                name="estilo"
+                value="Narrativo"
+              >
+              <label for="estiloNarrativo">
+                Narrativo
+              </label>
+            </div>
+
+            <div class="option">
+              <input
+                id="estiloViral"
+                type="radio"
+                name="estilo"
+                value="Viral"
+              >
+              <label for="estiloViral">
+                Viral
+              </label>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- VOZ -->
+
+        <div class="field">
+
+          <label class="field-label">
+            Voz
+          </label>
+
+          <div class="option-grid">
+
+            <div class="option">
+              <input
+                id="vozNatural"
+                type="radio"
+                name="voz"
+                value="Natural"
+                checked
+              >
+              <label for="vozNatural">
+                Natural
+              </label>
+            </div>
+
+            <div class="option">
+              <input
+                id="vozEnergetica"
+                type="radio"
+                name="voz"
+                value="Energética"
+              >
+              <label for="vozEnergetica">
+                Energética
+              </label>
+            </div>
+
+            <div class="option">
+              <input
+                id="vozCalma"
+                type="radio"
+                name="voz"
+                value="Calma"
+              >
+              <label for="vozCalma">
+                Calma
+              </label>
+            </div>
+
+            <div class="option">
+              <input
+                id="vozJornalistica"
+                type="radio"
+                name="voz"
+                value="Jornalística"
+              >
+              <label for="vozJornalistica">
+                Jornalística
+              </label>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- IDIOMA -->
+
+        <div class="field">
+
+          <label class="field-label">
+            Idioma
+          </label>
+
+          <div class="option-grid">
+
+            <div class="option">
+              <input
+                id="idiomaPt"
+                type="radio"
+                name="idioma"
+                value="Português"
+                checked
+              >
+              <label for="idiomaPt">
+                Português
+              </label>
+            </div>
+
+            <div class="option">
+              <input
+                id="idiomaEn"
+                type="radio"
+                name="idioma"
+                value="Inglês"
+              >
+              <label for="idiomaEn">
+                Inglês
+              </label>
+            </div>
+
+            <div class="option">
+              <input
+                id="idiomaEs"
+                type="radio"
+                name="idioma"
+                value="Espanhol"
+              >
+              <label for="idiomaEs">
+                Espanhol
+              </label>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- VISUAL -->
+
+        <div class="field">
+
+          <label class="field-label">
+            Visual
+          </label>
+
+          <div class="option-grid">
+
+            <div class="option">
+              <input
+                id="visualReal"
+                type="radio"
+                name="visual"
+                value="Vídeos reais"
+                checked
+              >
+              <label for="visualReal">
+                Vídeos reais
+              </label>
+            </div>
+
+            <div class="option">
+              <input
+                id="visualCinematografico"
+                type="radio"
+                name="visual"
+                value="Cinematográfico"
+              >
+              <label for="visualCinematografico">
+                Cinematográfico
+              </label>
+            </div>
+
+            <div class="option">
+              <input
+                id="visualNatureza"
+                type="radio"
+                name="visual"
+                value="Natureza"
+              >
+              <label for="visualNatureza">
+                Natureza
+              </label>
+            </div>
+
+            <div class="option">
+              <input
+                id="visualCientifico"
+                type="radio"
+                name="visual"
+                value="Científico"
+              >
+              <label for="visualCientifico">
+                Científico
+              </label>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- REFERÊNCIAS -->
+
+        <div class="field">
+
+          <label class="field-label">
+            Referências
+          </label>
+
+          <div class="references">
+
+            <label class="reference">
+              <input
+                type="checkbox"
+                name="referencias"
+                value="Animais pelo Mundo"
+              >
+              <span>
+                Animais pelo Mundo
+              </span>
+            </label>
+
+            <label class="reference">
+              <input
+                type="checkbox"
+                name="referencias"
+                value="Papo de Biólogo"
+              >
+              <span>
+                Papo de Biólogo
+              </span>
+            </label>
+
+            <label class="reference">
+              <input
+                type="checkbox"
+                name="referencias"
+                value="Ciência Todo Dia"
+              >
+              <span>
+                Ciência Todo Dia
+              </span>
+            </label>
+
+            <label class="reference">
+              <input
+                type="checkbox"
+                name="referencias"
+                value="Manual do Mundo"
+              >
+              <span>
+                Manual do Mundo
+              </span>
+            </label>
+
+            <label class="reference">
+              <input
+                type="checkbox"
+                name="referencias"
+                value="Tá Curioso?"
+              >
+              <span>
+                Tá Curioso?
+              </span>
+            </label>
+
+            <label class="reference">
+              <input
+                type="checkbox"
+                name="referencias"
+                value="Minutos Psíquicos"
+              >
+              <span>
+                Minutos Psíquicos
+              </span>
+            </label>
+
+          </div>
+
+        </div>
+
+
+        <!-- INTENSIDADE -->
+
+        <div class="field">
+
+          <label class="field-label">
+            Intensidade das referências
+          </label>
+
+          <div class="option-grid">
+
+            <div class="option">
+              <input
+                id="intensidadeLeve"
+                type="radio"
+                name="intensidade"
+                value="Leve"
+              >
+              <label for="intensidadeLeve">
+                Leve
+              </label>
+            </div>
+
+            <div class="option">
+              <input
+                id="intensidadeEquilibrada"
+                type="radio"
+                name="intensidade"
+                value="Equilibrada"
+                checked
+              >
+              <label for="intensidadeEquilibrada">
+                Equilibrada
+              </label>
+            </div>
+
+            <div class="option">
+              <input
+                id="intensidadeForte"
+                type="radio"
+                name="intensidade"
+                value="Forte"
+              >
+              <label for="intensidadeForte">
+                Forte
+              </label>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <button
+          id="createButton"
+          class="primary-button"
+          onclick="enviar()"
+        >
+          🚀 Criar conteúdo
+        </button>
+
+      </div>
+
+
+      <!-- =====================================================
+           STATUS
+           ===================================================== -->
+
+      <div
+        id="statusPanel"
+        class="panel status-panel hidden"
+      >
+
+        <div class="status-title">
+          Acompanhamento
+        </div>
+
+        <div
+          id="statusNumber"
+          class="status-number"
+        >
+          Pedido aguardando...
+        </div>
+
+
+        <div class="status-list">
+
+          <div
+            id="stepRecebido"
+            class="status-step"
+          >
+            <div class="status-icon">
+              1
+            </div>
+
+            <span>
+              Pedido recebido
+            </span>
+          </div>
+
+
+          <div
+            id="stepRoteiro"
+            class="status-step"
+          >
+            <div class="status-icon">
+              2
+            </div>
+
+            <span>
+              Criando roteiro
+            </span>
+          </div>
+
+
+          <div
+            id="stepVoz"
+            class="status-step"
+          >
+            <div class="status-icon">
+              3
+            </div>
+
+            <span>
+              Gerando voz
+            </span>
+          </div>
+
+
+          <div
+            id="stepMontando"
+            class="status-step"
+          >
+            <div class="status-icon">
+              4
+            </div>
+
+            <span>
+              Montando vídeo
+            </span>
+          </div>
+
+
+          <div
+            id="stepPublicando"
+            class="status-step"
+          >
+            <div class="status-icon">
+              5
+            </div>
+
+            <span>
+              Publicando
+            </span>
+          </div>
+
+
+          <div
+            id="stepConcluido"
+            class="status-step"
+          >
+            <div class="status-icon">
+              ✓
+            </div>
+
+            <span>
+              Concluído
+            </span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =======================================================
+         THUMBNAIL
+         ======================================================= -->
+
+    <section
+      id="thumbnailSection"
+      class="section"
+    >
+
+      <div class="hero">
+
+        <div class="hero-label">
+          DESIGN
+        </div>
+
+        <h1>
+          Thumbnail
+        </h1>
+
+        <p>
+          Área reservada para criação de miniaturas.
+        </p>
+
+      </div>
+
+
+      <div class="panel">
+
+        <div class="thumbnail-placeholder">
+
+          🖼️
+
+          <br><br>
+
+          A área de Thumbnail está preparada
+          para a próxima etapa do sistema.
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =======================================================
+         MEUS VÍDEOS
+         ======================================================= -->
+
+    <section
+      id="videosSection"
+      class="section"
+    >
+
+      <div class="panel">
+
+        <div class="videos-header">
+
+          <div>
+
+            <h2>
+              📺 Meus vídeos
+            </h2>
+
+            <div
+              id="videosCount"
+              class="videos-count"
+            >
+              Seus conteúdos
+            </div>
+
+          </div>
+
+
+          <button
+            id="refreshVideosButton"
+            class="refresh-button"
+            onclick="carregarPedidos()"
+          >
+            ↻ Atualizar
+          </button>
+
+        </div>
+
+
+        <div class="library-tools">
+
+          <input
+            id="videoSearch"
+            type="text"
+            placeholder="🔎 Buscar vídeo..."
+            oninput="filtrarVideos()"
+          >
+
+
+          <select
+            id="videoFilter"
+            onchange="filtrarVideos()"
+          >
+
+            <option value="todos">
+              Todos
+            </option>
+
+            <option value="concluido">
+              Publicados
+            </option>
+
+            <option value="montando">
+              Em produção
+            </option>
+
+            <option value="erro">
+              Com erro
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div
+          id="videosLoading"
+          class="videos-loading"
+        >
+          Carregando seus conteúdos...
+        </div>
+
+
+        <div
+          id="videosEmpty"
+          class="videos-empty hidden"
+        >
+          Você ainda não criou nenhum conteúdo.
+        </div>
+
+
+        <div
+          id="videoList"
+          class="video-list"
+        ></div>
+
+      </div>
+
+    </section>
+
 
   </div>
 
 
-  <div
-    class="quick-card"
-    onclick="irParaCriar()">
+  <!-- =========================================================
+       NAVEGAÇÃO
+       ========================================================= -->
 
-    <div class="icon">
-      🎥
-    </div>
+  <nav class="bottom-nav">
 
-    <strong>
-      Vídeo longo
-    </strong>
+    <button
+      id="navInicio"
+      class="nav-button active"
+      onclick="mostrarInicio()"
+    >
 
-    <span>
-      Conteúdo completo
-    </span>
+      <span class="nav-icon">
+        🏠
+      </span>
 
-  </div>
+      Início
+
+    </button>
 
 
-  <div
-    class="quick-card">
+    <button
+      id="navCriar"
+      class="nav-button"
+      onclick="mostrarCriar()"
+    >
 
-    <div class="icon">
-      🖼️
-    </div>
+      <span class="nav-icon">
+        ➕
+      </span>
 
-    <strong>
+      Criar
+
+    </button>
+
+
+    <button
+      id="navThumbnail"
+      class="nav-button"
+      onclick="mostrarThumbnail()"
+    >
+
+      <span class="nav-icon">
+        🖼️
+      </span>
+
       Thumbnail
-    </strong>
-
-    <span>
-      Imagem do vídeo
-    </span>
-
-  </div>
-
-
-  <div
-    class="quick-card"
-    onclick="mostrarVideos()">
-
-    <div class="icon">
-      📺
-    </div>
-
-    <strong>
-      Meus vídeos
-    </strong>
-
-    <span>
-      Acompanhar resultados
-    </span>
-
-  </div>
-
-</section>
-
-  </section>  <section
-    id="createSection"
-    class="section"><div class="section-title">
-  Criar conteúdo
-</div>
-
-
-<div class="panel">
-
-  <div class="toggle">
-
-    <button
-      id="tipoShort"
-      class="active"
-      onclick="selecionarTipo('Short')">
-
-      SHORT
 
     </button>
 
 
     <button
-      id="tipoLongo"
-      onclick="selecionarTipo('Vídeo Longo')">
+      id="navVideos"
+      class="nav-button"
+      onclick="mostrarVideos()"
+    >
 
-      VÍDEO LONGO
+      <span class="nav-icon">
+        📺
+      </span>
 
-    </button>
-
-  </div>
-
-
-  <label>
-    Tema
-  </label>
-
-  <input
-    id="tema"
-    type="text"
-    placeholder="Ex.: 7 animais que parecem inventados">
-
-
-  <label>
-    Duração
-  </label>
-
-
-  <div
-    id="duracoesShort"
-    class="duration-grid">
-
-    <button
-      class="active"
-      onclick="selecionarDuracao(this, '30 segundos')">
-
-      30s
+      Vídeos
 
     </button>
 
+  </nav>
 
-    <button
-      onclick="selecionarDuracao(this, '45 segundos')">
 
-      45s
+  <!-- =========================================================
+       JAVASCRIPT
+       ========================================================= -->
 
-    </button>
+  <script>
 
+    /* =========================================================
+       VARIÁVEIS
+       ========================================================= */
 
-    <button
-      onclick="selecionarDuracao(this, '60 segundos')">
+    let tipoSelecionado = "Short";
 
-      60s
+    let numeroPedido = null;
 
-    </button>
+    let intervaloStatus = null;
 
+    let pedidosBiblioteca = [];
 
-    <button
-      onclick="selecionarDuracao(this, '90 segundos')">
 
-      90s
+    /* =========================================================
+       NAVEGAÇÃO
+       ========================================================= */
 
-    </button>
+    function esconderTodasSecoes() {
 
-  </div>
+      const secoes = document.querySelectorAll(".section");
 
-
-  <div
-    id="duracoesLongo"
-    class="duration-grid hidden">
-
-    <button
-      class="active"
-      onclick="selecionarDuracao(this, '5 minutos')">
-
-      5 min
-
-    </button>
-
-
-    <button
-      onclick="selecionarDuracao(this, '8 minutos')">
-
-      8 min
-
-    </button>
-
-
-    <button
-      onclick="selecionarDuracao(this, '10 minutos')">
-
-      10 min
-
-    </button>
-
-
-    <button
-      onclick="selecionarDuracao(this, '15 minutos')">
-
-      15 min
-
-    </button>
-
-  </div>
-
-
-  <label>
-    Duração personalizada
-  </label>
-
-  <input
-    id="duracaoPersonalizada"
-    type="number"
-    min="10"
-    max="3600"
-    placeholder="10 a 3600 segundos">
-
-
-  <label>
-    Estilo
-  </label>
-
-  <select id="estilo">
-
-    <option>
-      Informativo
-    </option>
-
-    <option>
-      Curioso
-    </option>
-
-    <option>
-      Educacional
-    </option>
-
-    <option>
-      Narrativo
-    </option>
-
-    <option>
-      Viral
-    </option>
-
-  </select>
-
-
-  <label>
-    Voz
-  </label>
-
-  <select id="voz">
-
-    <option>
-      Natural
-    </option>
-
-    <option>
-      Energética
-    </option>
-
-    <option>
-      Calma
-    </option>
-
-    <option>
-      Jornalística
-    </option>
-
-  </select>
-
-
-  <label>
-    Idioma
-  </label>
-
-  <select id="idioma">
-
-    <option>
-      Português
-    </option>
-
-    <option>
-      Inglês
-    </option>
-
-    <option>
-      Espanhol
-    </option>
-
-  </select>
-
-
-  <label>
-    Visual
-  </label>
-
-  <select id="visual">
-
-    <option>
-      Vídeos reais
-    </option>
-
-    <option>
-      Cinematográfico
-    </option>
-
-    <option>
-      Natureza
-    </option>
-
-    <option>
-      Científico
-    </option>
-
-  </select>
-
-
-  <label>
-    Referências
-  </label>
-
-
-  <div class="reference-list">
-
-
-    <label class="reference-item">
-
-      <input
-        type="checkbox"
-        value="Animais pelo Mundo">
-
-      <div>
-
-        <strong>
-          Animais pelo Mundo
-        </strong>
-
-        <span>
-          Curiosidades sobre animais, comportamento e narrativa visual.
-        </span>
-
-      </div>
-
-    </label>
-
-
-    <label class="reference-item">
-
-      <input
-        type="checkbox"
-        value="Papo de Biólogo">
-
-      <div>
-
-        <strong>
-          Papo de Biólogo
-        </strong>
-
-        <span>
-          Explicação científica, contexto e informações biológicas.
-        </span>
-
-      </div>
-
-    </label>
-
-
-    <label class="reference-item">
-
-      <input
-        type="checkbox"
-        value="Ciência Todo Dia">
-
-      <div>
-
-        <strong>
-          Ciência Todo Dia
-        </strong>
-
-        <span>
-          Raciocínio científico, explicações claras e construção de ideias.
-        </span>
-
-      </div>
-
-    </label>
-
-
-    <label class="reference-item">
-
-      <input
-        type="checkbox"
-        value="Manual do Mundo">
-
-      <div>
-
-        <strong>
-          Manual do Mundo
-        </strong>
-
-        <span>
-          Demonstrações, exemplos, explicações acessíveis e didáticas.
-        </span>
-
-      </div>
-
-    </label>
-
-
-    <label class="reference-item">
-
-      <input
-        type="checkbox"
-        value="Tá Curioso?">
-
-      <div>
-
-        <strong>
-          Tá Curioso?
-        </strong>
-
-        <span>
-          Perguntas, curiosidades, ritmo e descoberta.
-        </span>
-
-      </div>
-
-    </label>
-
-
-    <label class="reference-item">
-
-      <input
-        type="checkbox"
-        value="Minutos Psíquicos">
-
-      <div>
-
-        <strong>
-          Minutos Psíquicos
-        </strong>
-
-        <span>
-          Comportamento, psicologia, narrativa e explicações envolventes.
-        </span>
-
-      </div>
-
-    </label>
-
-
-  </div>
-
-
-  <label>
-    Intensidade das referências
-  </label>
-
-
-  <select id="intensidade">
-
-    <option>
-      Leve
-    </option>
-
-    <option selected>
-      Equilibrada
-    </option>
-
-    <option>
-      Forte
-    </option>
-
-  </select>
-
-
-  <button
-    id="createButton"
-    class="create-button"
-    onclick="enviar()">
-
-    🚀 CRIAR CONTEÚDO
-
-  </button>
-
-
-  <div
-    id="statusPanel"
-    class="status-panel">
-
-
-    <h3>
-      Acompanhando seu conteúdo
-    </h3>
-
-
-    <div
-      id="statusSubtitle"
-      class="status-subtitle">
-
-      Seu pedido foi recebido.
-
-    </div>
-
-
-    <div class="progress-list">
-
-
-      <div
-        id="statusRecebido"
-        class="progress-item active">
-
-        <div class="progress-icon">
-          ✓
-        </div>
-
-        Pedido recebido
-
-      </div>
-
-
-      <div
-        id="statusRoteiro"
-        class="progress-item">
-
-        <div class="progress-icon">
-          2
-        </div>
-
-        Criando roteiro
-
-      </div>
-
-
-      <div
-        id="statusVoz"
-        class="progress-item">
-
-        <div class="progress-icon">
-          3
-        </div>
-
-        Gerando voz
-
-      </div>
-
-
-      <div
-        id="statusMontando"
-        class="progress-item">
-
-        <div class="progress-icon">
-          4
-        </div>
-
-        Montando vídeo
-
-      </div>
-
-
-      <div
-        id="statusPublicando"
-        class="progress-item">
-
-        <div class="progress-icon">
-          5
-        </div>
-
-        Publicando
-
-      </div>
-
-
-      <div
-        id="statusConcluido"
-        class="progress-item">
-
-        <div class="progress-icon">
-          ✓
-        </div>
-
-        Concluído
-
-      </div>
-
-
-    </div>
-
-
-    <div
-      id="orderInfo"
-      class="order-info">
-    </div>
-
-
-  </div>
-
-</div>
-
-  </section>  <!-- MEUS VÍDEOS -->  <section
-    id="videosSection"
-    class="section"><div class="panel">
-
-
-  <div class="videos-header">
-
-    <h2>
-      📺 Meus vídeos
-    </h2>
-
-
-    <button
-      id="refreshVideosButton"
-      class="refresh-button"
-      onclick="carregarPedidos()">
-
-      ↻ Atualizar
-
-    </button>
-
-  </div>
-
-
-  <div
-    id="videosLoading"
-    class="videos-loading">
-
-    Carregando seus conteúdos...
-
-  </div>
-
-
-  <div
-    id="videosEmpty"
-    class="videos-empty hidden">
-
-    Você ainda não criou nenhum conteúdo.
-
-  </div>
-
-
-  <div
-    id="videoList"
-    class="video-list">
-  </div>
-
-
-</div>
-
-  </section></div><nav class="bottom-nav"><a
-id="navInicio"
-class="active"
-onclick="mostrarInicio()">
-
-<span class="nav-icon">
-  🏠
-</span>
-
-Início
-
-  </a><a
-id="navCriar"
-onclick="mostrarCriar()">
-
-<span class="nav-icon">
-  ➕
-</span>
-
-Criar
-
-  </a><a
-id="navThumbnail"
-onclick="mostrarThumbnail()">
-
-<span class="nav-icon">
-  🖼️
-</span>
-
-Thumbnail
-
-  </a><a
-id="navVideos"
-onclick="mostrarVideos()">
-
-<span class="nav-icon">
-  📺
-</span>
-
-Vídeos
-
-  </a></nav><script>
-
-  let tipo = "Short";
-
-  let duracao = "30 segundos";
-
-  let numeroPedido = null;
-
-  let intervaloStatus = null;
-
-
-  /* ---------------------------
-     NAVEGAÇÃO
-  ---------------------------- */
-
-  function atualizarNav(ativo) {
-
-    const ids = [
-      "navInicio",
-      "navCriar",
-      "navThumbnail",
-      "navVideos"
-    ];
-
-    ids.forEach(function(id) {
-
-      document
-        .getElementById(id)
-        .classList.remove("active");
-
-    });
-
-    document
-      .getElementById(ativo)
-      .classList.add("active");
-
-  }
-
-
-  function esconderTelas() {
-
-    document
-      .getElementById("homeSection")
-      .style.display = "none";
-
-    document
-      .getElementById("createSection")
-      .style.display = "none";
-
-    document
-      .getElementById("videosSection")
-      .classList.remove("show");
-
-  }
-
-
-  function mostrarInicio() {
-
-    esconderTelas();
-
-    document
-      .getElementById("homeSection")
-      .style.display = "block";
-
-    document
-      .getElementById("createSection")
-      .style.display = "block";
-
-    atualizarNav("navInicio");
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-
-  }
-
-
-  function mostrarCriar() {
-
-    esconderTelas();
-
-    document
-      .getElementById("createSection")
-      .style.display = "block";
-
-    atualizarNav("navCriar");
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-
-  }
-
-
-  function mostrarThumbnail() {
-
-    alert(
-      "A área de Thumbnail será adicionada na próxima etapa."
-    );
-
-  }
-
-
-  function mostrarVideos() {
-
-    esconderTelas();
-
-    document
-      .getElementById("videosSection")
-      .classList.add("show");
-
-    atualizarNav("navVideos");
-
-    carregarPedidos();
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-
-  }
-
-
-  function irParaCriar() {
-
-    mostrarCriar();
-
-    document
-      .getElementById("tema")
-      .focus();
-
-  }
-
-
-  /* ---------------------------
-     TIPO DE CONTEÚDO
-  ---------------------------- */
-
-  function selecionarTipo(novoTipo) {
-
-    tipo = novoTipo;
-
-    const short =
-      document.getElementById("tipoShort");
-
-    const longo =
-      document.getElementById("tipoLongo");
-
-    const duracoesShort =
-      document.getElementById("duracoesShort");
-
-    const duracoesLongo =
-      document.getElementById("duracoesLongo");
-
-
-    if (novoTipo === "Short") {
-
-      short.classList.add("active");
-
-      longo.classList.remove("active");
-
-      duracoesShort.classList.remove("hidden");
-
-      duracoesLongo.classList.add("hidden");
-
-      duracao = "30 segundos";
-
-    } else {
-
-      short.classList.remove("active");
-
-      longo.classList.add("active");
-
-      duracoesShort.classList.add("hidden");
-
-      duracoesLongo.classList.remove("hidden");
-
-      duracao = "5 minutos";
+      secoes.forEach(function(secao) {
+        secao.classList.remove("active");
+      });
 
     }
 
-  }
+
+    function limparNav() {
+
+      const botoes =
+        document.querySelectorAll(".nav-button");
+
+      botoes.forEach(function(botao) {
+        botao.classList.remove("active");
+      });
+
+    }
 
 
-  /* ---------------------------
-     DURAÇÃO
-  ---------------------------- */
+    function mostrarInicio() {
 
-  function selecionarDuracao(
-    botao,
-    novaDuracao
-  ) {
+      esconderTodasSecoes();
 
-    duracao = novaDuracao;
+      limparNav();
 
-    const botoes =
-      botao.parentElement
-        .querySelectorAll("button");
+      document
+        .getElementById("inicioSection")
+        .classList.add("active");
 
-    botoes.forEach(function(item) {
+      document
+        .getElementById("navInicio")
+        .classList.add("active");
 
-      item.classList.remove("active");
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
 
-    });
-
-    botao.classList.add("active");
-
-    document
-      .getElementById("duracaoPersonalizada")
-      .value = "";
-
-  }
+    }
 
 
-  /* ---------------------------
-     STATUS DO PEDIDO
-  ---------------------------- */
+    function mostrarCriar() {
 
-  function mostrarStatus() {
+      esconderTodasSecoes();
 
-    document
-      .getElementById("statusPanel")
-      .classList.add("show");
+      limparNav();
 
-  }
+      document
+        .getElementById("criarSection")
+        .classList.add("active");
 
+      document
+        .getElementById("navCriar")
+        .classList.add("active");
 
-  function limparStatus() {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
 
-    const ids = [
-      "statusRecebido",
-      "statusRoteiro",
-      "statusVoz",
-      "statusMontando",
-      "statusPublicando",
-      "statusConcluido"
-    ];
-
-    ids.forEach(function(id) {
-
-      const elemento =
-        document.getElementById(id);
-
-      elemento.classList.remove("active");
-
-      elemento.classList.remove("done");
-
-      elemento.classList.remove("error");
-
-    });
-
-  }
+    }
 
 
-  function atualizarStatus(status) {
+    function mostrarCriarLongo() {
 
-    limparStatus();
+      mostrarCriar();
 
-    const ordem = [
-      "recebido",
-      "roteiro",
-      "voz",
-      "montando",
-      "publicando",
-      "concluido"
-    ];
+      selecionarTipo("Vídeo longo");
 
-    const nomes = {
-
-      recebido:
-        "Pedido recebido.",
-
-      roteiro:
-        "O roteiro está sendo criado.",
-
-      voz:
-        "A voz está sendo gerada.",
-
-      montando:
-        "O vídeo está sendo montado.",
-
-      publicando:
-        "O vídeo está sendo preparado para publicação.",
-
-      concluido:
-        "Conteúdo concluído!"
-
-    };
-
-    const posicao =
-      ordem.indexOf(status);
+    }
 
 
-    if (status === "erro") {
+    function mostrarThumbnail() {
 
-      const recebido =
-        document.getElementById(
-          "statusRecebido"
+      esconderTodasSecoes();
+
+      limparNav();
+
+      document
+        .getElementById("thumbnailSection")
+        .classList.add("active");
+
+      document
+        .getElementById("navThumbnail")
+        .classList.add("active");
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+    }
+
+
+    function mostrarVideos() {
+
+      esconderTodasSecoes();
+
+      limparNav();
+
+      document
+        .getElementById("videosSection")
+        .classList.add("active");
+
+      document
+        .getElementById("navVideos")
+        .classList.add("active");
+
+      carregarPedidos();
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+    }
+
+
+    /* =========================================================
+       TIPO
+       ========================================================= */
+
+    function selecionarTipo(tipo) {
+
+      tipoSelecionado = tipo;
+
+      const shortButton =
+        document.getElementById("tipoShortButton");
+
+      const longoButton =
+        document.getElementById("tipoLongoButton");
+
+      const duracoesShort =
+        document.getElementById("duracoesShort");
+
+      const duracoesLongo =
+        document.getElementById("duracoesLongo");
+
+
+      shortButton.classList.remove("active");
+
+      longoButton.classList.remove("active");
+
+
+      if (tipo === "Short") {
+
+        shortButton.classList.add("active");
+
+        duracoesShort.classList.remove("hidden");
+
+        duracoesLongo.classList.add("hidden");
+
+        document.getElementById("duracao60").checked = true;
+
+      } else {
+
+        longoButton.classList.add("active");
+
+        duracoesShort.classList.add("hidden");
+
+        duracoesLongo.classList.remove("hidden");
+
+        document.getElementById("duracao5").checked = true;
+
+      }
+
+    }
+
+
+    /* =========================================================
+       RÁDIO SELECIONADO
+       ========================================================= */
+
+    function obterRadio(nome, padrao) {
+
+      const selecionado =
+        document.querySelector(
+          'input[name="' + nome + '"]:checked'
         );
 
-      recebido.classList.add("error");
-
-      recebido
-        .querySelector(".progress-icon")
-        .textContent = "!";
-
-      document
-        .getElementById("statusSubtitle")
-        .textContent =
-        "Ocorreu um erro durante o processamento.";
-
-      return;
+      return selecionado
+        ? selecionado.value
+        : padrao;
 
     }
 
 
-    ordem.forEach(function(item, index) {
+    /* =========================================================
+       REFERÊNCIAS
+       ========================================================= */
 
-      const id =
-        "status" +
-        item.charAt(0).toUpperCase() +
-        item.slice(1);
+    function obterReferencias() {
 
-      const elemento =
-        document.getElementById(id);
+      const selecionadas =
+        document.querySelectorAll(
+          'input[name="referencias"]:checked'
+        );
 
-
-      if (!elemento) {
-        return;
-      }
-
-
-      if (index < posicao) {
-
-        elemento.classList.add("done");
-
-        elemento
-          .querySelector(".progress-icon")
-          .textContent = "✓";
-
-      }
-
-
-      if (index === posicao) {
-
-        elemento.classList.add("active");
-
-        if (item !== "concluido") {
-
-          elemento
-            .querySelector(".progress-icon")
-            .textContent = "●";
-
+      return Array.from(selecionadas).map(
+        function(item) {
+          return item.value;
         }
-
-      }
-
-    });
-
-
-    document
-      .getElementById("statusSubtitle")
-      .textContent =
-      nomes[status] ||
-      "Processando seu conteúdo.";
-
-  }
-
-
-  async function consultarStatus() {
-
-    if (!numeroPedido) {
-      return;
-    }
-
-
-    try {
-
-      const resposta =
-        await fetch(
-          "/.netlify/functions/status-pedido?numero=" +
-          encodeURIComponent(numeroPedido)
-        );
-
-
-      const resultado =
-        await resposta.json();
-
-
-      if (
-        !resposta.ok ||
-        !resultado.sucesso
-      ) {
-
-        throw new Error(
-          resultado.erro ||
-          "Não foi possível consultar o status."
-        );
-
-      }
-
-
-      atualizarStatus(
-        resultado.status
-      );
-
-
-      document
-        .getElementById("orderInfo")
-        .innerHTML =
-        "<strong>Pedido #" +
-        resultado.numero +
-        "</strong><br>" +
-        resultado.titulo;
-
-
-      if (
-        resultado.status === "concluido" ||
-        resultado.status === "erro"
-      ) {
-
-        if (intervaloStatus) {
-
-          clearInterval(intervaloStatus);
-
-          intervaloStatus = null;
-
-        }
-
-      }
-
-    } catch (erro) {
-
-      console.error(
-        "Erro ao consultar status:",
-        erro
       );
 
     }
 
-  }
+
+    /* =========================================================
+       ENVIAR PEDIDO
+       ========================================================= */
+
+    async function enviar() {
+
+      const temaInput =
+        document.getElementById("tema");
+
+      const tema =
+        temaInput.value.trim();
 
 
-  function iniciarAcompanhamento(numero) {
-
-    numeroPedido = numero;
-
-    mostrarStatus();
-
-    atualizarStatus("recebido");
-
-    consultarStatus();
-
-
-    if (intervaloStatus) {
-
-      clearInterval(intervaloStatus);
-
-    }
-
-
-    intervaloStatus =
-      setInterval(
-        consultarStatus,
-        10000
-      );
-
-  }
-
-
-  /* ---------------------------
-     CRIAR PEDIDO
-  ---------------------------- */
-
-  async function enviar() {
-
-    const tema =
-      document
-        .getElementById("tema")
-        .value
-        .trim();
-
-
-    if (!tema) {
-
-      alert(
-        "Digite o tema do vídeo."
-      );
-
-      return;
-
-    }
-
-
-    const personalizada =
-      document
-        .getElementById("duracaoPersonalizada")
-        .value;
-
-
-    let duracaoFinal = duracao;
-
-
-    if (personalizada) {
-
-      const segundos =
-        parseInt(personalizada);
-
-
-      if (
-        isNaN(segundos) ||
-        segundos < 10 ||
-        segundos > 3600
-      ) {
+      if (!tema) {
 
         alert(
-          "A duração personalizada deve estar entre 10 e 3600 segundos."
+          "Informe o tema do conteúdo."
         );
+
+        temaInput.focus();
 
         return;
-
       }
 
 
-      duracaoFinal =
-        segundos + " segundos";
-
-    }
+      const botao =
+        document.getElementById("createButton");
 
 
-    const estilo =
-      document
-        .getElementById("estilo")
-        .value;
-
-
-    const voz =
-      document
-        .getElementById("voz")
-        .value;
-
-
-    const idioma =
-      document
-        .getElementById("idioma")
-        .value;
-
-
-    const visual =
-      document
-        .getElementById("visual")
-        .value;
-
-
-    const intensidade =
-      document
-        .getElementById("intensidade")
-        .value;
-
-
-    const referenciasSelecionadas =
-      document.querySelectorAll(
-        ".reference-item input:checked"
-      );
-
-
-    const referencias = [];
-
-
-    referenciasSelecionadas.forEach(
-      function(item) {
-
-        referencias.push(
-          item.value
-        );
-
-      }
-    );
-
-
-    const botao =
-      document.getElementById(
-        "createButton"
-      );
-
-
-    botao.disabled = true;
-
-    botao.textContent =
-      "⏳ ENVIANDO PEDIDO...";
-
-
-    try {
-
-      const resposta =
-        await fetch(
-          "/.netlify/functions/criar-pedido",
-          {
-
-            method: "POST",
-
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-
-            body:
-              JSON.stringify({
-
-                tipo: tipo,
-
-                tema: tema,
-
-                duracao:
-                  duracaoFinal,
-
-                estilo: estilo,
-
-                voz: voz,
-
-                idioma: idioma,
-
-                visual: visual,
-
-                referencias:
-                  referencias,
-
-                intensidade:
-                  intensidade
-
-              })
-
-          }
-        );
-
-
-      const resultado =
-        await resposta.json();
-
-
-      if (
-        !resposta.ok ||
-        !resultado.sucesso
-      ) {
-
-        throw new Error(
-          resultado.erro ||
-          "Não foi possível enviar o pedido."
-        );
-
-      }
-
+      botao.disabled = true;
 
       botao.textContent =
-        "✅ PEDIDO ENVIADO!";
+        "⏳ Enviando pedido...";
 
 
-      document
-        .getElementById("tema")
-        .value = "";
+      const dados = {
 
+        tipo:
+          tipoSelecionado,
 
-      iniciarAcompanhamento(
-        resultado.numero
-      );
+        tema:
+          tema,
 
+        duracao:
+          obterRadio(
+            "duracao",
+            tipoSelecionado === "Short"
+              ? "60 segundos"
+              : "5 minutos"
+          ),
 
-      document
-        .getElementById("statusPanel")
-        .scrollIntoView({
-          behavior: "smooth",
-          block: "center"
-        });
+        estilo:
+          obterRadio(
+            "estilo",
+            "Informativo"
+          ),
 
+        voz:
+          obterRadio(
+            "voz",
+            "Natural"
+          ),
 
-    } catch (erro) {
+        idioma:
+          obterRadio(
+            "idioma",
+            "Português"
+          ),
 
-      console.error(erro);
+        visual:
+          obterRadio(
+            "visual",
+            "Vídeos reais"
+          ),
 
-      alert(
-        "Não foi possível enviar o pedido.\n\n" +
-        erro.message
-      );
+        referencias:
+          obterReferencias(),
 
-      botao.textContent =
-        "🚀 CRIAR CONTEÚDO";
+        intensidade:
+          obterRadio(
+            "intensidade",
+            "Equilibrada"
+          )
 
-    } finally {
+      };
 
-      botao.disabled = false;
 
-    }
+      try {
 
-  }
+        const resposta =
+          await fetch(
+            "/.netlify/functions/criar-pedido",
+            {
+              method: "POST",
 
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
 
-  /* ---------------------------
-     MEUS VÍDEOS
-  ---------------------------- */
+              body:
+                JSON.stringify(dados)
+            }
+          );
 
-  function formatarData(data) {
 
-    if (!data) {
-      return "";
-    }
+        const resultado =
+          await resposta.json();
 
 
-    try {
+        if (!resposta.ok || !resultado.sucesso) {
 
-      return new Date(data)
-        .toLocaleString(
-          "pt-BR",
-          {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit"
-          }
-        );
+          throw new Error(
+            resultado.erro ||
+            "Não foi possível enviar o pedido."
+          );
 
-    } catch (erro) {
+        }
 
-      return "";
-
-    }
-
-  }
-
-
-  function textoStatus(status) {
-
-    const nomes = {
-
-      recebido:
-        "Recebido",
-
-      roteiro:
-        "Criando roteiro",
-
-      voz:
-        "Gerando voz",
-
-      montando:
-        "Montando vídeo",
-
-      publicando:
-        "Publicando",
-
-      concluido:
-        "Concluído",
-
-      erro:
-        "Erro"
-
-    };
-
-
-    return nomes[status] ||
-      "Processando";
-
-  }
-
-
-  function criarPedidoCard(pedido) {
-
-    const card =
-      document.createElement("div");
-
-    card.className =
-      "video-card";
-
-
-    /*
-      VÍDEO PUBLICADO
-    */
-
-    if (
-      pedido.youtubeId ||
-      pedido.youtubeUrl
-    ) {
-
-      const thumbnailWrapper =
-        document.createElement("div");
-
-      thumbnailWrapper.className =
-        "video-thumbnail-wrapper";
-
-
-      const thumbnail =
-        document.createElement("img");
-
-      thumbnail.className =
-        "video-thumbnail";
-
-
-      thumbnail.src =
-        pedido.youtubeThumbnailUrl ||
-        (
-          pedido.youtubeId
-            ? "https://i.ytimg.com/vi/" +
-              encodeURIComponent(
-                pedido.youtubeId
-              ) +
-              "/hqdefault.jpg"
-            : ""
-        );
-
-
-      thumbnail.alt =
-        pedido.titulo ||
-        "Thumbnail do vídeo";
-
-
-      thumbnail.loading =
-        "lazy";
-
-
-      thumbnail.onerror =
-        function() {
-
-          thumbnail.style.display =
-            "none";
-
-        };
-
-
-      thumbnailWrapper.appendChild(
-        thumbnail
-      );
-
-
-      if (pedido.youtubeUrl) {
-
-        const play =
-          document.createElement("a");
-
-
-        play.className =
-          "video-play";
-
-
-        play.href =
-          pedido.youtubeUrl;
-
-
-        play.target =
-          "_blank";
-
-
-        play.rel =
-          "noopener noreferrer";
-
-
-        play.textContent =
-          "▶";
-
-
-        play.setAttribute(
-          "aria-label",
-          "Assistir no YouTube"
-        );
-
-
-        thumbnailWrapper.appendChild(
-          play
-        );
-
-      }
-
-
-      card.appendChild(
-        thumbnailWrapper
-      );
-
-    }
-
-
-    const content =
-      document.createElement("div");
-
-
-    content.className =
-      "video-card-content";
-
-
-    const titulo =
-      document.createElement("div");
-
-
-    titulo.className =
-      "video-card-title";
-
-
-    titulo.textContent =
-      pedido.titulo ||
-      "Conteúdo sem título";
-
-
-    content.appendChild(
-      titulo
-    );
-
-
-    const meta =
-      document.createElement("div");
-
-
-    meta.className =
-      "video-card-meta";
-
-
-    const numero =
-      document.createElement("span");
-
-
-    numero.className =
-      "video-card-number";
-
-
-    numero.textContent =
-      "Pedido #" +
-      pedido.numero;
-
-
-    const badge =
-      document.createElement("span");
-
-
-    badge.className =
-      "badge badge-" +
-      (pedido.status ||
-        "recebido");
-
-
-    badge.textContent =
-      textoStatus(
-        pedido.status
-      );
-
-
-    meta.appendChild(
-      numero
-    );
-
-
-    meta.appendChild(
-      badge
-    );
-
-
-    content.appendChild(
-      meta
-    );
-
-
-    const data =
-      document.createElement("div");
-
-
-    data.style.color =
-      "#666";
-
-
-    data.style.fontSize =
-      "10px";
-
-
-    data.style.marginBottom =
-      "12px";
-
-
-    data.textContent =
-      "Criado em " +
-      formatarData(
-        pedido.criadoEm
-      );
-
-
-    content.appendChild(
-      data
-    );
-
-
-    /*
-      AÇÕES
-    */
-
-    const actions =
-      document.createElement("div");
-
-
-    actions.className =
-      "video-card-actions";
-
-
-    if (pedido.youtubeUrl) {
-
-      const assistir =
-        document.createElement("a");
-
-
-      assistir.href =
-        pedido.youtubeUrl;
-
-
-      assistir.target =
-        "_blank";
-
-
-      assistir.rel =
-        "noopener noreferrer";
-
-
-      assistir.className =
-        "primary";
-
-
-      assistir.textContent =
-        "▶️ Assistir no YouTube";
-
-
-      actions.appendChild(
-        assistir
-      );
-
-    }
-
-
-    const acompanhar =
-      document.createElement("button");
-
-
-    acompanhar.textContent =
-      "Acompanhar";
-
-
-    acompanhar.onclick =
-      function() {
 
         numeroPedido =
-          pedido.numero;
+          resultado.numero;
 
 
-        mostrarCriar();
+        document
+          .getElementById("statusPanel")
+          .classList.remove("hidden");
 
-        mostrarStatus();
+
+        document
+          .getElementById("statusNumber")
+          .textContent =
+            "Pedido #" +
+            numeroPedido;
+
+
+        resetarStatus();
+
 
         consultarStatus();
 
 
         if (intervaloStatus) {
-
-          clearInterval(
-            intervaloStatus
-          );
-
+          clearInterval(intervaloStatus);
         }
 
 
@@ -2384,233 +2359,940 @@ Vídeos
           );
 
 
+        alert(
+          "Pedido enviado com sucesso!"
+        );
+
+
         document
-          .getElementById(
-            "statusPanel"
-          )
+          .getElementById("statusPanel")
           .scrollIntoView({
             behavior: "smooth",
             block: "center"
           });
 
+
+      } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+          erro.message ||
+          "Erro ao enviar o pedido."
+        );
+
+      } finally {
+
+        botao.disabled = false;
+
+        botao.textContent =
+          "🚀 Criar conteúdo";
+
+      }
+
+    }
+
+
+    /* =========================================================
+       RESET STATUS
+       ========================================================= */
+
+    function resetarStatus() {
+
+      const passos = [
+        "stepRecebido",
+        "stepRoteiro",
+        "stepVoz",
+        "stepMontando",
+        "stepPublicando",
+        "stepConcluido"
+      ];
+
+
+      passos.forEach(function(id) {
+
+        const elemento =
+          document.getElementById(id);
+
+        if (!elemento) {
+          return;
+        }
+
+        elemento.classList.remove("active");
+        elemento.classList.remove("done");
+        elemento.classList.remove("error");
+
+      });
+
+    }
+
+
+    /* =========================================================
+       TEXTO DO STATUS
+       ========================================================= */
+
+    function textoStatus(status) {
+
+      const textos = {
+
+        recebido:
+          "Recebido",
+
+        roteiro:
+          "Roteiro",
+
+        voz:
+          "Voz",
+
+        montando:
+          "Montando",
+
+        publicando:
+          "Publicando",
+
+        concluido:
+          "Publicado",
+
+        erro:
+          "Erro"
+
       };
 
 
-    actions.appendChild(
-      acompanhar
-    );
+      return textos[status] ||
+        "Recebido";
+
+    }
 
 
-    if (
-      !pedido.youtubeUrl &&
-      pedido.status !== "concluido"
-    ) {
+    /* =========================================================
+       ATUALIZAR STATUS
+       ========================================================= */
 
-      const aguardando =
-        document.createElement("div");
+    function atualizarStatusVisual(status) {
+
+      const ordem = [
+        "recebido",
+        "roteiro",
+        "voz",
+        "montando",
+        "publicando",
+        "concluido"
+      ];
 
 
-      aguardando.className =
-        "video-not-published";
+      const ids = {
+
+        recebido:
+          "stepRecebido",
+
+        roteiro:
+          "stepRoteiro",
+
+        voz:
+          "stepVoz",
+
+        montando:
+          "stepMontando",
+
+        publicando:
+          "stepPublicando",
+
+        concluido:
+          "stepConcluido"
+
+      };
 
 
-      aguardando.textContent =
-        "Seu vídeo ainda está sendo processado.";
+      resetarStatus();
 
 
-      content.appendChild(
-        aguardando
+      if (status === "erro") {
+
+        const atual =
+          document.getElementById(
+            "stepMontando"
+          );
+
+        if (atual) {
+          atual.classList.add("error");
+        }
+
+        return;
+      }
+
+
+      const indice =
+        ordem.indexOf(status);
+
+
+      if (indice < 0) {
+        return;
+      }
+
+
+      ordem.forEach(
+        function(item, index) {
+
+          const elemento =
+            document.getElementById(
+              ids[item]
+            );
+
+          if (!elemento) {
+            return;
+          }
+
+
+          if (index < indice) {
+
+            elemento.classList.add("done");
+
+          }
+
+
+          if (index === indice) {
+
+            if (status === "concluido") {
+
+              elemento.classList.add("done");
+
+            } else {
+
+              elemento.classList.add("active");
+
+            }
+
+          }
+
+        }
       );
 
     }
 
 
-    if (
-      !pedido.youtubeUrl &&
-      pedido.status === "concluido"
-    ) {
+    /* =========================================================
+       CONSULTAR STATUS
+       ========================================================= */
 
-      const aguardando =
-        document.createElement("div");
+    async function consultarStatus() {
 
-
-      aguardando.className =
-        "video-not-published";
+      if (!numeroPedido) {
+        return;
+      }
 
 
-      aguardando.textContent =
-        "Processamento concluído. A publicação ainda não possui um link disponível.";
+      try {
+
+        const resposta =
+          await fetch(
+            "/.netlify/functions/status-pedido?numero=" +
+            encodeURIComponent(numeroPedido)
+          );
 
 
-      content.appendChild(
-        aguardando
-      );
+        const resultado =
+          await resposta.json();
+
+
+        if (
+          !resposta.ok ||
+          !resultado.sucesso
+        ) {
+
+          return;
+
+        }
+
+
+        atualizarStatusVisual(
+          resultado.status
+        );
+
+
+        document
+          .getElementById("statusNumber")
+          .textContent =
+            "Pedido #" +
+            resultado.numero +
+            " — " +
+            textoStatus(resultado.status);
+
+
+        if (
+          resultado.status === "concluido" ||
+          resultado.status === "erro"
+        ) {
+
+          if (intervaloStatus) {
+
+            clearInterval(
+              intervaloStatus
+            );
+
+            intervaloStatus = null;
+
+          }
+
+        }
+
+
+      } catch (erro) {
+
+        console.error(
+          "Erro ao consultar status:",
+          erro
+        );
+
+      }
 
     }
 
 
-    content.appendChild(
-      actions
-    );
+    /* =========================================================
+       FORMATAR DATA
+       ========================================================= */
+
+    function formatarData(data) {
+
+      if (!data) {
+        return "Data não informada";
+      }
 
 
-    card.appendChild(
-      content
-    );
+      try {
+
+        return new Date(data)
+          .toLocaleString(
+            "pt-BR",
+            {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit"
+            }
+          );
+
+      } catch (erro) {
+
+        return data;
+
+      }
+
+    }
 
 
-    return card;
+    /* =========================================================
+       CARREGAR PEDIDOS
+       ========================================================= */
 
-  }
+    async function carregarPedidos() {
 
+      const loading =
+        document.getElementById(
+          "videosLoading"
+        );
 
-  async function carregarPedidos() {
+      const vazio =
+        document.getElementById(
+          "videosEmpty"
+        );
 
-    const loading =
-      document.getElementById(
-        "videosLoading"
-      );
-
-
-    const empty =
-      document.getElementById(
-        "videosEmpty"
-      );
-
-
-    const list =
-      document.getElementById(
-        "videoList"
-      );
+      const lista =
+        document.getElementById(
+          "videoList"
+        );
 
 
-    const botao =
-      document.getElementById(
-        "refreshVideosButton"
-      );
+      if (loading) {
+        loading.classList.remove("hidden");
+      }
 
 
-    loading.classList.remove(
-      "hidden"
-    );
+      if (vazio) {
+        vazio.classList.add("hidden");
+      }
 
 
-    empty.classList.add(
-      "hidden"
-    );
+      if (lista) {
+        lista.innerHTML = "";
+      }
 
 
-    list.innerHTML =
-      "";
+      try {
+
+        const resposta =
+          await fetch(
+            "/.netlify/functions/listar-pedidos"
+          );
 
 
-    botao.disabled =
-      true;
+        const resultado =
+          await resposta.json();
 
 
-    try {
+        if (
+          !resposta.ok ||
+          !resultado.sucesso
+        ) {
 
-      const resposta =
-        await fetch(
-          "/.netlify/functions/listar-pedidos",
-          {
-            method: "GET",
-            cache: "no-store"
+          throw new Error(
+            resultado.erro ||
+            "Não foi possível carregar os vídeos."
+          );
+
+        }
+
+
+        pedidosBiblioteca =
+          resultado.pedidos || [];
+
+
+        if (loading) {
+          loading.classList.add("hidden");
+        }
+
+
+        if (!pedidosBiblioteca.length) {
+
+          if (vazio) {
+            vazio.classList.remove("hidden");
+          }
+
+          const contador =
+            document.getElementById(
+              "videosCount"
+            );
+
+          if (contador) {
+            contador.textContent =
+              "Nenhum vídeo ainda";
+          }
+
+          return;
+        }
+
+
+        filtrarVideos();
+
+
+      } catch (erro) {
+
+        console.error(erro);
+
+
+        if (loading) {
+          loading.classList.add("hidden");
+        }
+
+
+        if (lista) {
+
+          lista.innerHTML = "";
+
+          const mensagem =
+            document.createElement("div");
+
+          mensagem.className =
+            "library-no-result";
+
+          mensagem.textContent =
+            "Não foi possível carregar seus vídeos.";
+
+          lista.appendChild(
+            mensagem
+          );
+
+        }
+
+      }
+
+    }
+
+
+    /* =========================================================
+       FILTRAR VÍDEOS
+       ========================================================= */
+
+    function filtrarVideos() {
+
+      const busca =
+        (
+          document.getElementById(
+            "videoSearch"
+          )?.value || ""
+        )
+        .toLowerCase()
+        .trim();
+
+
+      const filtro =
+        document.getElementById(
+          "videoFilter"
+        )?.value ||
+        "todos";
+
+
+      const lista =
+        document.getElementById(
+          "videoList"
+        );
+
+
+      if (!lista) {
+        return;
+      }
+
+
+      lista.innerHTML = "";
+
+
+      const filtrados =
+        pedidosBiblioteca.filter(
+          function(pedido) {
+
+            const titulo =
+              (
+                pedido.titulo ||
+                ""
+              )
+              .toLowerCase();
+
+
+            const combinaBusca =
+              !busca ||
+              titulo.includes(busca);
+
+
+            const combinaFiltro =
+              filtro === "todos" ||
+              pedido.status === filtro;
+
+
+            return (
+              combinaBusca &&
+              combinaFiltro
+            );
+
           }
         );
 
 
-      const resultado =
-        await resposta.json();
-
-
-      if (
-        !resposta.ok ||
-        !resultado.sucesso
-      ) {
-
-        throw new Error(
-          resultado.erro ||
-          "Não foi possível carregar os pedidos."
+      const contador =
+        document.getElementById(
+          "videosCount"
         );
+
+
+      if (contador) {
+
+        contador.textContent =
+          filtrados.length +
+          (
+            filtrados.length === 1
+              ? " vídeo"
+              : " vídeos"
+          );
 
       }
 
 
-      loading.classList.add(
-        "hidden"
-      );
+      if (!filtrados.length) {
 
+        const vazio =
+          document.createElement("div");
 
-      const pedidos =
-        Array.isArray(
-          resultado.pedidos
-        )
-          ? resultado.pedidos
-          : [];
+        vazio.className =
+          "library-no-result";
 
+        vazio.textContent =
+          pedidosBiblioteca.length
+            ? "Nenhum vídeo encontrado."
+            : "Você ainda não criou nenhum conteúdo.";
 
-      if (
-        pedidos.length === 0
-      ) {
-
-        empty.classList.remove(
-          "hidden"
+        lista.appendChild(
+          vazio
         );
 
         return;
-
       }
 
 
-      pedidos.forEach(
+      filtrados.forEach(
         function(pedido) {
 
-          list.appendChild(
-            criarPedidoCard(
-              pedido
-            )
+          lista.appendChild(
+            criarPedidoCard(pedido)
           );
 
         }
       );
 
+    }
 
-    } catch (erro) {
 
-      loading.classList.add(
-        "hidden"
+    /* =========================================================
+       CRIAR CARD DO VÍDEO
+       ========================================================= */
+
+    function criarPedidoCard(pedido) {
+
+      const card =
+        document.createElement("div");
+
+      card.className =
+        "video-card";
+
+
+      const youtubeUrl =
+        pedido.youtubeUrl ||
+        (
+          pedido.youtubeId
+            ? "https://www.youtube.com/watch?v=" +
+              pedido.youtubeId
+            : ""
+        );
+
+
+      const thumbnail =
+        pedido.youtubeThumbnailUrl ||
+        (
+          pedido.youtubeId
+            ? "https://i.ytimg.com/vi/" +
+              pedido.youtubeId +
+              "/hqdefault.jpg"
+            : ""
+        );
+
+
+      /* =======================================================
+         PREVIEW
+         ======================================================= */
+
+      if (thumbnail) {
+
+        const preview =
+          document.createElement("div");
+
+        preview.className =
+          "video-card-preview";
+
+
+        const imagem =
+          document.createElement("img");
+
+        imagem.src =
+          thumbnail;
+
+        imagem.alt =
+          pedido.titulo ||
+          "Vídeo";
+
+
+        imagem.loading =
+          "lazy";
+
+
+        imagem.onerror =
+          function() {
+
+            preview.style.display =
+              "none";
+
+          };
+
+
+        preview.appendChild(
+          imagem
+        );
+
+
+        if (youtubeUrl) {
+
+          const play =
+            document.createElement("button");
+
+          play.className =
+            "video-card-play";
+
+          play.textContent =
+            "▶";
+
+          play.setAttribute(
+            "aria-label",
+            "Assistir vídeo"
+          );
+
+
+          play.onclick =
+            function() {
+
+              window.open(
+                youtubeUrl,
+                "_blank",
+                "noopener,noreferrer"
+              );
+
+            };
+
+
+          preview.appendChild(
+            play
+          );
+
+        }
+
+
+        card.appendChild(
+          preview
+        );
+
+      }
+
+
+      /* =======================================================
+         CORPO
+         ======================================================= */
+
+      const body =
+        document.createElement("div");
+
+      body.className =
+        "video-card-body";
+
+
+      const titulo =
+        document.createElement("div");
+
+      titulo.className =
+        "video-card-title";
+
+      titulo.textContent =
+        pedido.titulo ||
+        "Conteúdo sem título";
+
+
+      body.appendChild(
+        titulo
       );
 
 
-      empty.classList.remove(
-        "hidden"
+      /* =======================================================
+         META
+         ======================================================= */
+
+      const meta =
+        document.createElement("div");
+
+      meta.className =
+        "video-card-meta";
+
+
+      const numero =
+        document.createElement("span");
+
+      numero.className =
+        "video-card-number";
+
+      numero.textContent =
+        "Pedido #" +
+        pedido.numero;
+
+
+      const badge =
+        document.createElement("span");
+
+      badge.className =
+        "badge badge-" +
+        (
+          pedido.status ||
+          "recebido"
+        );
+
+      badge.textContent =
+        textoStatus(
+          pedido.status
+        );
+
+
+      meta.appendChild(
+        numero
+      );
+
+      meta.appendChild(
+        badge
       );
 
 
-      empty.textContent =
-        "Não foi possível carregar seus conteúdos agora.";
-
-
-      console.error(
-        "Erro ao carregar pedidos:",
-        erro
+      body.appendChild(
+        meta
       );
 
-    } finally {
 
-      botao.disabled =
-        false;
+      /* =======================================================
+         DATA
+         ======================================================= */
+
+      const data =
+        document.createElement("div");
+
+      data.className =
+        "video-card-date";
+
+      data.textContent =
+        "Criado em " +
+        formatarData(
+          pedido.criadoEm
+        );
+
+
+      body.appendChild(
+        data
+      );
+
+
+      /* =======================================================
+         BOTÕES
+         ======================================================= */
+
+      const actions =
+        document.createElement("div");
+
+      actions.className =
+        "video-card-actions";
+
+
+      if (youtubeUrl) {
+
+        const assistir =
+          document.createElement("a");
+
+        assistir.href =
+          youtubeUrl;
+
+        assistir.target =
+          "_blank";
+
+        assistir.rel =
+          "noopener noreferrer";
+
+        assistir.className =
+          "youtube-button";
+
+        assistir.textContent =
+          "▶ Assistir no YouTube";
+
+
+        actions.appendChild(
+          assistir
+        );
+
+      }
+
+
+      const acompanhar =
+        document.createElement("button");
+
+      acompanhar.className =
+        "follow-button";
+
+      acompanhar.textContent =
+        "Acompanhar";
+
+
+      acompanhar.onclick =
+        function() {
+
+          numeroPedido =
+            pedido.numero;
+
+
+          mostrarCriar();
+
+
+          document
+            .getElementById(
+              "statusPanel"
+            )
+            .classList.remove(
+              "hidden"
+            );
+
+
+          document
+            .getElementById(
+              "statusNumber"
+            )
+            .textContent =
+              "Pedido #" +
+              pedido.numero;
+
+
+          consultarStatus();
+
+
+          if (intervaloStatus) {
+
+            clearInterval(
+              intervaloStatus
+            );
+
+          }
+
+
+          intervaloStatus =
+            setInterval(
+              consultarStatus,
+              10000
+            );
+
+
+          const painel =
+            document.getElementById(
+              "statusPanel"
+            );
+
+
+          if (painel) {
+
+            painel.scrollIntoView({
+              behavior: "smooth",
+              block: "center"
+            });
+
+          }
+
+        };
+
+
+      actions.appendChild(
+        acompanhar
+      );
+
+
+      body.appendChild(
+        actions
+      );
+
+
+      card.appendChild(
+        body
+      );
+
+
+      return card;
 
     }
 
-  }
 
+    /* =========================================================
+       INICIALIZAÇÃO
+       ========================================================= */
 
-  /* ---------------------------
-     INÍCIO
-  ---------------------------- */
+    mostrarInicio();
 
-  mostrarInicio();
+  </script>
 
-</script></body></html>
+</body>
+</html>
