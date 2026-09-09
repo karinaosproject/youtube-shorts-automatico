@@ -2330,6 +2330,9 @@ jobs:
       # ============================================================
       # 22. SALVAR ARTIFACT
       # ============================================================
+- name: Registrar número do pedido
+  run: |
+    echo "${{ github.event.issue.number }}" > resultado/issue-number.txt
 
       - name: Enviar resultado para próxima etapa
         uses: actions/upload-artifact@v4
