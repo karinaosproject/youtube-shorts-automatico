@@ -2328,11 +2328,17 @@ jobs:
           find resultado -maxdepth 3 -type f
 
       # ============================================================
-      # 22. SALVAR ARTIFACT
+            # ============================================================
+      # 22. REGISTRAR NÚMERO DO PEDIDO
       # ============================================================
-- name: Registrar número do pedido
-  run: |
-    echo "${{ github.event.issue.number }}" > resultado/issue-number.txt
+
+      - name: Registrar número do pedido
+        run: |
+          echo "${{ github.event.issue.number }}" > resultado/issue-number.txt
+
+      # ============================================================
+      # 23. SALVAR ARTIFACT
+      # ============================================================
 
       - name: Enviar resultado para próxima etapa
         uses: actions/upload-artifact@v4
