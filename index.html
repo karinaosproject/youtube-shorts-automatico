@@ -111,14 +111,38 @@
 
     .referencia-item {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 10px;
-      margin: 9px 0;
+      margin: 12px 0;
       font-size: 14px;
+      line-height: 1.35;
+      font-weight: normal;
     }
 
     .referencia-item input {
       width: auto;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .referencia-descricao {
+      display: block;
+      color: #777;
+      font-size: 12px;
+      margin-top: 3px;
+      font-weight: normal;
+    }
+
+    .intensidade {
+      margin-top: 15px;
+      padding: 14px;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      background: #fafafa;
+    }
+
+    .intensidade label {
+      margin-top: 0;
     }
 
     .aviso {
@@ -128,6 +152,17 @@
       border-radius: 10px;
       font-size: 13px;
       color: #665300;
+      line-height: 1.45;
+    }
+
+    .aviso-originalidade {
+      margin-top: 10px;
+      padding: 12px;
+      background: #eef7ff;
+      border-radius: 10px;
+      font-size: 13px;
+      color: #174a70;
+      line-height: 1.45;
     }
 
     #duracaoPersonalizada {
@@ -172,6 +207,7 @@
     <div class="subtitulo">
       Criador automático de conteúdo
     </div>
+
 
     <label>Tipo de conteúdo</label>
 
@@ -260,7 +296,7 @@
 
       <button
         type="button"
-        class="duracao-btn"
+        class="duracao-btn ativo"
         onclick="selecionarDuracao('10 minutos', this)">
         10 minutos
       </button>
@@ -347,54 +383,144 @@
     <div class="referencias">
 
       <label class="referencia-item">
+
         <input
           type="checkbox"
           value="Animais pelo Mundo">
-        Animais pelo Mundo
+
+        <span>
+          <strong>Animais pelo Mundo</strong>
+          <span class="referencia-descricao">
+            Curiosidades sobre animais, comportamento e narrativa visual.
+          </span>
+        </span>
+
       </label>
 
+
       <label class="referencia-item">
+
         <input
           type="checkbox"
           value="Papo de Biólogo">
-        Papo de Biólogo
+
+        <span>
+          <strong>Papo de Biólogo</strong>
+          <span class="referencia-descricao">
+            Explicação científica, contexto e informações biológicas.
+          </span>
+        </span>
+
       </label>
 
+
       <label class="referencia-item">
+
         <input
           type="checkbox"
           value="Ciência Todo Dia">
-        Ciência Todo Dia
+
+        <span>
+          <strong>Ciência Todo Dia</strong>
+          <span class="referencia-descricao">
+            Raciocínio científico, explicações claras e construção de ideias.
+          </span>
+        </span>
+
       </label>
 
+
       <label class="referencia-item">
+
         <input
           type="checkbox"
           value="Manual do Mundo">
-        Manual do Mundo
+
+        <span>
+          <strong>Manual do Mundo</strong>
+          <span class="referencia-descricao">
+            Demonstrações, exemplos, explicações acessíveis e didáticas.
+          </span>
+        </span>
+
       </label>
 
+
       <label class="referencia-item">
+
         <input
           type="checkbox"
           value="Tá Curioso?">
-        Tá Curioso?
+
+        <span>
+          <strong>Tá Curioso?</strong>
+          <span class="referencia-descricao">
+            Perguntas, curiosidades, ritmo e descoberta.
+          </span>
+        </span>
+
       </label>
 
+
       <label class="referencia-item">
+
         <input
           type="checkbox"
           value="Minutos Psíquicos">
-        Minutos Psíquicos
+
+        <span>
+          <strong>Minutos Psíquicos</strong>
+          <span class="referencia-descricao">
+            Comportamento, psicologia, narrativa e explicações envolventes.
+          </span>
+        </span>
+
       </label>
 
     </div>
 
 
+    <div class="intensidade">
+
+      <label>🎯 Intensidade das referências</label>
+
+      <select id="intensidade">
+
+        <option value="Leve">
+          Leve — apenas orientação geral
+        </option>
+
+        <option value="Equilibrada" selected>
+          Equilibrada — orientação de estrutura, ritmo e abordagem
+        </option>
+
+        <option value="Forte">
+          Forte — influência editorial mais presente
+        </option>
+
+      </select>
+
+    </div>
+
+
     <div class="aviso">
-      💡 As referências servem para orientar estrutura, ritmo,
-      abordagem e estilo. O conteúdo gerado deve ser original,
-      sem copiar roteiros ou textos desses canais.
+
+      💡 As referências funcionam como orientação editorial.
+      O sistema pode usar características gerais de estrutura,
+      ritmo, abordagem, linguagem e narrativa associadas às
+      referências selecionadas.
+
+    </div>
+
+
+    <div class="aviso-originalidade">
+
+      🛡️ <strong>Conteúdo original:</strong>
+      as referências NÃO devem ser usadas para copiar frases,
+      roteiros, títulos, textos, exemplos específicos ou sequências
+      identificáveis. O conteúdo final deve ser novo e original,
+      apenas inspirado em características editoriais gerais.
+
     </div>
 
 
@@ -413,6 +539,12 @@
       Você escolhe o tema e as características do vídeo.
       O pedido será enviado automaticamente para o sistema
       de produção através de uma Issue do GitHub.
+
+      <br><br>
+
+      O sistema utiliza essas informações para criar o roteiro,
+      selecionar os visuais, gerar a narração e montar o vídeo
+      automaticamente.
 
     </div>
 
@@ -468,15 +600,20 @@ function selecionarTipo(novoTipo) {
 
   }
 
+
   document
     .getElementById("duracaoPersonalizada")
     .style.display = "none";
 
 
   if (novoTipo === "Short") {
+
     duracao = "45 segundos";
+
   } else {
+
     duracao = "10 minutos";
+
   }
 
 }
@@ -490,10 +627,13 @@ function selecionarDuracao(novaDuracao, botao) {
     document.querySelectorAll(".duracao-btn");
 
   botoes.forEach(function(btn) {
+
     btn.classList.remove("ativo");
+
   });
 
   botao.classList.add("ativo");
+
 
   document
     .getElementById("duracaoPersonalizada")
@@ -520,11 +660,13 @@ function enviar() {
   const tema =
     document.getElementById("tema").value.trim();
 
+
   if (!tema) {
 
     alert("Digite o tema do vídeo.");
 
     return;
+
   }
 
 
@@ -542,6 +684,7 @@ function enviar() {
     const segundos =
       parseInt(personalizada);
 
+
     if (
       isNaN(segundos) ||
       segundos < 10 ||
@@ -553,7 +696,9 @@ function enviar() {
       );
 
       return;
+
     }
+
 
     duracaoFinal =
       segundos + " segundos";
@@ -564,14 +709,21 @@ function enviar() {
   const estilo =
     document.getElementById("estilo").value;
 
+
   const voz =
     document.getElementById("voz").value;
+
 
   const idioma =
     document.getElementById("idioma").value;
 
+
   const visual =
     document.getElementById("visual").value;
+
+
+  const intensidade =
+    document.getElementById("intensidade").value;
 
 
   const referenciasSelecionadas =
@@ -623,6 +775,19 @@ ${visual}
 ${referencias.length
   ? referencias.join(", ")
   : "Nenhuma selecionada"}
+
+### INTENSIDADE DAS REFERÊNCIAS
+${intensidade}
+
+### ORIENTAÇÃO EDITORIAL
+Use as referências selecionadas somente como orientação
+de estrutura, ritmo, abordagem, linguagem, narrativa e
+forma de apresentar informações.
+
+Não copie frases, roteiros, títulos, textos, exemplos
+específicos ou sequências identificáveis das referências.
+
+O resultado deve ser original e adequado ao tema solicitado.
 
 ### STATUS
 Novo pedido de conteúdo`;
