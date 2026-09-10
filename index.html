@@ -164,6 +164,344 @@
     }
 
     /* =========================================================
+       DASHBOARD
+       ========================================================= */
+
+    .dashboard-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .dashboard-header h2 {
+      margin: 0;
+      font-size: 17px;
+    }
+
+    .dashboard-header p {
+      margin: 5px 0 0;
+      color: #666;
+      font-size: 10px;
+      line-height: 1.4;
+    }
+
+    .dashboard-refresh {
+      flex-shrink: 0;
+
+      background: #111;
+      color: #fff;
+
+      border: 1px solid #292929;
+      border-radius: 9px;
+
+      padding: 9px 10px;
+
+      font-size: 10px;
+      font-weight: 700;
+
+      cursor: pointer;
+    }
+
+    .dashboard-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .dashboard-stat {
+      position: relative;
+
+      padding: 14px;
+
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 13px;
+    }
+
+    .dashboard-stat-number {
+      display: block;
+
+      font-size: 25px;
+      font-weight: 800;
+
+      line-height: 1;
+
+      margin-bottom: 7px;
+    }
+
+    .dashboard-stat-label {
+      display: block;
+
+      color: #777;
+
+      font-size: 9px;
+      font-weight: 700;
+
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .dashboard-stat-icon {
+      position: absolute;
+
+      right: 12px;
+      top: 12px;
+
+      font-size: 17px;
+
+      opacity: .7;
+    }
+
+    .dashboard-update {
+      color: #555;
+      font-size: 9px;
+      margin-top: -8px;
+      margin-bottom: 16px;
+    }
+
+    /* =========================================================
+       FLUXO DE PRODUÇÃO
+       ========================================================= */
+
+    .production-flow {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+
+      overflow-x: auto;
+
+      padding-bottom: 4px;
+      margin-bottom: 3px;
+
+      scrollbar-width: none;
+    }
+
+    .production-flow::-webkit-scrollbar {
+      display: none;
+    }
+
+    .production-flow-step {
+      min-width: 72px;
+
+      padding: 10px 6px;
+
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 10px;
+
+      text-align: center;
+    }
+
+    .production-flow-icon {
+      display: block;
+      font-size: 17px;
+      margin-bottom: 5px;
+    }
+
+    .production-flow-label {
+      display: block;
+
+      color: #777;
+
+      font-size: 8px;
+      font-weight: 700;
+
+      white-space: nowrap;
+    }
+
+    .production-flow-arrow {
+      flex-shrink: 0;
+      color: #444;
+      font-size: 12px;
+    }
+
+    .dashboard-production-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .dashboard-production-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      padding: 10px;
+
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 11px;
+    }
+
+    .dashboard-production-thumb {
+      width: 62px;
+      height: 40px;
+
+      flex-shrink: 0;
+
+      border-radius: 7px;
+
+      object-fit: cover;
+
+      background: #050505;
+    }
+
+    .dashboard-production-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .dashboard-production-title {
+      overflow: hidden;
+
+      color: #ddd;
+
+      font-size: 11px;
+      font-weight: 700;
+
+      white-space: nowrap;
+      text-overflow: ellipsis;
+
+      margin-bottom: 5px;
+    }
+
+    .dashboard-production-meta {
+      color: #666;
+      font-size: 9px;
+    }
+
+    .dashboard-production-button {
+      flex-shrink: 0;
+
+      padding: 8px 9px;
+
+      background: #202020;
+      color: #fff;
+
+      border: 1px solid #303030;
+      border-radius: 8px;
+
+      font-size: 9px;
+      font-weight: 700;
+
+      cursor: pointer;
+    }
+
+    .dashboard-recent-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .dashboard-recent-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      padding: 10px;
+
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 11px;
+    }
+
+    .dashboard-recent-thumb {
+      width: 72px;
+      height: 43px;
+
+      flex-shrink: 0;
+
+      object-fit: cover;
+
+      border-radius: 7px;
+
+      background: #050505;
+    }
+
+    .dashboard-recent-placeholder {
+      width: 72px;
+      height: 43px;
+
+      flex-shrink: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background: #191919;
+
+      border-radius: 7px;
+
+      color: #555;
+
+      font-size: 17px;
+    }
+
+    .dashboard-recent-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .dashboard-recent-title {
+      overflow: hidden;
+
+      color: #ddd;
+
+      font-size: 11px;
+      font-weight: 700;
+
+      line-height: 1.35;
+
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .dashboard-recent-meta {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+
+      margin-top: 5px;
+
+      color: #666;
+
+      font-size: 8px;
+    }
+
+    .dashboard-empty {
+      padding: 24px 10px;
+
+      text-align: center;
+
+      color: #555;
+
+      font-size: 11px;
+    }
+
+    .dashboard-main-button {
+      width: 100%;
+
+      margin-top: 12px;
+
+      padding: 12px;
+
+      background: #fff;
+      color: #000;
+
+      border: 0;
+      border-radius: 11px;
+
+      font-size: 11px;
+      font-weight: 800;
+
+      cursor: pointer;
+    }
+
+    /* =========================================================
        CARDS RÁPIDOS
        ========================================================= */
 
@@ -856,7 +1194,7 @@
     }
 
     /* =========================================================
-       MODAL DE DETALHES
+       MODAL
        ========================================================= */
 
     .modal-overlay {
@@ -1109,6 +1447,15 @@
         flex-direction: column;
       }
 
+      .dashboard-production-thumb {
+        width: 54px;
+        height: 36px;
+      }
+
+      .dashboard-production-button {
+        padding: 7px;
+      }
+
     }
   </style>
 </head>
@@ -1136,7 +1483,7 @@
 
 
     <!-- =======================================================
-         INÍCIO
+         INÍCIO / DASHBOARD
          ======================================================= -->
 
     <section
@@ -1147,7 +1494,7 @@
       <div class="hero">
 
         <div class="hero-label">
-          AUTOMAÇÃO DE CONTEÚDO
+          CENTRAL DE PRODUÇÃO
         </div>
 
         <h1>
@@ -1157,12 +1504,342 @@
         </h1>
 
         <p>
-          Seu sistema automático para produção
-          e publicação de conteúdo.
+          Seu centro de controle para produção
+          automática de conteúdo.
         </p>
 
       </div>
 
+
+      <!-- =====================================================
+           DASHBOARD
+           ===================================================== -->
+
+      <div class="panel">
+
+        <div class="dashboard-header">
+
+          <div>
+
+            <h2>
+              📊 Dashboard
+            </h2>
+
+            <p>
+              Visão geral da sua produção.
+            </p>
+
+          </div>
+
+          <button
+            class="dashboard-refresh"
+            id="dashboardRefreshButton"
+            onclick="carregarPedidos()"
+          >
+            ↻ Atualizar
+          </button>
+
+        </div>
+
+
+        <div class="dashboard-stats">
+
+          <div class="dashboard-stat">
+
+            <span
+              id="dashboardTotal"
+              class="dashboard-stat-number"
+            >
+              0
+            </span>
+
+            <span class="dashboard-stat-label">
+              Conteúdos
+            </span>
+
+            <span class="dashboard-stat-icon">
+              🎬
+            </span>
+
+          </div>
+
+
+          <div class="dashboard-stat">
+
+            <span
+              id="dashboardPublicados"
+              class="dashboard-stat-number"
+            >
+              0
+            </span>
+
+            <span class="dashboard-stat-label">
+              Publicados
+            </span>
+
+            <span class="dashboard-stat-icon">
+              ▶️
+            </span>
+
+          </div>
+
+
+          <div class="dashboard-stat">
+
+            <span
+              id="dashboardProducao"
+              class="dashboard-stat-number"
+            >
+              0
+            </span>
+
+            <span class="dashboard-stat-label">
+              Em produção
+            </span>
+
+            <span class="dashboard-stat-icon">
+              ⚙️
+            </span>
+
+          </div>
+
+
+          <div class="dashboard-stat">
+
+            <span
+              id="dashboardErros"
+              class="dashboard-stat-number"
+            >
+              0
+            </span>
+
+            <span class="dashboard-stat-label">
+              Com erro
+            </span>
+
+            <span class="dashboard-stat-icon">
+              ⚠️
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="dashboardUpdate"
+          class="dashboard-update"
+        >
+          Aguardando atualização...
+        </div>
+
+      </div>
+
+
+      <!-- =====================================================
+           FLUXO AUTOMÁTICO
+           ===================================================== -->
+
+      <div class="panel">
+
+        <h2 class="panel-title">
+          ⚙️ Linha de produção
+        </h2>
+
+        <p class="panel-subtitle">
+          Todo conteúdo percorre automaticamente estas etapas.
+        </p>
+
+
+        <div class="production-flow">
+
+          <div class="production-flow-step">
+
+            <span class="production-flow-icon">
+              📨
+            </span>
+
+            <span class="production-flow-label">
+              Pedido
+            </span>
+
+          </div>
+
+          <span class="production-flow-arrow">
+            →
+          </span>
+
+
+          <div class="production-flow-step">
+
+            <span class="production-flow-icon">
+              🧠
+            </span>
+
+            <span class="production-flow-label">
+              Roteiro
+            </span>
+
+          </div>
+
+          <span class="production-flow-arrow">
+            →
+          </span>
+
+
+          <div class="production-flow-step">
+
+            <span class="production-flow-icon">
+              🎙️
+            </span>
+
+            <span class="production-flow-label">
+              Voz
+            </span>
+
+          </div>
+
+          <span class="production-flow-arrow">
+            →
+          </span>
+
+
+          <div class="production-flow-step">
+
+            <span class="production-flow-icon">
+              🎬
+            </span>
+
+            <span class="production-flow-label">
+              Vídeo
+            </span>
+
+          </div>
+
+          <span class="production-flow-arrow">
+            →
+          </span>
+
+
+          <div class="production-flow-step">
+
+            <span class="production-flow-icon">
+              ▶️
+            </span>
+
+            <span class="production-flow-label">
+              YouTube
+            </span>
+
+          </div>
+
+          <span class="production-flow-arrow">
+            →
+          </span>
+
+
+          <div class="production-flow-step">
+
+            <span class="production-flow-icon">
+              ✅
+            </span>
+
+            <span class="production-flow-label">
+              Pronto
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =====================================================
+           PRODUÇÃO ATIVA
+           ===================================================== -->
+
+      <div class="panel">
+
+        <div class="dashboard-header">
+
+          <div>
+
+            <h2>
+              ⚙️ Produção ativa
+            </h2>
+
+            <p>
+              Conteúdos que ainda estão sendo processados.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="dashboardProductionList"
+          class="dashboard-production-list"
+        >
+
+          <div class="dashboard-empty">
+            Nenhuma produção ativa.
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =====================================================
+           PRODUÇÃO RECENTE
+           ===================================================== -->
+
+      <div class="panel">
+
+        <div class="dashboard-header">
+
+          <div>
+
+            <h2>
+              🎬 Produção recente
+            </h2>
+
+            <p>
+              Seus últimos conteúdos.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="dashboardRecentList"
+          class="dashboard-recent-list"
+        >
+
+          <div class="dashboard-empty">
+            Carregando produção...
+          </div>
+
+        </div>
+
+
+        <button
+          class="dashboard-main-button"
+          onclick="mostrarVideos()"
+        >
+          📺 Abrir biblioteca completa
+        </button>
+
+      </div>
+
+
+      <!-- =====================================================
+           AÇÕES RÁPIDAS
+           ===================================================== -->
 
       <div class="quick-grid">
 
@@ -1248,6 +1925,10 @@
       </div>
 
 
+      <!-- =====================================================
+           AUTOMAÇÃO
+           ===================================================== -->
+
       <div class="panel">
 
         <h2 class="panel-title">
@@ -1261,8 +1942,8 @@
         </p>
 
         <div class="notice">
-          Você pode acompanhar cada etapa em
-          <strong>Meus vídeos</strong>.
+          O GitHub funciona como motor interno da automação.
+          Você controla tudo pelo Karina OS.
         </div>
 
       </div>
@@ -1298,8 +1979,6 @@
 
       <div class="panel">
 
-        <!-- TIPO -->
-
         <div class="field">
 
           <label class="field-label">
@@ -1329,8 +2008,6 @@
         </div>
 
 
-        <!-- TEMA -->
-
         <div class="field">
 
           <label
@@ -1348,8 +2025,6 @@
 
         </div>
 
-
-        <!-- DURAÇÃO -->
 
         <div class="field">
 
@@ -1502,8 +2177,6 @@
         </div>
 
 
-        <!-- ESTILO -->
-
         <div class="field">
 
           <label class="field-label">
@@ -1513,7 +2186,6 @@
           <div class="option-grid">
 
             <div class="option">
-
               <input
                 id="estiloInformativo"
                 type="radio"
@@ -1521,83 +2193,63 @@
                 value="Informativo"
                 checked
               >
-
               <label for="estiloInformativo">
                 Informativo
               </label>
-
             </div>
 
-
             <div class="option">
-
               <input
                 id="estiloCurioso"
                 type="radio"
                 name="estilo"
                 value="Curioso"
               >
-
               <label for="estiloCurioso">
                 Curioso
               </label>
-
             </div>
 
-
             <div class="option">
-
               <input
                 id="estiloEducacional"
                 type="radio"
                 name="estilo"
                 value="Educacional"
               >
-
               <label for="estiloEducacional">
                 Educacional
               </label>
-
             </div>
 
-
             <div class="option">
-
               <input
                 id="estiloNarrativo"
                 type="radio"
                 name="estilo"
                 value="Narrativo"
               >
-
               <label for="estiloNarrativo">
                 Narrativo
               </label>
-
             </div>
 
-
             <div class="option">
-
               <input
                 id="estiloViral"
                 type="radio"
                 name="estilo"
                 value="Viral"
               >
-
               <label for="estiloViral">
                 Viral
               </label>
-
             </div>
 
           </div>
 
         </div>
 
-
-        <!-- VOZ -->
 
         <div class="field">
 
@@ -1608,7 +2260,6 @@
           <div class="option-grid">
 
             <div class="option">
-
               <input
                 id="vozNatural"
                 type="radio"
@@ -1616,67 +2267,51 @@
                 value="Natural"
                 checked
               >
-
               <label for="vozNatural">
                 Natural
               </label>
-
             </div>
 
-
             <div class="option">
-
               <input
                 id="vozEnergetica"
                 type="radio"
                 name="voz"
                 value="Energética"
               >
-
               <label for="vozEnergetica">
                 Energética
               </label>
-
             </div>
 
-
             <div class="option">
-
               <input
                 id="vozCalma"
                 type="radio"
                 name="voz"
                 value="Calma"
               >
-
               <label for="vozCalma">
                 Calma
               </label>
-
             </div>
 
-
             <div class="option">
-
               <input
                 id="vozJornalistica"
                 type="radio"
                 name="voz"
                 value="Jornalística"
               >
-
               <label for="vozJornalistica">
                 Jornalística
               </label>
-
             </div>
 
           </div>
 
         </div>
 
-
-        <!-- IDIOMA -->
 
         <div class="field">
 
@@ -1687,7 +2322,6 @@
           <div class="option-grid">
 
             <div class="option">
-
               <input
                 id="idiomaPt"
                 type="radio"
@@ -1695,51 +2329,39 @@
                 value="Português"
                 checked
               >
-
               <label for="idiomaPt">
                 Português
               </label>
-
             </div>
 
-
             <div class="option">
-
               <input
                 id="idiomaEn"
                 type="radio"
                 name="idioma"
                 value="Inglês"
               >
-
               <label for="idiomaEn">
                 Inglês
               </label>
-
             </div>
 
-
             <div class="option">
-
               <input
                 id="idiomaEs"
                 type="radio"
                 name="idioma"
                 value="Espanhol"
               >
-
               <label for="idiomaEs">
                 Espanhol
               </label>
-
             </div>
 
           </div>
 
         </div>
 
-
-        <!-- VISUAL -->
 
         <div class="field">
 
@@ -1750,7 +2372,6 @@
           <div class="option-grid">
 
             <div class="option">
-
               <input
                 id="visualReal"
                 type="radio"
@@ -1758,67 +2379,51 @@
                 value="Vídeos reais"
                 checked
               >
-
               <label for="visualReal">
                 Vídeos reais
               </label>
-
             </div>
 
-
             <div class="option">
-
               <input
                 id="visualCinematografico"
                 type="radio"
                 name="visual"
                 value="Cinematográfico"
               >
-
               <label for="visualCinematografico">
                 Cinematográfico
               </label>
-
             </div>
 
-
             <div class="option">
-
               <input
                 id="visualNatureza"
                 type="radio"
                 name="visual"
                 value="Natureza"
               >
-
               <label for="visualNatureza">
                 Natureza
               </label>
-
             </div>
 
-
             <div class="option">
-
               <input
                 id="visualCientifico"
                 type="radio"
                 name="visual"
                 value="Científico"
               >
-
               <label for="visualCientifico">
                 Científico
               </label>
-
             </div>
 
           </div>
 
         </div>
 
-
-        <!-- REFERÊNCIAS -->
 
         <div class="field">
 
@@ -1829,100 +2434,75 @@
           <div class="references">
 
             <label class="reference">
-
               <input
                 type="checkbox"
                 name="referencias"
                 value="Animais pelo Mundo"
               >
-
               <span>
                 Animais pelo Mundo
               </span>
-
             </label>
 
-
             <label class="reference">
-
               <input
                 type="checkbox"
                 name="referencias"
                 value="Papo de Biólogo"
               >
-
               <span>
                 Papo de Biólogo
               </span>
-
             </label>
 
-
             <label class="reference">
-
               <input
                 type="checkbox"
                 name="referencias"
                 value="Ciência Todo Dia"
               >
-
               <span>
                 Ciência Todo Dia
               </span>
-
             </label>
 
-
             <label class="reference">
-
               <input
                 type="checkbox"
                 name="referencias"
                 value="Manual do Mundo"
               >
-
               <span>
                 Manual do Mundo
               </span>
-
             </label>
 
-
             <label class="reference">
-
               <input
                 type="checkbox"
                 name="referencias"
                 value="Tá Curioso?"
               >
-
               <span>
                 Tá Curioso?
               </span>
-
             </label>
 
-
             <label class="reference">
-
               <input
                 type="checkbox"
                 name="referencias"
                 value="Minutos Psíquicos"
               >
-
               <span>
                 Minutos Psíquicos
               </span>
-
             </label>
 
           </div>
 
         </div>
 
-
-        <!-- INTENSIDADE -->
 
         <div class="field">
 
@@ -1933,23 +2513,18 @@
           <div class="option-grid">
 
             <div class="option">
-
               <input
                 id="intensidadeLeve"
                 type="radio"
                 name="intensidade"
                 value="Leve"
               >
-
               <label for="intensidadeLeve">
                 Leve
               </label>
-
             </div>
 
-
             <div class="option">
-
               <input
                 id="intensidadeEquilibrada"
                 type="radio"
@@ -1957,27 +2532,21 @@
                 value="Equilibrada"
                 checked
               >
-
               <label for="intensidadeEquilibrada">
                 Equilibrada
               </label>
-
             </div>
 
-
             <div class="option">
-
               <input
                 id="intensidadeForte"
                 type="radio"
                 name="intensidade"
                 value="Forte"
               >
-
               <label for="intensidadeForte">
                 Forte
               </label>
-
             </div>
 
           </div>
@@ -1996,10 +2565,6 @@
       </div>
 
 
-      <!-- =====================================================
-           STATUS
-           ===================================================== -->
-
       <div
         id="statusPanel"
         class="panel status-panel hidden"
@@ -2016,102 +2581,78 @@
           Pedido aguardando...
         </div>
 
-
         <div class="status-list">
 
           <div
             id="stepRecebido"
             class="status-step"
           >
-
             <div class="status-icon">
               1
             </div>
-
             <span>
               Pedido recebido
             </span>
-
           </div>
-
 
           <div
             id="stepRoteiro"
             class="status-step"
           >
-
             <div class="status-icon">
               2
             </div>
-
             <span>
               Criando roteiro
             </span>
-
           </div>
-
 
           <div
             id="stepVoz"
             class="status-step"
           >
-
             <div class="status-icon">
               3
             </div>
-
             <span>
               Gerando voz
             </span>
-
           </div>
-
 
           <div
             id="stepMontando"
             class="status-step"
           >
-
             <div class="status-icon">
               4
             </div>
-
             <span>
               Montando vídeo
             </span>
-
           </div>
-
 
           <div
             id="stepPublicando"
             class="status-step"
           >
-
             <div class="status-icon">
               5
             </div>
-
             <span>
               Publicando
             </span>
-
           </div>
-
 
           <div
             id="stepConcluido"
             class="status-step"
           >
-
             <div class="status-icon">
               ✓
             </div>
-
             <span>
               Concluído
             </span>
-
           </div>
 
         </div>
@@ -2205,10 +2746,6 @@
         </div>
 
 
-        <!-- ===================================================
-             ESTATÍSTICAS
-             =================================================== -->
-
         <div class="library-stats">
 
           <div class="library-stat">
@@ -2277,10 +2814,6 @@
         </div>
 
 
-        <!-- ===================================================
-             BUSCA E FILTRO
-             =================================================== -->
-
         <div class="library-tools">
 
           <input
@@ -2289,7 +2822,6 @@
             placeholder="🔎 Buscar vídeo..."
             oninput="filtrarVideos()"
           >
-
 
           <select
             id="videoFilter"
@@ -2389,8 +2921,7 @@
         <div
           id="modalTitulo"
           class="detail-value"
-        >
-        </div>
+        ></div>
 
       </div>
 
@@ -2404,8 +2935,7 @@
         <div
           id="modalNumero"
           class="detail-value"
-        >
-        </div>
+        ></div>
 
       </div>
 
@@ -2419,8 +2949,7 @@
         <div
           id="modalStatus"
           class="detail-value"
-        >
-        </div>
+        ></div>
 
       </div>
 
@@ -2434,8 +2963,7 @@
         <div
           id="modalCriado"
           class="detail-value"
-        >
-        </div>
+        ></div>
 
       </div>
 
@@ -2449,8 +2977,7 @@
         <div
           id="modalAtualizado"
           class="detail-value"
-        >
-        </div>
+        ></div>
 
       </div>
 
@@ -2570,6 +3097,10 @@
 
     let videoSelecionadoModal = null;
 
+    let intervaloDashboard = null;
+
+    let ultimaAtualizacaoDashboard = null;
+
 
     /* =========================================================
        NAVEGAÇÃO
@@ -2621,6 +3152,18 @@
         top: 0,
         behavior: "smooth"
       });
+
+
+      atualizarDashboard();
+
+
+      if (
+        !pedidosBiblioteca.length
+      ) {
+
+        carregarPedidos();
+
+      }
 
     }
 
@@ -2785,7 +3328,7 @@
 
 
     /* =========================================================
-       RÁDIO SELECIONADO
+       RÁDIO
        ========================================================= */
 
     function obterRadio(nome, padrao) {
@@ -3017,1238 +3560,13 @@
           });
 
 
-      } catch (erro) {
-
-        console.error(
-          erro
-        );
-
-        alert(
-          erro.message ||
-          "Erro ao enviar o pedido."
-        );
-
-      } finally {
-
-        botao.disabled =
-          false;
-
-        botao.textContent =
-          "🚀 Criar conteúdo";
-
-      }
-
-    }
-
-
-    /* =========================================================
-       RESET STATUS
-       ========================================================= */
-
-    function resetarStatus() {
-
-      const passos = [
-
-        "stepRecebido",
-        "stepRoteiro",
-        "stepVoz",
-        "stepMontando",
-        "stepPublicando",
-        "stepConcluido"
-
-      ];
-
-
-      passos.forEach(
-        function(id) {
-
-          const elemento =
-            document.getElementById(
-              id
-            );
-
-          if (!elemento) {
-            return;
-          }
-
-          elemento.classList.remove(
-            "active"
-          );
-
-          elemento.classList.remove(
-            "done"
-          );
-
-          elemento.classList.remove(
-            "error"
-          );
-
-        }
-      );
-
-    }
-
-
-    /* =========================================================
-       TEXTO DO STATUS
-       ========================================================= */
-
-    function textoStatus(status) {
-
-      const textos = {
-
-        recebido:
-          "Recebido",
-
-        roteiro:
-          "Roteiro",
-
-        voz:
-          "Voz",
-
-        montando:
-          "Montando",
-
-        publicando:
-          "Publicando",
-
-        concluido:
-          "Publicado",
-
-        erro:
-          "Erro"
-
-      };
-
-
-      return textos[status] ||
-        "Recebido";
-
-    }
-
-
-    /* =========================================================
-       ATUALIZAR STATUS
-       ========================================================= */
-
-    function atualizarStatusVisual(status) {
-
-      const ordem = [
-
-        "recebido",
-        "roteiro",
-        "voz",
-        "montando",
-        "publicando",
-        "concluido"
-
-      ];
-
-
-      const ids = {
-
-        recebido:
-          "stepRecebido",
-
-        roteiro:
-          "stepRoteiro",
-
-        voz:
-          "stepVoz",
-
-        montando:
-          "stepMontando",
-
-        publicando:
-          "stepPublicando",
-
-        concluido:
-          "stepConcluido"
-
-      };
-
-
-      resetarStatus();
-
-
-      if (status === "erro") {
-
-        const atual =
-          document.getElementById(
-            "stepMontando"
-          );
-
-        if (atual) {
-
-          atual.classList.add(
-            "error"
-          );
-
-        }
-
-        return;
-
-      }
-
-
-      const indice =
-        ordem.indexOf(
-          status
-        );
-
-
-      if (indice < 0) {
-        return;
-      }
-
-
-      ordem.forEach(
-        function(item, index) {
-
-          const elemento =
-            document.getElementById(
-              ids[item]
-            );
-
-          if (!elemento) {
-            return;
-          }
-
-
-          if (index < indice) {
-
-            elemento.classList.add(
-              "done"
-            );
-
-          }
-
-
-          if (index === indice) {
-
-            if (
-              status ===
-              "concluido"
-            ) {
-
-              elemento.classList.add(
-                "done"
-              );
-
-            } else {
-
-              elemento.classList.add(
-                "active"
-              );
-
-            }
-
-          }
-
-        }
-      );
-
-    }
-
-
-    /* =========================================================
-       CONSULTAR STATUS
-       ========================================================= */
-
-    async function consultarStatus() {
-
-      if (!numeroPedido) {
-        return;
-      }
-
-
-      try {
-
-        const resposta =
-          await fetch(
-            "/.netlify/functions/status-pedido?numero=" +
-            encodeURIComponent(
-              numeroPedido
-            )
-          );
-
-
-        const resultado =
-          await resposta.json();
-
-
-        if (
-          !resposta.ok ||
-          !resultado.sucesso
-        ) {
-
-          return;
-
-        }
-
-
-        atualizarStatusVisual(
-          resultado.status
-        );
-
-
-        document
-          .getElementById(
-            "statusNumber"
-          )
-          .textContent =
-            "Pedido #" +
-            resultado.numero +
-            " — " +
-            textoStatus(
-              resultado.status
-            );
-
-
-        if (
-          resultado.status ===
-            "concluido" ||
-          resultado.status ===
-            "erro"
-        ) {
-
-          if (intervaloStatus) {
-
-            clearInterval(
-              intervaloStatus
-            );
-
-            intervaloStatus =
-              null;
-
-          }
-
-        }
-
-
-      } catch (erro) {
-
-        console.error(
-          "Erro ao consultar status:",
-          erro
-        );
-
-      }
-
-    }
-
-
-    /* =========================================================
-       FORMATAR DATA
-       ========================================================= */
-
-    function formatarData(data) {
-
-      if (!data) {
-
-        return "Data não informada";
-
-      }
-
-
-      try {
-
-        return new Date(data)
-          .toLocaleString(
-            "pt-BR",
-            {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit"
-            }
-          );
-
-      } catch (erro) {
-
-        return data;
-
-      }
-
-    }
-
-
-    /* =========================================================
-       ATUALIZAR ESTATÍSTICAS
-       ========================================================= */
-
-    function atualizarEstatisticas() {
-
-      const total =
-        pedidosBiblioteca.length;
-
-
-      const publicados =
-        pedidosBiblioteca.filter(
-          function(pedido) {
-
-            return pedido.status ===
-              "concluido";
-
-          }
-        ).length;
-
-
-      const erros =
-        pedidosBiblioteca.filter(
-          function(pedido) {
-
-            return pedido.status ===
-              "erro";
-
-          }
-        ).length;
-
-
-      const producao =
-        pedidosBiblioteca.filter(
-          function(pedido) {
-
-            return (
-              pedido.status !==
-                "concluido" &&
-              pedido.status !==
-                "erro"
-            );
-
-          }
-        ).length;
-
-
-      const statTotal =
-        document.getElementById(
-          "statTotal"
-        );
-
-      const statPublicados =
-        document.getElementById(
-          "statPublicados"
-        );
-
-      const statProducao =
-        document.getElementById(
-          "statProducao"
-        );
-
-      const statErros =
-        document.getElementById(
-          "statErros"
-        );
-
-
-      if (statTotal) {
-
-        statTotal.textContent =
-          total;
-
-      }
-
-
-      if (statPublicados) {
-
-        statPublicados.textContent =
-          publicados;
-
-      }
-
-
-      if (statProducao) {
-
-        statProducao.textContent =
-          producao;
-
-      }
-
-
-      if (statErros) {
-
-        statErros.textContent =
-          erros;
-
-      }
-
-    }
-
-
-    /* =========================================================
-       CARREGAR PEDIDOS
-       ========================================================= */
-
-    async function carregarPedidos() {
-
-      const loading =
-        document.getElementById(
-          "videosLoading"
-        );
-
-      const vazio =
-        document.getElementById(
-          "videosEmpty"
-        );
-
-      const lista =
-        document.getElementById(
-          "videoList"
-        );
-
-
-      if (loading) {
-
-        loading.classList.remove(
-          "hidden"
-        );
-
-      }
-
-
-      if (vazio) {
-
-        vazio.classList.add(
-          "hidden"
-        );
-
-      }
-
-
-      if (lista) {
-
-        lista.innerHTML =
-          "";
-
-      }
-
-
-      try {
-
-        const resposta =
-          await fetch(
-            "/.netlify/functions/listar-pedidos"
-          );
-
-
-        const resultado =
-          await resposta.json();
-
-
-        if (
-          !resposta.ok ||
-          !resultado.sucesso
-        ) {
-
-          throw new Error(
-            resultado.erro ||
-            "Não foi possível carregar os vídeos."
-          );
-
-        }
-
-
-        pedidosBiblioteca =
-          resultado.pedidos || [];
-
-
-        atualizarEstatisticas();
-
-
-        if (loading) {
-
-          loading.classList.add(
-            "hidden"
-          );
-
-        }
-
-
-        if (
-          !pedidosBiblioteca.length
-        ) {
-
-          if (vazio) {
-
-            vazio.classList.remove(
-              "hidden"
-            );
-
-          }
-
-
-          const contador =
-            document.getElementById(
-              "videosCount"
-            );
-
-
-          if (contador) {
-
-            contador.textContent =
-              "Nenhum vídeo ainda";
-
-          }
-
-
-          return;
-
-        }
-
-
-        filtrarVideos();
-
-
-      } catch (erro) {
-
-        console.error(
-          erro
-        );
-
-
-        if (loading) {
-
-          loading.classList.add(
-            "hidden"
-          );
-
-        }
-
-
-        if (lista) {
-
-          lista.innerHTML =
-            "";
-
-
-          const mensagem =
-            document.createElement(
-              "div"
-            );
-
-
-          mensagem.className =
-            "library-no-result";
-
-
-          mensagem.textContent =
-            "Não foi possível carregar seus vídeos.";
-
-
-          lista.appendChild(
-            mensagem
-          );
-
-        }
-
-      }
-
-    }
-
-
-    /* =========================================================
-       FILTRAR VÍDEOS
-       ========================================================= */
-
-    function filtrarVideos() {
-
-      const busca =
-        (
-          document.getElementById(
-            "videoSearch"
-          )?.value || ""
-        )
-        .toLowerCase()
-        .trim();
-
-
-      const filtro =
-        document.getElementById(
-          "videoFilter"
-        )?.value ||
-        "todos";
-
-
-      const lista =
-        document.getElementById(
-          "videoList"
-        );
-
-
-      if (!lista) {
-        return;
-      }
-
-
-      lista.innerHTML =
-        "";
-
-
-      const filtrados =
-        pedidosBiblioteca.filter(
-          function(pedido) {
-
-            const titulo =
-              (
-                pedido.titulo ||
-                ""
-              )
-              .toLowerCase();
-
-
-            const combinaBusca =
-              !busca ||
-              titulo.includes(
-                busca
-              );
-
-
-            const combinaFiltro =
-              filtro === "todos" ||
-              pedido.status ===
-                filtro;
-
-
-            return (
-              combinaBusca &&
-              combinaFiltro
-            );
-
-          }
-        );
-
-
-      const contador =
-        document.getElementById(
-          "videosCount"
-        );
-
-
-      if (contador) {
-
-        contador.textContent =
-          filtrados.length +
-          (
-            filtrados.length ===
-            1
-              ? " vídeo"
-              : " vídeos"
-          );
-
-      }
-
-
-      if (!filtrados.length) {
-
-        const vazio =
-          document.createElement(
-            "div"
-          );
-
-
-        vazio.className =
-          "library-no-result";
-
-
-        vazio.textContent =
-          pedidosBiblioteca.length
-            ? "Nenhum vídeo encontrado."
-            : "Você ainda não criou nenhum conteúdo.";
-
-
-        lista.appendChild(
-          vazio
-        );
-
-
-        return;
-
-      }
-
-
-      filtrados.forEach(
-        function(pedido) {
-
-          lista.appendChild(
-            criarPedidoCard(
-              pedido
-            )
-          );
-
-        }
-      );
-
-    }
-
-
-    /* =========================================================
-       CRIAR CARD
-       ========================================================= */
-
-    function criarPedidoCard(pedido) {
-
-      const card =
-        document.createElement(
-          "div"
-        );
-
-
-      card.className =
-        "video-card";
-
-
-      const youtubeUrl =
-        pedido.youtubeUrl ||
-        (
-          pedido.youtubeId
-            ? "https://www.youtube.com/watch?v=" +
-              pedido.youtubeId
-            : ""
-        );
-
-
-      const thumbnail =
-        pedido.youtubeThumbnailUrl ||
-        (
-          pedido.youtubeId
-            ? "https://i.ytimg.com/vi/" +
-              pedido.youtubeId +
-              "/hqdefault.jpg"
-            : ""
-        );
-
-
-      /* =======================================================
-         PREVIEW
-         ======================================================= */
-
-      if (thumbnail) {
-
-        const preview =
-          document.createElement(
-            "div"
-          );
-
-
-        preview.className =
-          "video-card-preview";
-
-
-        const imagem =
-          document.createElement(
-            "img"
-          );
-
-
-        imagem.src =
-          thumbnail;
-
-
-        imagem.alt =
-          pedido.titulo ||
-          "Vídeo";
-
-
-        imagem.loading =
-          "lazy";
-
-
-        imagem.onerror =
-          function() {
-
-            preview.style.display =
-              "none";
-
-          };
-
-
-        preview.appendChild(
-          imagem
-        );
-
-
-        if (youtubeUrl) {
-
-          const play =
-            document.createElement(
-              "button"
-            );
-
-
-          play.className =
-            "video-card-play";
-
-
-          play.textContent =
-            "▶";
-
-
-          play.setAttribute(
-            "aria-label",
-            "Assistir vídeo"
-          );
-
-
-          play.onclick =
-            function() {
-
-              abrirYoutube(
-                youtubeUrl
-              );
-
-            };
-
-
-          preview.appendChild(
-            play
-          );
-
-        }
-
-
-        card.appendChild(
-          preview
-        );
-
-      }
-
-
-      /* =======================================================
-         CORPO
-         ======================================================= */
-
-      const body =
-        document.createElement(
-          "div"
-        );
-
-
-      body.className =
-        "video-card-body";
-
-
-      const titulo =
-        document.createElement(
-          "div"
-        );
-
-
-      titulo.className =
-        "video-card-title";
-
-
-      titulo.textContent =
-        pedido.titulo ||
-        "Conteúdo sem título";
-
-
-      body.appendChild(
-        titulo
-      );
-
-
-      /* =======================================================
-         META
-         ======================================================= */
-
-      const meta =
-        document.createElement(
-          "div"
-        );
-
-
-      meta.className =
-        "video-card-meta";
-
-
-      const numero =
-        document.createElement(
-          "span"
-        );
-
-
-      numero.className =
-        "video-card-number";
-
-
-      numero.textContent =
-        "Pedido #" +
-        pedido.numero;
-
-
-      const badge =
-        document.createElement(
-          "span"
-        );
-
-
-      badge.className =
-        "badge badge-" +
-        (
-          pedido.status ||
-          "recebido"
-        );
-
-
-      badge.textContent =
-        textoStatus(
-          pedido.status
-        );
-
-
-      meta.appendChild(
-        numero
-      );
-
-
-      meta.appendChild(
-        badge
-      );
-
-
-      body.appendChild(
-        meta
-      );
-
-
-      /* =======================================================
-         DATA
-         ======================================================= */
-
-      const data =
-        document.createElement(
-          "div"
-        );
-
-
-      data.className =
-        "video-card-date";
-
-
-      data.textContent =
-        "Criado em " +
-        formatarData(
-          pedido.criadoEm
-        );
-
-
-      body.appendChild(
-        data
-      );
-
-
-      /* =======================================================
-         BOTÕES
-         ======================================================= */
-
-      const actions =
-        document.createElement(
-          "div"
-        );
-
-
-      actions.className =
-        "video-card-actions";
-
-
-      if (youtubeUrl) {
-
-        const assistir =
-          document.createElement(
-            "a"
-          );
-
-
-        assistir.href =
-          youtubeUrl;
-
-
-        assistir.target =
-          "_blank";
-
-
-        assistir.rel =
-          "noopener noreferrer";
-
-
-        assistir.className =
-          "youtube-button";
-
-
-        assistir.textContent =
-          "▶ Assistir";
-
-
-        actions.appendChild(
-          assistir
-        );
-
-
-        const copiar =
-          document.createElement(
-            "button"
-          );
-
-
-        copiar.className =
-          "copy-button";
-
-
-        copiar.textContent =
-          "🔗 Copiar";
-
-
-        copiar.onclick =
-          function() {
-
-            copiarLink(
-              youtubeUrl,
-              copiar
-            );
-
-          };
-
-
-        actions.appendChild(
-          copiar
-        );
-
-      }
-
-
-      const acompanhar =
-        document.createElement(
-          "button"
-        );
-
-
-      acompanhar.className =
-        "follow-button";
-
-
-      acompanhar.textContent =
-        "Acompanhar";
-
-
-      acompanhar.onclick =
-        function() {
-
-          acompanharPedido(
-            pedido
-          );
-
-        };
-
-
-      actions.appendChild(
-        acompanhar
-      );
-
-
-      const detalhes =
-        document.createElement(
-          "button"
-        );
-
-
-      detalhes.className =
-        "details-button";
-
-
-      detalhes.textContent =
-        "📋 Detalhes";
-
-
-      detalhes.onclick =
-        function() {
-
-          abrirDetalhes(
-            pedido
-          );
-
-        };
-
-
-      actions.appendChild(
-        detalhes
-      );
-
-
-      body.appendChild(
-        actions
-      );
-
-
-      card.appendChild(
-        body
-      );
-
-
-      return card;
-
-    }
-
-
-    /* =========================================================
-       ABRIR YOUTUBE
-       ========================================================= */
-
-    function abrirYoutube(url) {
-
-      if (!url) {
-        return;
-      }
-
-
-      window.open(
-        url,
-        "_blank",
-        "noopener,noreferrer"
-      );
-
-    }
-
-
-    /* =========================================================
-       COPIAR LINK
-       ========================================================= */
-
-    async function copiarLink(
-      url,
-      botao
-    ) {
-
-      if (!url) {
-
-        return;
-
-      }
-
-
-      try {
-
-        await navigator.clipboard.writeText(
-          url
-        );
-
-
-        const textoOriginal =
-          botao.textContent;
-
-
-        botao.textContent =
-          "✓ Copiado";
-
-
         setTimeout(
           function() {
 
-            botao.textContent =
-              textoOriginal;
+            carregarPedidos();
 
           },
-          1800
+          1500
         );
 
 
@@ -4256,332 +3574,4 @@
 
         console.error(
           erro
-        );
-
-
-        prompt(
-          "Copie o link do vídeo:",
-          url
-        );
-
-      }
-
-    }
-
-
-    /* =========================================================
-       ACOMPANHAR PEDIDO
-       ========================================================= */
-
-    function acompanharPedido(
-      pedido
-    ) {
-
-      numeroPedido =
-        pedido.numero;
-
-
-      mostrarCriar();
-
-
-      document
-        .getElementById(
-          "statusPanel"
-        )
-        .classList.remove(
-          "hidden"
-        );
-
-
-      document
-        .getElementById(
-          "statusNumber"
-        )
-        .textContent =
-          "Pedido #" +
-          pedido.numero;
-
-
-      consultarStatus();
-
-
-      if (intervaloStatus) {
-
-        clearInterval(
-          intervaloStatus
-        );
-
-      }
-
-
-      intervaloStatus =
-        setInterval(
-          consultarStatus,
-          10000
-        );
-
-
-      const painel =
-        document.getElementById(
-          "statusPanel"
-        );
-
-
-      if (painel) {
-
-        painel.scrollIntoView({
-          behavior: "smooth",
-          block: "center"
-        });
-
-      }
-
-    }
-
-
-    /* =========================================================
-       ABRIR DETALHES
-       ========================================================= */
-
-    function abrirDetalhes(
-      pedido
-    ) {
-
-      videoSelecionadoModal =
-        pedido;
-
-
-      const modal =
-        document.getElementById(
-          "videoModal"
-        );
-
-
-      const titulo =
-        pedido.titulo ||
-        "Conteúdo sem título";
-
-
-      const youtubeUrl =
-        pedido.youtubeUrl ||
-        (
-          pedido.youtubeId
-            ? "https://www.youtube.com/watch?v=" +
-              pedido.youtubeId
-            : ""
-        );
-
-
-      document
-        .getElementById(
-          "modalTitle"
-        )
-        .textContent =
-          titulo;
-
-
-      document
-        .getElementById(
-          "modalTitulo"
-        )
-        .textContent =
-          titulo;
-
-
-      document
-        .getElementById(
-          "modalNumero"
-        )
-        .textContent =
-          "Pedido #" +
-          pedido.numero;
-
-
-      document
-        .getElementById(
-          "modalStatus"
-        )
-        .textContent =
-          textoStatus(
-            pedido.status
-          );
-
-
-      document
-        .getElementById(
-          "modalCriado"
-        )
-        .textContent =
-          formatarData(
-            pedido.criadoEm
-          );
-
-
-      document
-        .getElementById(
-          "modalAtualizado"
-        )
-        .textContent =
-          formatarData(
-            pedido.atualizadoEm
-          );
-
-
-      const youtube =
-        document.getElementById(
-          "modalYoutube"
-        );
-
-
-      if (youtubeUrl) {
-
-        youtube.href =
-          youtubeUrl;
-
-
-        youtube.classList.remove(
-          "hidden"
-        );
-
-      } else {
-
-        youtube.classList.add(
-          "hidden"
-        );
-
-      }
-
-
-      modal.classList.remove(
-        "hidden"
-      );
-
-    }
-
-
-    /* =========================================================
-       FECHAR MODAL
-       ========================================================= */
-
-    function fecharModal(
-      evento
-    ) {
-
-      if (
-        evento &&
-        evento.target &&
-        evento.target.id !==
-          "videoModal"
-      ) {
-
-        return;
-
-      }
-
-
-      const modal =
-        document.getElementById(
-          "videoModal"
-        );
-
-
-      if (modal) {
-
-        modal.classList.add(
-          "hidden"
-        );
-
-      }
-
-
-      videoSelecionadoModal =
-        null;
-
-    }
-
-
-    /* =========================================================
-       COPIAR LINK DO MODAL
-       ========================================================= */
-
-    async function copiarLinkModal() {
-
-      if (
-        !videoSelecionadoModal
-      ) {
-
-        return;
-
-      }
-
-
-      const pedido =
-        videoSelecionadoModal;
-
-
-      const youtubeUrl =
-        pedido.youtubeUrl ||
-        (
-          pedido.youtubeId
-            ? "https://www.youtube.com/watch?v=" +
-              pedido.youtubeId
-            : ""
-        );
-
-
-      if (!youtubeUrl) {
-
-        alert(
-          "Este vídeo ainda não possui um link do YouTube."
-        );
-
-        return;
-
-      }
-
-
-      const botao =
-        document.getElementById(
-          "modalCopy"
-        );
-
-
-      await copiarLink(
-        youtubeUrl,
-        botao
-      );
-
-    }
-
-
-    /* =========================================================
-       TECLA ESC FECHA MODAL
-       ========================================================= */
-
-    document.addEventListener(
-      "keydown",
-      function(evento) {
-
-        if (
-          evento.key ===
-          "Escape"
-        ) {
-
-          fecharModal();
-
-        }
-
-      }
-    );
-
-
-    /* =========================================================
-       INICIALIZAÇÃO
-       ========================================================= */
-
-    mostrarInicio();
-
-  </script>
-
-</body>
-</html>
+       
