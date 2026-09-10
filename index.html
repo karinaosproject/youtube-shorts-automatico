@@ -534,6 +534,53 @@
       cursor: pointer;
     }
 
+    /* =========================================================
+       ESTATÍSTICAS DA BIBLIOTECA
+       ========================================================= */
+
+    .library-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+
+      margin-bottom: 16px;
+    }
+
+    .library-stat {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 11px;
+
+      padding: 10px 6px;
+
+      text-align: center;
+    }
+
+    .library-stat-number {
+      display: block;
+
+      font-size: 18px;
+      font-weight: 800;
+
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+
+    .library-stat-label {
+      display: block;
+
+      color: #666;
+
+      font-size: 8px;
+      font-weight: 700;
+
+      text-transform: uppercase;
+    }
+
+    /* =========================================================
+       FERRAMENTAS
+       ========================================================= */
+
     .library-tools {
       display: flex;
       gap: 8px;
@@ -570,6 +617,10 @@
       border-color: #555;
     }
 
+    /* =========================================================
+       LISTA
+       ========================================================= */
+
     .video-list {
       display: flex;
       flex-direction: column;
@@ -586,7 +637,8 @@
 
       padding: 0;
 
-      box-shadow: 0 8px 25px rgba(0, 0, 0, .18);
+      box-shadow:
+        0 8px 25px rgba(0, 0, 0, .18);
     }
 
     .video-card-preview {
@@ -668,11 +720,14 @@
     .video-card-actions {
       display: flex;
       gap: 8px;
+      flex-wrap: wrap;
     }
 
     .video-card-actions button,
     .video-card-actions a {
       flex: 1;
+
+      min-width: 100px;
 
       text-align: center;
       text-decoration: none;
@@ -682,7 +737,7 @@
 
       padding: 11px 8px;
 
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
 
       cursor: pointer;
@@ -699,6 +754,24 @@
 
       border: 1px solid #333 !important;
     }
+
+    .copy-button {
+      background: #202020;
+      color: #fff;
+
+      border: 1px solid #333 !important;
+    }
+
+    .details-button {
+      background: #151515;
+      color: #aaa;
+
+      border: 1px solid #292929 !important;
+    }
+
+    /* =========================================================
+       LOADING / VAZIO
+       ========================================================= */
 
     .videos-loading,
     .videos-empty,
@@ -783,6 +856,153 @@
     }
 
     /* =========================================================
+       MODAL DE DETALHES
+       ========================================================= */
+
+    .modal-overlay {
+      position: fixed;
+
+      inset: 0;
+
+      z-index: 100;
+
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+
+      padding: 12px;
+
+      background: rgba(0, 0, 0, .75);
+
+      backdrop-filter: blur(8px);
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 496px;
+
+      max-height: 85vh;
+
+      overflow-y: auto;
+
+      background: #0d0d0d;
+
+      border: 1px solid #292929;
+      border-radius: 18px;
+
+      padding: 18px;
+
+      box-shadow:
+        0 20px 60px rgba(0, 0, 0, .55);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+
+      gap: 12px;
+
+      margin-bottom: 18px;
+    }
+
+    .modal-title {
+      margin: 0;
+
+      font-size: 17px;
+      font-weight: 800;
+
+      line-height: 1.3;
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+
+      flex-shrink: 0;
+
+      background: #181818;
+      color: #fff;
+
+      border: 1px solid #292929;
+      border-radius: 9px;
+
+      cursor: pointer;
+
+      font-size: 15px;
+    }
+
+    .detail-item {
+      padding: 11px 0;
+
+      border-bottom: 1px solid #1d1d1d;
+    }
+
+    .detail-item:last-child {
+      border-bottom: 0;
+    }
+
+    .detail-label {
+      display: block;
+
+      margin-bottom: 5px;
+
+      color: #666;
+
+      font-size: 9px;
+      font-weight: 800;
+
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    .detail-value {
+      color: #ddd;
+
+      font-size: 12px;
+
+      line-height: 1.5;
+
+      word-break: break-word;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+
+      margin-top: 18px;
+    }
+
+    .modal-actions a,
+    .modal-actions button {
+      flex: 1;
+
+      padding: 12px 8px;
+
+      border-radius: 10px;
+
+      text-align: center;
+      text-decoration: none;
+
+      font-size: 11px;
+      font-weight: 800;
+
+      cursor: pointer;
+    }
+
+    .modal-youtube {
+      background: #fff;
+      color: #000;
+      border: 0;
+    }
+
+    .modal-copy {
+      background: #181818;
+      color: #fff;
+      border: 1px solid #303030;
+    }
+
+    /* =========================================================
        NAVEGAÇÃO
        ========================================================= */
 
@@ -810,7 +1030,8 @@
       border: 1px solid #252525;
       border-radius: 15px;
 
-      box-shadow: 0 10px 35px rgba(0, 0, 0, .4);
+      box-shadow:
+        0 10px 35px rgba(0, 0, 0, .4);
 
       backdrop-filter: blur(12px);
     }
@@ -867,6 +1088,7 @@
     }
 
     @media (max-width: 420px) {
+
       .library-tools {
         flex-direction: column;
       }
@@ -878,6 +1100,15 @@
       .video-card-actions {
         flex-direction: column;
       }
+
+      .library-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .modal-actions {
+        flex-direction: column;
+      }
+
     }
   </style>
 </head>
@@ -1132,30 +1363,39 @@
           >
 
             <div class="option">
+
               <input
                 id="duracao30"
                 type="radio"
                 name="duracao"
                 value="30 segundos"
               >
+
               <label for="duracao30">
                 30 segundos
               </label>
+
             </div>
 
+
             <div class="option">
+
               <input
                 id="duracao45"
                 type="radio"
                 name="duracao"
                 value="45 segundos"
               >
+
               <label for="duracao45">
                 45 segundos
               </label>
+
             </div>
 
+
             <div class="option">
+
               <input
                 id="duracao60"
                 type="radio"
@@ -1163,21 +1403,27 @@
                 value="60 segundos"
                 checked
               >
+
               <label for="duracao60">
                 60 segundos
               </label>
+
             </div>
 
+
             <div class="option">
+
               <input
                 id="duracao90"
                 type="radio"
                 name="duracao"
                 value="90 segundos"
               >
+
               <label for="duracao90">
                 90 segundos
               </label>
+
             </div>
 
           </div>
@@ -1189,51 +1435,66 @@
           >
 
             <div class="option">
+
               <input
                 id="duracao5"
                 type="radio"
                 name="duracao"
                 value="5 minutos"
               >
+
               <label for="duracao5">
                 5 minutos
               </label>
+
             </div>
 
+
             <div class="option">
+
               <input
                 id="duracao8"
                 type="radio"
                 name="duracao"
                 value="8 minutos"
               >
+
               <label for="duracao8">
                 8 minutos
               </label>
+
             </div>
 
+
             <div class="option">
+
               <input
                 id="duracao10"
                 type="radio"
                 name="duracao"
                 value="10 minutos"
               >
+
               <label for="duracao10">
                 10 minutos
               </label>
+
             </div>
 
+
             <div class="option">
+
               <input
                 id="duracao15"
                 type="radio"
                 name="duracao"
                 value="15 minutos"
               >
+
               <label for="duracao15">
                 15 minutos
               </label>
+
             </div>
 
           </div>
@@ -1252,6 +1513,7 @@
           <div class="option-grid">
 
             <div class="option">
+
               <input
                 id="estiloInformativo"
                 type="radio"
@@ -1259,57 +1521,75 @@
                 value="Informativo"
                 checked
               >
+
               <label for="estiloInformativo">
                 Informativo
               </label>
+
             </div>
 
+
             <div class="option">
+
               <input
                 id="estiloCurioso"
                 type="radio"
                 name="estilo"
                 value="Curioso"
               >
+
               <label for="estiloCurioso">
                 Curioso
               </label>
+
             </div>
 
+
             <div class="option">
+
               <input
                 id="estiloEducacional"
                 type="radio"
                 name="estilo"
                 value="Educacional"
               >
+
               <label for="estiloEducacional">
                 Educacional
               </label>
+
             </div>
 
+
             <div class="option">
+
               <input
                 id="estiloNarrativo"
                 type="radio"
                 name="estilo"
                 value="Narrativo"
               >
+
               <label for="estiloNarrativo">
                 Narrativo
               </label>
+
             </div>
 
+
             <div class="option">
+
               <input
                 id="estiloViral"
                 type="radio"
                 name="estilo"
                 value="Viral"
               >
+
               <label for="estiloViral">
                 Viral
               </label>
+
             </div>
 
           </div>
@@ -1328,6 +1608,7 @@
           <div class="option-grid">
 
             <div class="option">
+
               <input
                 id="vozNatural"
                 type="radio"
@@ -1335,45 +1616,59 @@
                 value="Natural"
                 checked
               >
+
               <label for="vozNatural">
                 Natural
               </label>
+
             </div>
 
+
             <div class="option">
+
               <input
                 id="vozEnergetica"
                 type="radio"
                 name="voz"
                 value="Energética"
               >
+
               <label for="vozEnergetica">
                 Energética
               </label>
+
             </div>
 
+
             <div class="option">
+
               <input
                 id="vozCalma"
                 type="radio"
                 name="voz"
                 value="Calma"
               >
+
               <label for="vozCalma">
                 Calma
               </label>
+
             </div>
 
+
             <div class="option">
+
               <input
                 id="vozJornalistica"
                 type="radio"
                 name="voz"
                 value="Jornalística"
               >
+
               <label for="vozJornalistica">
                 Jornalística
               </label>
+
             </div>
 
           </div>
@@ -1392,6 +1687,7 @@
           <div class="option-grid">
 
             <div class="option">
+
               <input
                 id="idiomaPt"
                 type="radio"
@@ -1399,33 +1695,43 @@
                 value="Português"
                 checked
               >
+
               <label for="idiomaPt">
                 Português
               </label>
+
             </div>
 
+
             <div class="option">
+
               <input
                 id="idiomaEn"
                 type="radio"
                 name="idioma"
                 value="Inglês"
               >
+
               <label for="idiomaEn">
                 Inglês
               </label>
+
             </div>
 
+
             <div class="option">
+
               <input
                 id="idiomaEs"
                 type="radio"
                 name="idioma"
                 value="Espanhol"
               >
+
               <label for="idiomaEs">
                 Espanhol
               </label>
+
             </div>
 
           </div>
@@ -1444,6 +1750,7 @@
           <div class="option-grid">
 
             <div class="option">
+
               <input
                 id="visualReal"
                 type="radio"
@@ -1451,45 +1758,59 @@
                 value="Vídeos reais"
                 checked
               >
+
               <label for="visualReal">
                 Vídeos reais
               </label>
+
             </div>
 
+
             <div class="option">
+
               <input
                 id="visualCinematografico"
                 type="radio"
                 name="visual"
                 value="Cinematográfico"
               >
+
               <label for="visualCinematografico">
                 Cinematográfico
               </label>
+
             </div>
 
+
             <div class="option">
+
               <input
                 id="visualNatureza"
                 type="radio"
                 name="visual"
                 value="Natureza"
               >
+
               <label for="visualNatureza">
                 Natureza
               </label>
+
             </div>
 
+
             <div class="option">
+
               <input
                 id="visualCientifico"
                 type="radio"
                 name="visual"
                 value="Científico"
               >
+
               <label for="visualCientifico">
                 Científico
               </label>
+
             </div>
 
           </div>
@@ -1508,69 +1829,92 @@
           <div class="references">
 
             <label class="reference">
+
               <input
                 type="checkbox"
                 name="referencias"
                 value="Animais pelo Mundo"
               >
+
               <span>
                 Animais pelo Mundo
               </span>
+
             </label>
 
+
             <label class="reference">
+
               <input
                 type="checkbox"
                 name="referencias"
                 value="Papo de Biólogo"
               >
+
               <span>
                 Papo de Biólogo
               </span>
+
             </label>
 
+
             <label class="reference">
+
               <input
                 type="checkbox"
                 name="referencias"
                 value="Ciência Todo Dia"
               >
+
               <span>
                 Ciência Todo Dia
               </span>
+
             </label>
 
+
             <label class="reference">
+
               <input
                 type="checkbox"
                 name="referencias"
                 value="Manual do Mundo"
               >
+
               <span>
                 Manual do Mundo
               </span>
+
             </label>
 
+
             <label class="reference">
+
               <input
                 type="checkbox"
                 name="referencias"
                 value="Tá Curioso?"
               >
+
               <span>
                 Tá Curioso?
               </span>
+
             </label>
 
+
             <label class="reference">
+
               <input
                 type="checkbox"
                 name="referencias"
                 value="Minutos Psíquicos"
               >
+
               <span>
                 Minutos Psíquicos
               </span>
+
             </label>
 
           </div>
@@ -1589,18 +1933,23 @@
           <div class="option-grid">
 
             <div class="option">
+
               <input
                 id="intensidadeLeve"
                 type="radio"
                 name="intensidade"
                 value="Leve"
               >
+
               <label for="intensidadeLeve">
                 Leve
               </label>
+
             </div>
 
+
             <div class="option">
+
               <input
                 id="intensidadeEquilibrada"
                 type="radio"
@@ -1608,21 +1957,27 @@
                 value="Equilibrada"
                 checked
               >
+
               <label for="intensidadeEquilibrada">
                 Equilibrada
               </label>
+
             </div>
 
+
             <div class="option">
+
               <input
                 id="intensidadeForte"
                 type="radio"
                 name="intensidade"
                 value="Forte"
               >
+
               <label for="intensidadeForte">
                 Forte
               </label>
+
             </div>
 
           </div>
@@ -1668,6 +2023,7 @@
             id="stepRecebido"
             class="status-step"
           >
+
             <div class="status-icon">
               1
             </div>
@@ -1675,6 +2031,7 @@
             <span>
               Pedido recebido
             </span>
+
           </div>
 
 
@@ -1682,6 +2039,7 @@
             id="stepRoteiro"
             class="status-step"
           >
+
             <div class="status-icon">
               2
             </div>
@@ -1689,6 +2047,7 @@
             <span>
               Criando roteiro
             </span>
+
           </div>
 
 
@@ -1696,6 +2055,7 @@
             id="stepVoz"
             class="status-step"
           >
+
             <div class="status-icon">
               3
             </div>
@@ -1703,6 +2063,7 @@
             <span>
               Gerando voz
             </span>
+
           </div>
 
 
@@ -1710,6 +2071,7 @@
             id="stepMontando"
             class="status-step"
           >
+
             <div class="status-icon">
               4
             </div>
@@ -1717,6 +2079,7 @@
             <span>
               Montando vídeo
             </span>
+
           </div>
 
 
@@ -1724,6 +2087,7 @@
             id="stepPublicando"
             class="status-step"
           >
+
             <div class="status-icon">
               5
             </div>
@@ -1731,6 +2095,7 @@
             <span>
               Publicando
             </span>
+
           </div>
 
 
@@ -1738,6 +2103,7 @@
             id="stepConcluido"
             class="status-step"
           >
+
             <div class="status-icon">
               ✓
             </div>
@@ -1745,6 +2111,7 @@
             <span>
               Concluído
             </span>
+
           </div>
 
         </div>
@@ -1838,6 +2205,82 @@
         </div>
 
 
+        <!-- ===================================================
+             ESTATÍSTICAS
+             =================================================== -->
+
+        <div class="library-stats">
+
+          <div class="library-stat">
+
+            <span
+              id="statTotal"
+              class="library-stat-number"
+            >
+              0
+            </span>
+
+            <span class="library-stat-label">
+              Total
+            </span>
+
+          </div>
+
+
+          <div class="library-stat">
+
+            <span
+              id="statPublicados"
+              class="library-stat-number"
+            >
+              0
+            </span>
+
+            <span class="library-stat-label">
+              Publicados
+            </span>
+
+          </div>
+
+
+          <div class="library-stat">
+
+            <span
+              id="statProducao"
+              class="library-stat-number"
+            >
+              0
+            </span>
+
+            <span class="library-stat-label">
+              Produção
+            </span>
+
+          </div>
+
+
+          <div class="library-stat">
+
+            <span
+              id="statErros"
+              class="library-stat-number"
+            >
+              0
+            </span>
+
+            <span class="library-stat-label">
+              Erros
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <!-- ===================================================
+             BUSCA E FILTRO
+             =================================================== -->
+
         <div class="library-tools">
 
           <input
@@ -1899,6 +2342,142 @@
 
     </section>
 
+  </div>
+
+
+  <!-- =========================================================
+       MODAL
+       ========================================================= -->
+
+  <div
+    id="videoModal"
+    class="modal-overlay hidden"
+    onclick="fecharModal(event)"
+  >
+
+    <div
+      class="modal-box"
+      onclick="event.stopPropagation()"
+    >
+
+      <div class="modal-header">
+
+        <h3
+          id="modalTitle"
+          class="modal-title"
+        >
+          Detalhes do vídeo
+        </h3>
+
+        <button
+          class="modal-close"
+          onclick="fecharModal()"
+          aria-label="Fechar"
+        >
+          ✕
+        </button>
+
+      </div>
+
+
+      <div class="detail-item">
+
+        <span class="detail-label">
+          Título
+        </span>
+
+        <div
+          id="modalTitulo"
+          class="detail-value"
+        >
+        </div>
+
+      </div>
+
+
+      <div class="detail-item">
+
+        <span class="detail-label">
+          Pedido
+        </span>
+
+        <div
+          id="modalNumero"
+          class="detail-value"
+        >
+        </div>
+
+      </div>
+
+
+      <div class="detail-item">
+
+        <span class="detail-label">
+          Status
+        </span>
+
+        <div
+          id="modalStatus"
+          class="detail-value"
+        >
+        </div>
+
+      </div>
+
+
+      <div class="detail-item">
+
+        <span class="detail-label">
+          Criado em
+        </span>
+
+        <div
+          id="modalCriado"
+          class="detail-value"
+        >
+        </div>
+
+      </div>
+
+
+      <div class="detail-item">
+
+        <span class="detail-label">
+          Atualizado em
+        </span>
+
+        <div
+          id="modalAtualizado"
+          class="detail-value"
+        >
+        </div>
+
+      </div>
+
+
+      <div class="modal-actions">
+
+        <a
+          id="modalYoutube"
+          class="modal-youtube hidden"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          ▶ Assistir no YouTube
+        </a>
+
+        <button
+          id="modalCopy"
+          class="modal-copy"
+          onclick="copiarLinkModal()"
+        >
+          🔗 Copiar link
+        </button>
+
+      </div>
+
+    </div>
 
   </div>
 
@@ -1989,6 +2568,8 @@
 
     let pedidosBiblioteca = [];
 
+    let videoSelecionadoModal = null;
+
 
     /* =========================================================
        NAVEGAÇÃO
@@ -1996,10 +2577,13 @@
 
     function esconderTodasSecoes() {
 
-      const secoes = document.querySelectorAll(".section");
+      const secoes =
+        document.querySelectorAll(".section");
 
       secoes.forEach(function(secao) {
+
         secao.classList.remove("active");
+
       });
 
     }
@@ -2011,7 +2595,9 @@
         document.querySelectorAll(".nav-button");
 
       botoes.forEach(function(botao) {
+
         botao.classList.remove("active");
+
       });
 
     }
@@ -2065,7 +2651,9 @@
 
       mostrarCriar();
 
-      selecionarTipo("Vídeo longo");
+      selecionarTipo(
+        "Vídeo longo"
+      );
 
     }
 
@@ -2122,45 +2710,74 @@
 
     function selecionarTipo(tipo) {
 
-      tipoSelecionado = tipo;
+      tipoSelecionado =
+        tipo;
 
       const shortButton =
-        document.getElementById("tipoShortButton");
+        document.getElementById(
+          "tipoShortButton"
+        );
 
       const longoButton =
-        document.getElementById("tipoLongoButton");
+        document.getElementById(
+          "tipoLongoButton"
+        );
 
       const duracoesShort =
-        document.getElementById("duracoesShort");
+        document.getElementById(
+          "duracoesShort"
+        );
 
       const duracoesLongo =
-        document.getElementById("duracoesLongo");
+        document.getElementById(
+          "duracoesLongo"
+        );
 
 
-      shortButton.classList.remove("active");
+      shortButton.classList.remove(
+        "active"
+      );
 
-      longoButton.classList.remove("active");
+      longoButton.classList.remove(
+        "active"
+      );
 
 
       if (tipo === "Short") {
 
-        shortButton.classList.add("active");
+        shortButton.classList.add(
+          "active"
+        );
 
-        duracoesShort.classList.remove("hidden");
+        duracoesShort.classList.remove(
+          "hidden"
+        );
 
-        duracoesLongo.classList.add("hidden");
+        duracoesLongo.classList.add(
+          "hidden"
+        );
 
-        document.getElementById("duracao60").checked = true;
+        document
+          .getElementById("duracao60")
+          .checked = true;
 
       } else {
 
-        longoButton.classList.add("active");
+        longoButton.classList.add(
+          "active"
+        );
 
-        duracoesShort.classList.add("hidden");
+        duracoesShort.classList.add(
+          "hidden"
+        );
 
-        duracoesLongo.classList.remove("hidden");
+        duracoesLongo.classList.remove(
+          "hidden"
+        );
 
-        document.getElementById("duracao5").checked = true;
+        document
+          .getElementById("duracao5")
+          .checked = true;
 
       }
 
@@ -2175,7 +2792,9 @@
 
       const selecionado =
         document.querySelector(
-          'input[name="' + nome + '"]:checked'
+          'input[name="' +
+          nome +
+          '"]:checked'
         );
 
       return selecionado
@@ -2196,9 +2815,13 @@
           'input[name="referencias"]:checked'
         );
 
-      return Array.from(selecionadas).map(
+      return Array.from(
+        selecionadas
+      ).map(
         function(item) {
+
           return item.value;
+
         }
       );
 
@@ -2212,7 +2835,9 @@
     async function enviar() {
 
       const temaInput =
-        document.getElementById("tema");
+        document.getElementById(
+          "tema"
+        );
 
       const tema =
         temaInput.value.trim();
@@ -2227,11 +2852,14 @@
         temaInput.focus();
 
         return;
+
       }
 
 
       const botao =
-        document.getElementById("createButton");
+        document.getElementById(
+          "createButton"
+        );
 
 
       botao.disabled = true;
@@ -2306,7 +2934,9 @@
               },
 
               body:
-                JSON.stringify(dados)
+                JSON.stringify(
+                  dados
+                )
             }
           );
 
@@ -2315,7 +2945,10 @@
           await resposta.json();
 
 
-        if (!resposta.ok || !resultado.sucesso) {
+        if (
+          !resposta.ok ||
+          !resultado.sucesso
+        ) {
 
           throw new Error(
             resultado.erro ||
@@ -2330,12 +2963,18 @@
 
 
         document
-          .getElementById("statusPanel")
-          .classList.remove("hidden");
+          .getElementById(
+            "statusPanel"
+          )
+          .classList.remove(
+            "hidden"
+          );
 
 
         document
-          .getElementById("statusNumber")
+          .getElementById(
+            "statusNumber"
+          )
           .textContent =
             "Pedido #" +
             numeroPedido;
@@ -2348,7 +2987,11 @@
 
 
         if (intervaloStatus) {
-          clearInterval(intervaloStatus);
+
+          clearInterval(
+            intervaloStatus
+          );
+
         }
 
 
@@ -2365,7 +3008,9 @@
 
 
         document
-          .getElementById("statusPanel")
+          .getElementById(
+            "statusPanel"
+          )
           .scrollIntoView({
             behavior: "smooth",
             block: "center"
@@ -2374,7 +3019,9 @@
 
       } catch (erro) {
 
-        console.error(erro);
+        console.error(
+          erro
+        );
 
         alert(
           erro.message ||
@@ -2383,7 +3030,8 @@
 
       } finally {
 
-        botao.disabled = false;
+        botao.disabled =
+          false;
 
         botao.textContent =
           "🚀 Criar conteúdo";
@@ -2400,29 +3048,43 @@
     function resetarStatus() {
 
       const passos = [
+
         "stepRecebido",
         "stepRoteiro",
         "stepVoz",
         "stepMontando",
         "stepPublicando",
         "stepConcluido"
+
       ];
 
 
-      passos.forEach(function(id) {
+      passos.forEach(
+        function(id) {
 
-        const elemento =
-          document.getElementById(id);
+          const elemento =
+            document.getElementById(
+              id
+            );
 
-        if (!elemento) {
-          return;
+          if (!elemento) {
+            return;
+          }
+
+          elemento.classList.remove(
+            "active"
+          );
+
+          elemento.classList.remove(
+            "done"
+          );
+
+          elemento.classList.remove(
+            "error"
+          );
+
         }
-
-        elemento.classList.remove("active");
-        elemento.classList.remove("done");
-        elemento.classList.remove("error");
-
-      });
+      );
 
     }
 
@@ -2472,12 +3134,14 @@
     function atualizarStatusVisual(status) {
 
       const ordem = [
+
         "recebido",
         "roteiro",
         "voz",
         "montando",
         "publicando",
         "concluido"
+
       ];
 
 
@@ -2515,15 +3179,22 @@
           );
 
         if (atual) {
-          atual.classList.add("error");
+
+          atual.classList.add(
+            "error"
+          );
+
         }
 
         return;
+
       }
 
 
       const indice =
-        ordem.indexOf(status);
+        ordem.indexOf(
+          status
+        );
 
 
       if (indice < 0) {
@@ -2546,20 +3217,29 @@
 
           if (index < indice) {
 
-            elemento.classList.add("done");
+            elemento.classList.add(
+              "done"
+            );
 
           }
 
 
           if (index === indice) {
 
-            if (status === "concluido") {
+            if (
+              status ===
+              "concluido"
+            ) {
 
-              elemento.classList.add("done");
+              elemento.classList.add(
+                "done"
+              );
 
             } else {
 
-              elemento.classList.add("active");
+              elemento.classList.add(
+                "active"
+              );
 
             }
 
@@ -2587,7 +3267,9 @@
         const resposta =
           await fetch(
             "/.netlify/functions/status-pedido?numero=" +
-            encodeURIComponent(numeroPedido)
+            encodeURIComponent(
+              numeroPedido
+            )
           );
 
 
@@ -2611,17 +3293,23 @@
 
 
         document
-          .getElementById("statusNumber")
+          .getElementById(
+            "statusNumber"
+          )
           .textContent =
             "Pedido #" +
             resultado.numero +
             " — " +
-            textoStatus(resultado.status);
+            textoStatus(
+              resultado.status
+            );
 
 
         if (
-          resultado.status === "concluido" ||
-          resultado.status === "erro"
+          resultado.status ===
+            "concluido" ||
+          resultado.status ===
+            "erro"
         ) {
 
           if (intervaloStatus) {
@@ -2630,7 +3318,8 @@
               intervaloStatus
             );
 
-            intervaloStatus = null;
+            intervaloStatus =
+              null;
 
           }
 
@@ -2656,7 +3345,9 @@
     function formatarData(data) {
 
       if (!data) {
+
         return "Data não informada";
+
       }
 
 
@@ -2677,6 +3368,108 @@
       } catch (erro) {
 
         return data;
+
+      }
+
+    }
+
+
+    /* =========================================================
+       ATUALIZAR ESTATÍSTICAS
+       ========================================================= */
+
+    function atualizarEstatisticas() {
+
+      const total =
+        pedidosBiblioteca.length;
+
+
+      const publicados =
+        pedidosBiblioteca.filter(
+          function(pedido) {
+
+            return pedido.status ===
+              "concluido";
+
+          }
+        ).length;
+
+
+      const erros =
+        pedidosBiblioteca.filter(
+          function(pedido) {
+
+            return pedido.status ===
+              "erro";
+
+          }
+        ).length;
+
+
+      const producao =
+        pedidosBiblioteca.filter(
+          function(pedido) {
+
+            return (
+              pedido.status !==
+                "concluido" &&
+              pedido.status !==
+                "erro"
+            );
+
+          }
+        ).length;
+
+
+      const statTotal =
+        document.getElementById(
+          "statTotal"
+        );
+
+      const statPublicados =
+        document.getElementById(
+          "statPublicados"
+        );
+
+      const statProducao =
+        document.getElementById(
+          "statProducao"
+        );
+
+      const statErros =
+        document.getElementById(
+          "statErros"
+        );
+
+
+      if (statTotal) {
+
+        statTotal.textContent =
+          total;
+
+      }
+
+
+      if (statPublicados) {
+
+        statPublicados.textContent =
+          publicados;
+
+      }
+
+
+      if (statProducao) {
+
+        statProducao.textContent =
+          producao;
+
+      }
+
+
+      if (statErros) {
+
+        statErros.textContent =
+          erros;
 
       }
 
@@ -2706,17 +3499,28 @@
 
 
       if (loading) {
-        loading.classList.remove("hidden");
+
+        loading.classList.remove(
+          "hidden"
+        );
+
       }
 
 
       if (vazio) {
-        vazio.classList.add("hidden");
+
+        vazio.classList.add(
+          "hidden"
+        );
+
       }
 
 
       if (lista) {
-        lista.innerHTML = "";
+
+        lista.innerHTML =
+          "";
+
       }
 
 
@@ -2749,28 +3553,47 @@
           resultado.pedidos || [];
 
 
+        atualizarEstatisticas();
+
+
         if (loading) {
-          loading.classList.add("hidden");
+
+          loading.classList.add(
+            "hidden"
+          );
+
         }
 
 
-        if (!pedidosBiblioteca.length) {
+        if (
+          !pedidosBiblioteca.length
+        ) {
 
           if (vazio) {
-            vazio.classList.remove("hidden");
+
+            vazio.classList.remove(
+              "hidden"
+            );
+
           }
+
 
           const contador =
             document.getElementById(
               "videosCount"
             );
 
+
           if (contador) {
+
             contador.textContent =
               "Nenhum vídeo ainda";
+
           }
 
+
           return;
+
         }
 
 
@@ -2779,26 +3602,39 @@
 
       } catch (erro) {
 
-        console.error(erro);
+        console.error(
+          erro
+        );
 
 
         if (loading) {
-          loading.classList.add("hidden");
+
+          loading.classList.add(
+            "hidden"
+          );
+
         }
 
 
         if (lista) {
 
-          lista.innerHTML = "";
+          lista.innerHTML =
+            "";
+
 
           const mensagem =
-            document.createElement("div");
+            document.createElement(
+              "div"
+            );
+
 
           mensagem.className =
             "library-no-result";
 
+
           mensagem.textContent =
             "Não foi possível carregar seus vídeos.";
+
 
           lista.appendChild(
             mensagem
@@ -2845,7 +3681,8 @@
       }
 
 
-      lista.innerHTML = "";
+      lista.innerHTML =
+        "";
 
 
       const filtrados =
@@ -2862,12 +3699,15 @@
 
             const combinaBusca =
               !busca ||
-              titulo.includes(busca);
+              titulo.includes(
+                busca
+              );
 
 
             const combinaFiltro =
               filtro === "todos" ||
-              pedido.status === filtro;
+              pedido.status ===
+                filtro;
 
 
             return (
@@ -2890,7 +3730,8 @@
         contador.textContent =
           filtrados.length +
           (
-            filtrados.length === 1
+            filtrados.length ===
+            1
               ? " vídeo"
               : " vídeos"
           );
@@ -2901,21 +3742,28 @@
       if (!filtrados.length) {
 
         const vazio =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
+
 
         vazio.className =
           "library-no-result";
+
 
         vazio.textContent =
           pedidosBiblioteca.length
             ? "Nenhum vídeo encontrado."
             : "Você ainda não criou nenhum conteúdo.";
 
+
         lista.appendChild(
           vazio
         );
 
+
         return;
+
       }
 
 
@@ -2923,7 +3771,9 @@
         function(pedido) {
 
           lista.appendChild(
-            criarPedidoCard(pedido)
+            criarPedidoCard(
+              pedido
+            )
           );
 
         }
@@ -2933,13 +3783,16 @@
 
 
     /* =========================================================
-       CRIAR CARD DO VÍDEO
+       CRIAR CARD
        ========================================================= */
 
     function criarPedidoCard(pedido) {
 
       const card =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       card.className =
         "video-card";
@@ -2973,17 +3826,24 @@
       if (thumbnail) {
 
         const preview =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
+
 
         preview.className =
           "video-card-preview";
 
 
         const imagem =
-          document.createElement("img");
+          document.createElement(
+            "img"
+          );
+
 
         imagem.src =
           thumbnail;
+
 
         imagem.alt =
           pedido.titulo ||
@@ -3011,13 +3871,18 @@
         if (youtubeUrl) {
 
           const play =
-            document.createElement("button");
+            document.createElement(
+              "button"
+            );
+
 
           play.className =
             "video-card-play";
 
+
           play.textContent =
             "▶";
+
 
           play.setAttribute(
             "aria-label",
@@ -3028,10 +3893,8 @@
           play.onclick =
             function() {
 
-              window.open(
-                youtubeUrl,
-                "_blank",
-                "noopener,noreferrer"
+              abrirYoutube(
+                youtubeUrl
               );
 
             };
@@ -3056,17 +3919,24 @@
          ======================================================= */
 
       const body =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       body.className =
         "video-card-body";
 
 
       const titulo =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       titulo.className =
         "video-card-title";
+
 
       titulo.textContent =
         pedido.titulo ||
@@ -3083,17 +3953,24 @@
          ======================================================= */
 
       const meta =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       meta.className =
         "video-card-meta";
 
 
       const numero =
-        document.createElement("span");
+        document.createElement(
+          "span"
+        );
+
 
       numero.className =
         "video-card-number";
+
 
       numero.textContent =
         "Pedido #" +
@@ -3101,7 +3978,10 @@
 
 
       const badge =
-        document.createElement("span");
+        document.createElement(
+          "span"
+        );
+
 
       badge.className =
         "badge badge-" +
@@ -3109,6 +3989,7 @@
           pedido.status ||
           "recebido"
         );
+
 
       badge.textContent =
         textoStatus(
@@ -3119,6 +4000,7 @@
       meta.appendChild(
         numero
       );
+
 
       meta.appendChild(
         badge
@@ -3135,10 +4017,14 @@
          ======================================================= */
 
       const data =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       data.className =
         "video-card-date";
+
 
       data.textContent =
         "Criado em " +
@@ -3157,7 +4043,10 @@
          ======================================================= */
 
       const actions =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       actions.className =
         "video-card-actions";
@@ -3166,36 +4055,77 @@
       if (youtubeUrl) {
 
         const assistir =
-          document.createElement("a");
+          document.createElement(
+            "a"
+          );
+
 
         assistir.href =
           youtubeUrl;
 
+
         assistir.target =
           "_blank";
+
 
         assistir.rel =
           "noopener noreferrer";
 
+
         assistir.className =
           "youtube-button";
 
+
         assistir.textContent =
-          "▶ Assistir no YouTube";
+          "▶ Assistir";
 
 
         actions.appendChild(
           assistir
         );
 
+
+        const copiar =
+          document.createElement(
+            "button"
+          );
+
+
+        copiar.className =
+          "copy-button";
+
+
+        copiar.textContent =
+          "🔗 Copiar";
+
+
+        copiar.onclick =
+          function() {
+
+            copiarLink(
+              youtubeUrl,
+              copiar
+            );
+
+          };
+
+
+        actions.appendChild(
+          copiar
+        );
+
       }
 
 
       const acompanhar =
-        document.createElement("button");
+        document.createElement(
+          "button"
+        );
+
 
       acompanhar.className =
         "follow-button";
+
 
       acompanhar.textContent =
         "Acompanhar";
@@ -3204,70 +4134,44 @@
       acompanhar.onclick =
         function() {
 
-          numeroPedido =
-            pedido.numero;
-
-
-          mostrarCriar();
-
-
-          document
-            .getElementById(
-              "statusPanel"
-            )
-            .classList.remove(
-              "hidden"
-            );
-
-
-          document
-            .getElementById(
-              "statusNumber"
-            )
-            .textContent =
-              "Pedido #" +
-              pedido.numero;
-
-
-          consultarStatus();
-
-
-          if (intervaloStatus) {
-
-            clearInterval(
-              intervaloStatus
-            );
-
-          }
-
-
-          intervaloStatus =
-            setInterval(
-              consultarStatus,
-              10000
-            );
-
-
-          const painel =
-            document.getElementById(
-              "statusPanel"
-            );
-
-
-          if (painel) {
-
-            painel.scrollIntoView({
-              behavior: "smooth",
-              block: "center"
-            });
-
-          }
+          acompanharPedido(
+            pedido
+          );
 
         };
 
 
       actions.appendChild(
         acompanhar
+      );
+
+
+      const detalhes =
+        document.createElement(
+          "button"
+        );
+
+
+      detalhes.className =
+        "details-button";
+
+
+      detalhes.textContent =
+        "📋 Detalhes";
+
+
+      detalhes.onclick =
+        function() {
+
+          abrirDetalhes(
+            pedido
+          );
+
+        };
+
+
+      actions.appendChild(
+        detalhes
       );
 
 
@@ -3284,6 +4188,391 @@
       return card;
 
     }
+
+
+    /* =========================================================
+       ABRIR YOUTUBE
+       ========================================================= */
+
+    function abrirYoutube(url) {
+
+      if (!url) {
+        return;
+      }
+
+
+      window.open(
+        url,
+        "_blank",
+        "noopener,noreferrer"
+      );
+
+    }
+
+
+    /* =========================================================
+       COPIAR LINK
+       ========================================================= */
+
+    async function copiarLink(
+      url,
+      botao
+    ) {
+
+      if (!url) {
+
+        return;
+
+      }
+
+
+      try {
+
+        await navigator.clipboard.writeText(
+          url
+        );
+
+
+        const textoOriginal =
+          botao.textContent;
+
+
+        botao.textContent =
+          "✓ Copiado";
+
+
+        setTimeout(
+          function() {
+
+            botao.textContent =
+              textoOriginal;
+
+          },
+          1800
+        );
+
+
+      } catch (erro) {
+
+        console.error(
+          erro
+        );
+
+
+        prompt(
+          "Copie o link do vídeo:",
+          url
+        );
+
+      }
+
+    }
+
+
+    /* =========================================================
+       ACOMPANHAR PEDIDO
+       ========================================================= */
+
+    function acompanharPedido(
+      pedido
+    ) {
+
+      numeroPedido =
+        pedido.numero;
+
+
+      mostrarCriar();
+
+
+      document
+        .getElementById(
+          "statusPanel"
+        )
+        .classList.remove(
+          "hidden"
+        );
+
+
+      document
+        .getElementById(
+          "statusNumber"
+        )
+        .textContent =
+          "Pedido #" +
+          pedido.numero;
+
+
+      consultarStatus();
+
+
+      if (intervaloStatus) {
+
+        clearInterval(
+          intervaloStatus
+        );
+
+      }
+
+
+      intervaloStatus =
+        setInterval(
+          consultarStatus,
+          10000
+        );
+
+
+      const painel =
+        document.getElementById(
+          "statusPanel"
+        );
+
+
+      if (painel) {
+
+        painel.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+
+      }
+
+    }
+
+
+    /* =========================================================
+       ABRIR DETALHES
+       ========================================================= */
+
+    function abrirDetalhes(
+      pedido
+    ) {
+
+      videoSelecionadoModal =
+        pedido;
+
+
+      const modal =
+        document.getElementById(
+          "videoModal"
+        );
+
+
+      const titulo =
+        pedido.titulo ||
+        "Conteúdo sem título";
+
+
+      const youtubeUrl =
+        pedido.youtubeUrl ||
+        (
+          pedido.youtubeId
+            ? "https://www.youtube.com/watch?v=" +
+              pedido.youtubeId
+            : ""
+        );
+
+
+      document
+        .getElementById(
+          "modalTitle"
+        )
+        .textContent =
+          titulo;
+
+
+      document
+        .getElementById(
+          "modalTitulo"
+        )
+        .textContent =
+          titulo;
+
+
+      document
+        .getElementById(
+          "modalNumero"
+        )
+        .textContent =
+          "Pedido #" +
+          pedido.numero;
+
+
+      document
+        .getElementById(
+          "modalStatus"
+        )
+        .textContent =
+          textoStatus(
+            pedido.status
+          );
+
+
+      document
+        .getElementById(
+          "modalCriado"
+        )
+        .textContent =
+          formatarData(
+            pedido.criadoEm
+          );
+
+
+      document
+        .getElementById(
+          "modalAtualizado"
+        )
+        .textContent =
+          formatarData(
+            pedido.atualizadoEm
+          );
+
+
+      const youtube =
+        document.getElementById(
+          "modalYoutube"
+        );
+
+
+      if (youtubeUrl) {
+
+        youtube.href =
+          youtubeUrl;
+
+
+        youtube.classList.remove(
+          "hidden"
+        );
+
+      } else {
+
+        youtube.classList.add(
+          "hidden"
+        );
+
+      }
+
+
+      modal.classList.remove(
+        "hidden"
+      );
+
+    }
+
+
+    /* =========================================================
+       FECHAR MODAL
+       ========================================================= */
+
+    function fecharModal(
+      evento
+    ) {
+
+      if (
+        evento &&
+        evento.target &&
+        evento.target.id !==
+          "videoModal"
+      ) {
+
+        return;
+
+      }
+
+
+      const modal =
+        document.getElementById(
+          "videoModal"
+        );
+
+
+      if (modal) {
+
+        modal.classList.add(
+          "hidden"
+        );
+
+      }
+
+
+      videoSelecionadoModal =
+        null;
+
+    }
+
+
+    /* =========================================================
+       COPIAR LINK DO MODAL
+       ========================================================= */
+
+    async function copiarLinkModal() {
+
+      if (
+        !videoSelecionadoModal
+      ) {
+
+        return;
+
+      }
+
+
+      const pedido =
+        videoSelecionadoModal;
+
+
+      const youtubeUrl =
+        pedido.youtubeUrl ||
+        (
+          pedido.youtubeId
+            ? "https://www.youtube.com/watch?v=" +
+              pedido.youtubeId
+            : ""
+        );
+
+
+      if (!youtubeUrl) {
+
+        alert(
+          "Este vídeo ainda não possui um link do YouTube."
+        );
+
+        return;
+
+      }
+
+
+      const botao =
+        document.getElementById(
+          "modalCopy"
+        );
+
+
+      await copiarLink(
+        youtubeUrl,
+        botao
+      );
+
+    }
+
+
+    /* =========================================================
+       TECLA ESC FECHA MODAL
+       ========================================================= */
+
+    document.addEventListener(
+      "keydown",
+      function(evento) {
+
+        if (
+          evento.key ===
+          "Escape"
+        ) {
+
+          fecharModal();
+
+        }
+
+      }
+    );
 
 
     /* =========================================================
