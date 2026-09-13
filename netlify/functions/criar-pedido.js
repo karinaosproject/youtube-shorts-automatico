@@ -1,58 +1,31 @@
 exports.handler = async (event) => {
-  // Aceita apenas POST
+  const corsHeaders = {
+    "Access-Control-Allow-Origin": "https://karinaosproject.github.io",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "POST,OPTIONS",
+    "Content-Type": "application/json"
+  };
+
+  if (event.httpMethod === "OPTIONS") return { statusCode: 204, headers: corsHeaders, body: "" };
+
   if (event.httpMethod !== "POST") {
-    return {
-      statusCode: 405,
-      body: JSON.stringify({
-        sucesso: false,
-        erro: "Método não permitido."
-      })
-    };
+    return { statusCode: 405, headers: corsHeaders, body: JSON.stringify({ sucesso: false, erro: "Método não permitido." }) };
   }
 
   try {
     const dados = JSON.parse(event.body || "{}");
+    const { tipo, tema, duracao, estilo, voz, idioma, visual, referencias, intensidade } = dados;
 
-    const {
-      tipo,
-      tema,
-      duracao,
-      estilo,
-      voz,
-      idioma,
-      visual,
-      referencias,
-      intensidade
-    } = dados;
-
-    // Validação básica
     if (!tema || !tema.trim()) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          sucesso: false,
-          erro: "Informe o tema do conteúdo."
-        })
-      };
+      return { statusCode: 400, headers: corsHeaders, body: JSON.stringify({ sucesso: false, erro: "Informe o tema do conteúdo." }) };
     }
 
     const token = process.env.GITHUB_TOKEN;
-
     if (!token) {
-      return {
-        statusCode: 500,
-        body: JSON.stringify({
-          sucesso: false,
-          erro: "GITHUB_TOKEN não configurado no Netlify."
-        })
-      };
+      return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ sucesso: false, erro: "GITHUB_TOKEN não configurado no Netlify." }) };
     }
 
-    const referenciasTexto =
-      Array.isArray(referencias) && referencias.length
-        ? referencias.join(", ")
-        : "Nenhuma selecionada";
-
+    const referenciasTexto = Array.isArray(referencias) && referencias.length ? referencias.join(", ") : "Nenhuma selecionada";
     const corpoIssue = `### TIPO DE CONTEÚDO
 ${tipo || "Short"}
 
@@ -95,56 +68,26 @@ Novo pedido de conteúdo
 `;
 
     const titulo = `Pedido Karina OS — ${tema.trim()}`;
-
-    const resposta = await fetch(
-      "https://api.github.com/repos/karinaosproject/youtube-shorts-automatico/issues",
-      {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Accept": "application/vnd.github+json",
-          "X-GitHub-Api-Version": "2022-11-28",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          title: titulo,
-          body: corpoIssue
-        })
-      }
-    );
+    const resposta = await fetch("https://api.github.com/repos/karinaosproject/youtube-shorts-automatico/issues", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ title: titulo, body: corpoIssue })
+    });
 
     const resultado = await resposta.json();
-
     if (!resposta.ok) {
       console.error("Erro GitHub:", resultado);
-
-      return {
-        statusCode: resposta.status,
-        body: JSON.stringify({
-          sucesso: false,
-          erro: "Não foi possível criar o pedido no GitHub."
-        })
-      };
+      return { statusCode: resposta.status, headers: corsHeaders, body: JSON.stringify({ sucesso: false, erro: "Não foi possível criar o pedido no GitHub." }) };
     }
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        sucesso: true,
-        mensagem: "Pedido enviado com sucesso!",
-        numero: resultado.number
-      })
-    };
-
+    return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ sucesso: true, mensagem: "Pedido enviado com sucesso!", numero: resultado.number }) };
   } catch (erro) {
     console.error("Erro:", erro);
-
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        sucesso: false,
-        erro: "Erro interno ao processar o pedido."
-      })
-    };
+    return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ sucesso: false, erro: "Erro interno ao processar o pedido." }) };
   }
 };
