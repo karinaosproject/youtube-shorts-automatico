@@ -7,8 +7,7 @@ exports.handler = async (event) => {
     const resultado = await resposta.json();
     if (!resposta.ok) return { statusCode: resposta.status, body: JSON.stringify({ sucesso: false, erro: "Não foi possível listar os pedidos." }) };
     const pedidos = resultado.filter(i => !i.pull_request).map(i => {
-      const corpo = i.body || ""; const up = corpo.toUpperCase();
-      let status = "recebido";
+      const corpo = i.body || ""; const up = corpo.toUpperCase(); let status = "recebido";
       if (up.includes("### PUBLICAÇÃO NO YOUTUBE") && up.includes("STATUS: PUBLICADO")) status = "concluido";
       else if (up.includes("ERRO") || up.includes("FALHA")) status = "erro";
       else if (up.includes("PUBLICANDO") || up.includes("YOUTUBE")) status = "publicando";
