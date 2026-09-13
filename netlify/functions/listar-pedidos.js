@@ -11,7 +11,6 @@ exports.handler = async (event) => {
   }
 
   try {
-
     const token = process.env.GITHUB_TOKEN;
 
     if (!token) {
@@ -25,10 +24,9 @@ exports.handler = async (event) => {
     }
 
     const resposta = await fetch(
-      "https://api.github.com/repos/karinaosproject/youtube-shorts-automatico/issues?state=all&sort=created&direction=desc&per_page=50",
+      "https://api.github.com/repos/karinaosproject/youtube-shorts-automatico/issues?state=all&sort=updated&direction=desc&per_page=50",
       {
         method: "GET",
-
         headers: {
           "Authorization": `Bearer ${token}`,
           "Accept": "application/vnd.github+json",
@@ -40,9 +38,7 @@ exports.handler = async (event) => {
     const resultado = await resposta.json();
 
     if (!resposta.ok) {
-
       console.error("Erro GitHub:", resultado);
-
       return {
         statusCode: resposta.status,
         body: JSON.stringify({
@@ -50,7 +46,6 @@ exports.handler = async (event) => {
           erro: "Não foi possível listar os pedidos."
         })
       };
-
     }
 
     const pedidos = resultado
@@ -58,47 +53,45 @@ exports.handler = async (event) => {
         return !item.pull_request;
       })
       .map(function(item) {
-
         const corpo = item.body || "";
+        const corpoMaiusculo = corpo.toUpperCase();
 
         let status = "recebido";
 
         if (
-          corpo.includes("YOUTUBE VIDEO ID") ||
-          corpo.includes("STATUS: PUBLICADO") ||
-          corpo.includes("PUBLICADO COM SUCESSO") ||
-          corpo.includes("### PUBLICAÇÃO NO YOUTUBE")
+          corpoMaiusculo.includes("### PUBLICAÇÃO NO YOUTUBE") &&
+          corpoMaiusculo.includes("STATUS: PUBLICADO")
         ) {
           status = "concluido";
         }
         else if (
-          corpo.includes("ERRO") ||
-          corpo.includes("FALHA")
+          corpoMaiusculo.includes("ERRO") ||
+          corpoMaiusculo.includes("FALHA")
         ) {
           status = "erro";
         }
         else if (
-          corpo.includes("PUBLICANDO") ||
-          corpo.includes("YOUTUBE")
+          corpoMaiusculo.includes("PUBLICANDO") ||
+          corpoMaiusculo.includes("YOUTUBE")
         ) {
           status = "publicando";
         }
         else if (
-          corpo.includes("MONTANDO") ||
-          corpo.includes("VÍDEO") ||
-          corpo.includes("VIDEO")
+          corpoMaiusculo.includes("MONTANDO") ||
+          corpoMaiusculo.includes("VÍDEO") ||
+          corpoMaiusculo.includes("VIDEO")
         ) {
           status = "montando";
         }
         else if (
-          corpo.includes("VOZ") ||
-          corpo.includes("PIPER")
+          corpoMaiusculo.includes("VOZ") ||
+          corpoMaiusculo.includes("PIPER")
         ) {
           status = "voz";
         }
         else if (
-          corpo.includes("ROTEIRO") ||
-          corpo.includes("GEMINI")
+          corpoMaiusculo.includes("ROTEIRO") ||
+          corpoMaiusculo.includes("GEMINI")
         ) {
           status = "roteiro";
         }
@@ -122,6 +115,26 @@ exports.handler = async (event) => {
           youtubeUrl = urlMatch[1].trim();
         }
 
+        if (!youtubeId && youtubeUrl) {
+          const idUrlMatch = youtubeUrl.match(
+            /[?&]v=([^&\s]+)/i
+          );
+
+          const idShortsMatch = youtubeUrl.match(
+            /\/shorts\/([^?&\s/]+)/i
+          );
+
+          const idEmbedMatch = youtubeUrl.match(
+            /\/embed\/([^?&\s/]+)/i
+          );
+
+          youtubeId =
+            (idUrlMatch && idUrlMatch[1]) ||
+            (idShortsMatch && idShortsMatch[1]) ||
+            (idEmbedMatch && idEmbedMatch[1]) ||
+            null;
+        }
+
         if (!youtubeUrl && youtubeId) {
           youtubeUrl =
             `https://www.youtube.com/watch?v=${youtubeId}`;
@@ -142,21 +155,18 @@ exports.handler = async (event) => {
           criadoEm: item.created_at,
           atualizadoEm: item.updated_at,
           url: item.html_url,
-
           youtubeId: youtubeId,
           youtubeUrl: youtubeUrl,
           youtubeThumbnailUrl: youtubeThumbnailUrl
         };
-
       });
 
     return {
       statusCode: 200,
-
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Cache-Control": "no-store"
       },
-
       body: JSON.stringify({
         sucesso: true,
         pedidos: pedidos
@@ -164,9 +174,7 @@ exports.handler = async (event) => {
     };
 
   } catch (erro) {
-
     console.error("Erro interno:", erro);
-
     return {
       statusCode: 500,
       body: JSON.stringify({
@@ -174,7 +182,5 @@ exports.handler = async (event) => {
         erro: "Erro interno ao listar os pedidos."
       })
     };
-
   }
-
 };
