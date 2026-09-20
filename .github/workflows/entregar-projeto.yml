@@ -2,7 +2,7 @@ name: Entregar projeto Karina Studio
 
 on:
   workflow_run:
-    workflows: ["Processar pedido de Short"]
+    workflows: ["Processar projeto Karina Studio"]
     types: [completed]
 
 jobs:
