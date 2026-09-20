@@ -1,4 +1,4 @@
-name: Processar pedido de Short
+name: Processar projeto Karina Studio
 
 on:
   issues:
@@ -66,22 +66,22 @@ jobs:
           intensidade = pegar("INTENSIDADE DAS REFERÊNCIAS")
 
           if not tipo:
-              tipo = "Short"
+              tipo = "Anúncio"
 
           if not duracao:
               duracao = "30 segundos"
 
           if not estilo:
-              estilo = "Curiosidades"
+              estilo = "Oferta direta"
 
           if not voz:
-              voz = "Automática"
+              voz = "Natural"
 
           if not idioma:
               idioma = "Português brasileiro"
 
           if not visual:
-              visual = "Viral"
+              visual = "Vídeos reais"
 
           if not referencias:
               referencias = "Nenhuma selecionada"
