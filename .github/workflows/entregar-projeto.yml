@@ -1,0 +1,93 @@
+name: Entregar projeto Karina Studio
+
+on:
+  workflow_run:
+    workflows: ["Processar pedido de Short"]
+    types: [completed]
+
+jobs:
+  entregar:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+      issues: write
+
+    steps:
+      - name: Baixar resultado da produção
+        uses: actions/download-artifact@v4
+        with:
+          name: short-gerado
+          path: resultado
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Preparar pacote
+        id: pacote
+        run: |
+          set -e
+          test -f resultado/issue-number.txt
+          test -f resultado/short-final.mp4
+          ISSUE_NUMBER="$(cat resultado/issue-number.txt | tr -d '[:space:]')"
+          test -n "$ISSUE_NUMBER"
+          TAG="projeto-$ISSUE_NUMBER"
+          ZIP="projeto-$ISSUE_NUMBER.zip"
+          cd resultado
+          zip -qr "../$ZIP" .
+          cd ..
+          echo "issue=$ISSUE_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "zip=$ZIP" >> "$GITHUB_OUTPUT"
+
+      - name: Criar ou atualizar entrega
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ steps.pacote.outputs.issue }}
+          TAG: ${{ steps.pacote.outputs.tag }}
+          ZIP: ${{ steps.pacote.outputs.zip }}
+        run: |
+          set -e
+          TITULO="$(gh api "repos/$GITHUB_REPOSITORY/issues/$ISSUE_NUMBER" --jq '.title')"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$ZIP" --clobber
+          else
+            gh release create "$TAG" "$ZIP" \
+              --title "$TITULO" \
+              --notes "Entrega automática do Karina Studio para o projeto #$ISSUE_NUMBER."
+          fi
+          DOWNLOAD_URL="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" --jq '.assets[].browser_download_url' | tail -n 1)"
+          test -n "$DOWNLOAD_URL"
+          echo "$DOWNLOAD_URL" > entrega-url.txt
+          echo "$TAG" > entrega-tag.txt
+
+      - name: Registrar entrega no pedido
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ steps.pacote.outputs.issue }}
+        run: |
+          set -e
+          URL="$(cat entrega-url.txt)"
+          TAG="$(cat entrega-tag.txt)"
+          BODY="$(gh api "/repos/$GITHUB_REPOSITORY/issues/$ISSUE_NUMBER" --jq '.body')"
+          BODY="$BODY"$'\n\n'"### ENTREGA KARINA STUDIO"$'\n\n'"**STATUS:** CONCLUÍDO"$'\n\n'"### DOWNLOAD DO PROJETO"$'\n'"$URL"$'\n\n'"### IDENTIFICAÇÃO DA ENTREGA"$'\n'"$TAG"$'\n\n'"O pacote contém o vídeo final, roteiro, áudio, legendas, configuração e demais arquivos gerados pela produção."
+          gh api --method PATCH \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/$GITHUB_REPOSITORY/issues/$ISSUE_NUMBER" \
+            -f body="$BODY"
+
+      - name: Salvar informações da entrega
+        uses: actions/upload-artifact@v4
+        with:
+          name: entrega-karina-studio
+          path: |
+            entrega-url.txt
+            entrega-tag.txt
+            resultado/issue-number.txt
+          retention-days: 7
+
+      - name: Finalizar
+        run: |
+          echo "ENTREGA KARINA STUDIO CONCLUÍDA"
+          echo "Pedido: ${{ steps.pacote.outputs.issue }}"
+          echo "Download: $(cat entrega-url.txt)"
