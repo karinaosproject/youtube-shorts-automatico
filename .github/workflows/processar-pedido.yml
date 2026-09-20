@@ -51,7 +51,12 @@ jobs:
               return m.group(1).strip()
 
           tipo = pegar("TIPO DE CONTEÚDO")
+          produto = pegar("PRODUTO OU SERVIÇO")
           tema = pegar("TEMA")
+          oferta = pegar("OFERTA")
+          publico = pegar("PÚBLICO-ALVO")
+          objetivo = pegar("OBJETIVO")
+          cta = pegar("CHAMADA PARA AÇÃO")
           duracao = pegar("DURAÇÃO")
           estilo = pegar("ESTILO")
           voz = pegar("VOZ")
@@ -64,7 +69,7 @@ jobs:
               tipo = "Short"
 
           if not duracao:
-              duracao = "60 segundos"
+              duracao = "30 segundos"
 
           if not estilo:
               estilo = "Curiosidades"
@@ -86,7 +91,12 @@ jobs:
 
           with open("pedido.txt", "w", encoding="utf-8") as f:
               f.write(f"TIPO={tipo}\n")
+              f.write(f"PRODUTO={produto}\n")
               f.write(f"TEMA={tema}\n")
+              f.write(f"OFERTA={oferta}\n")
+              f.write(f"PUBLICO={publico}\n")
+              f.write(f"OBJETIVO={objetivo}\n")
+              f.write(f"CTA={cta}\n")
               f.write(f"DURACAO={duracao}\n")
               f.write(f"ESTILO={estilo}\n")
               f.write(f"VOZ={voz}\n")
@@ -144,8 +154,10 @@ jobs:
               min(duracao, 3600)
           )
 
-          if tipo.lower().startswith("short"):
-              formato = "short"
+          tipos_verticais = ("short", "anúncio", "reel", "story", "oferta")
+
+          if any(tipo.lower().startswith(x) for x in tipos_verticais):
+              formato = "vertical"
               numero_cenas = 6
               largura = 1080
               altura = 1920
@@ -226,7 +238,7 @@ jobs:
 
           tipo = dados.get(
               "TIPO",
-              "Short"
+              "Anúncio"
           )
 
           tema = dados.get(
@@ -236,8 +248,13 @@ jobs:
 
           estilo = dados.get(
               "ESTILO",
-              "Curiosidades"
+              "Oferta direta"
           )
+
+          oferta = dados.get("OFERTA", "")
+          publico = dados.get("PUBLICO", "")
+          objetivo = dados.get("OBJETIVO", "Vender")
+          cta = dados.get("CTA", "")
 
           voz = dados.get(
               "VOZ",
@@ -291,23 +308,25 @@ jobs:
               )
           )
 
-          if tipo.lower().startswith("short"):
+          tipos_verticais = ("short", "anúncio", "reel", "story", "oferta")
+
+          if any(tipo.lower().startswith(x) for x in tipos_verticais):
 
               estrutura = """
-              O vídeo é um YouTube Short.
+              O vídeo é uma peça vertical curta para anúncio, Reel,
+              Story ou oferta em redes sociais.
 
               Estrutura:
-              1. Gancho muito forte nos primeiros segundos.
-              2. Apresentação rápida da curiosidade.
-              3. Desenvolvimento direto.
-              4. Informação surpreendente.
-              5. Fechamento memorável.
+              1. Gancho claro nos primeiros segundos.
+              2. Apresentação do produto ou serviço.
+              3. Benefício ou problema que resolve.
+              4. Prova, diferencial ou motivo para acreditar.
+              5. Oferta quando houver.
+              6. Chamada para ação clara.
 
-              O ritmo deve ser rápido e natural.
-
-              Não transforme a narração em uma lista
-              artificial de "número 1", "número 2" etc.,
-              a menos que o próprio tema exija isso.
+              O vídeo deve ser original, natural e adequado para
+              publicidade. Não invente preço, promoção, depoimento,
+              garantia ou característica que não tenha sido informada.
               """
 
           else:
@@ -358,8 +377,23 @@ jobs:
 
           {estrutura}
 
-          TEMA:
+          PRODUTO OU SERVIÇO:
+          {produto}
+
+          TEMA / BRIEFING:
           {tema}
+
+          OFERTA:
+          {oferta}
+
+          PÚBLICO-ALVO:
+          {publico}
+
+          OBJETIVO:
+          {objetivo}
+
+          CHAMADA PARA AÇÃO:
+          {cta}
 
           TIPO:
           {tipo}
@@ -407,6 +441,10 @@ jobs:
           - estrutura característica de um vídeo específico
 
           O conteúdo final deve ser ORIGINAL.
+
+          NÃO invente informações comerciais que não estejam no briefing.
+          Não invente preço, desconto, endereço, telefone, resultados,
+          avaliações, depoimentos ou promessas.
 
           IMPORTANTE SOBRE AS CENAS:
 
