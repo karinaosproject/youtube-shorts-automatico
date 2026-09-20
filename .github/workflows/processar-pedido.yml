@@ -241,6 +241,11 @@ jobs:
               "Anúncio"
           )
 
+          produto = dados.get(
+              "PRODUTO",
+              ""
+          )
+
           tema = dados.get(
               "TEMA",
               ""
@@ -372,8 +377,10 @@ jobs:
               """
 
           prompt = f"""
-          Você é um roteirista profissional de YouTube,
-          especializado em vídeos com alta retenção.
+          Você é um roteirista profissional de anúncios e vídeos curtos,
+          especializado em retenção, clareza e comunicação comercial.
+          
+          O conteúdo deve ser original e criado a partir do briefing fornecido.
 
           {estrutura}
 
