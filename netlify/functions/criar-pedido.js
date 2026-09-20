@@ -1,6 +1,6 @@
 exports.handler = async (event) => {
   const corsHeaders = {
-    "Access-Control-Allow-Origin": "https://karinaosproject.github.io",
+    "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Allow-Methods": "POST,OPTIONS",
     "Content-Type": "application/json"
