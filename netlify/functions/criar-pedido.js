@@ -14,10 +14,10 @@ exports.handler = async (event) => {
 
   try {
     const dados = JSON.parse(event.body || "{}");
-    const { tipo, tema, duracao, estilo, voz, idioma, visual, referencias, intensidade } = dados;
+    const { tipo, produto, tema, oferta, publico, objetivo, cta, duracao, estilo, voz, idioma, visual, referencias, intensidade } = dados;
 
-    if (!tema || !tema.trim()) {
-      return { statusCode: 400, headers: corsHeaders, body: JSON.stringify({ sucesso: false, erro: "Informe o tema do conteúdo." }) };
+    if ((!produto || !produto.trim()) && (!tema || !tema.trim())) {
+      return { statusCode: 400, headers: corsHeaders, body: JSON.stringify({ sucesso: false, erro: "Informe o produto/serviço ou descreva o conteúdo." }) };
     }
 
     const token = process.env.GITHUB_TOKEN;
@@ -67,7 +67,7 @@ O resultado deve ser original e adequado ao tema solicitado.
 Novo pedido de conteúdo
 `;
 
-    const titulo = `Pedido Karina OS — ${tema.trim()}`;
+    const nomeProjeto = (produto || tema || tipo || "Novo projeto").trim();\n    const titulo = `Projeto Karina Studio — ${nomeProjeto}`;
     const resposta = await fetch("https://api.github.com/repos/karinaosproject/youtube-shorts-automatico/issues", {
       method: "POST",
       headers: {
