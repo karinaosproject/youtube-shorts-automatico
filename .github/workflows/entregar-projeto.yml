@@ -43,20 +43,19 @@ jobs:
       - name: Criar ou atualizar entrega
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
           ISSUE_NUMBER: ${{ steps.pacote.outputs.issue }}
           TAG: ${{ steps.pacote.outputs.tag }}
           ZIP: ${{ steps.pacote.outputs.zip }}
         run: |
           set -e
-          TITULO="$(gh api "repos/$GITHUB_REPOSITORY/issues/$ISSUE_NUMBER" --jq '.title')"
-          if gh release view "$TAG" >/dev/null 2>&1; then
+          TITULO="$(gh api "repos/$GH_REPO/issues/$ISSUE_NUMBER" --jq '.title')"
+          if gh api "repos/$GH_REPO/releases/tags/$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "$ZIP" --clobber
           else
-            gh release create "$TAG" "$ZIP" \
-              --title "$TITULO" \
-              --notes "Entrega automática do Karina Studio para o projeto #$ISSUE_NUMBER."
+            gh release create "$TAG" "$ZIP"               --repo "$GH_REPO"               --title "$TITULO"               --notes "Entrega automática do Karina Studio para o projeto #$ISSUE_NUMBER."
           fi
-          DOWNLOAD_URL="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" --jq '.assets[].browser_download_url' | tail -n 1)"
+          DOWNLOAD_URL="$(gh api "repos/$GH_REPO/releases/tags/$TAG" --jq '.assets[].browser_download_url' | tail -n 1)"
           test -n "$DOWNLOAD_URL"
           echo "$DOWNLOAD_URL" > entrega-url.txt
           echo "$TAG" > entrega-tag.txt
@@ -64,17 +63,15 @@ jobs:
       - name: Registrar entrega no pedido
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
           ISSUE_NUMBER: ${{ steps.pacote.outputs.issue }}
         run: |
           set -e
           URL="$(cat entrega-url.txt)"
           TAG="$(cat entrega-tag.txt)"
-          BODY="$(gh api "/repos/$GITHUB_REPOSITORY/issues/$ISSUE_NUMBER" --jq '.body')"
+          BODY="$(gh api "repos/$GH_REPO/issues/$ISSUE_NUMBER" --jq '.body')"
           BODY="$BODY"$'\n\n'"### ENTREGA KARINA STUDIO"$'\n\n'"**STATUS:** CONCLUÍDO"$'\n\n'"### DOWNLOAD DO PROJETO"$'\n'"$URL"$'\n\n'"### IDENTIFICAÇÃO DA ENTREGA"$'\n'"$TAG"$'\n\n'"O pacote contém o vídeo final, roteiro, áudio, legendas, configuração e demais arquivos gerados pela produção."
-          gh api --method PATCH \
-            -H "Accept: application/vnd.github+json" \
-            "/repos/$GITHUB_REPOSITORY/issues/$ISSUE_NUMBER" \
-            -f body="$BODY"
+          gh api --method PATCH             -H "Accept: application/vnd.github+json"             "repos/$GH_REPO/issues/$ISSUE_NUMBER"             -f body="$BODY"
 
       - name: Salvar informações da entrega
         uses: actions/upload-artifact@v4
