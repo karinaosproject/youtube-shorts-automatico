@@ -39,6 +39,7 @@ exports.handler = async (event) => {
       }
 
       const download = corpo.match(/### DOWNLOAD DO PROJETO\s*\n([^\s]+)/i)?.[1]?.trim() || null;
+      const videoDownload = corpo.match(/### DOWNLOAD DO VÍDEO\s*\n([^\s]+)/i)?.[1]?.trim() || null;
       const youtubeUrl = corpo.match(/### YOUTUBE URL\s*\n([^\s]+)/i)?.[1]?.trim() || null;
       const youtubeIdMatch = corpo.match(/### YOUTUBE VIDEO ID\s*\n([^\s]+)/i);
       let youtubeId = youtubeIdMatch?.[1]?.trim() || null;
@@ -60,6 +61,7 @@ exports.handler = async (event) => {
         atualizadoEm: i.updated_at,
         url: i.html_url,
         downloadUrl: download,
+        videoDownloadUrl: videoDownload,
         youtubeId,
         youtubeUrl,
         youtubeThumbnailUrl: youtubeId ? `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg` : null
